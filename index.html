@@ -34,22 +34,9 @@ body {
   color: var(--ink);
   min-height: 100vh;
   overflow-x: hidden;
-  /* Subtle paper texture via repeating gradient */
   background-image:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.008) 2px,
-      rgba(0,0,0,0.008) 4px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.005) 2px,
-      rgba(0,0,0,0.005) 4px
-    );
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.008) 2px, rgba(0,0,0,0.008) 4px),
+    repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.005) 2px, rgba(0,0,0,0.005) 4px);
 }
 
 /* ========================================================================
@@ -66,6 +53,130 @@ h1, h2, h3, h4 {
 .italic { font-style: italic; }
 
 /* ========================================================================
+   KEYFRAME ANIMATIONS
+   ======================================================================== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes confettiDrop {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+@keyframes scanline {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100%; }
+}
+
+@keyframes vinylSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes albumReveal {
+  from { transform: scale(0.8) rotate(-5deg); opacity: 0; }
+  to { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes stampSlam {
+  0% { transform: scale(3) rotate(-10deg); opacity: 0; }
+  60% { transform: scale(1.1) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-2deg); opacity: 1; }
+}
+
+@keyframes scoreReveal {
+  0% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 10px rgba(122,139,111,0.5); }
+  50% { text-shadow: 0 0 30px rgba(122,139,111,0.9), 0 0 60px rgba(122,139,111,0.4); }
+}
+
+@keyframes crowdBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes crowdBob2 {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes lyricFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 0.85; transform: translateY(0); }
+}
+
+@keyframes lyricFadeOut {
+  from { opacity: 0.85; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-8px); }
+}
+
+@keyframes letterReveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes countUp {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes flashIn {
+  0% { background: rgba(255,255,255,0); }
+  30% { background: rgba(255,255,255,0.3); }
+  100% { background: rgba(255,255,255,0); }
+}
+
+@keyframes eqBounce1 {
+  0%, 100% { height: 4px; }
+  50% { height: 14px; }
+}
+@keyframes eqBounce2 {
+  0%, 100% { height: 8px; }
+  50% { height: 18px; }
+}
+@keyframes eqBounce3 {
+  0%, 100% { height: 6px; }
+  50% { height: 12px; }
+}
+
+/* ========================================================================
    TITLE SCREEN
    ======================================================================== */
 #title-screen {
@@ -76,13 +187,29 @@ h1, h2, h3, h4 {
   min-height: 100vh;
   padding: 2rem;
   text-align: center;
-  animation: fadeIn 1.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* VHS scanline overlay */
+#title-screen::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+  animation: scanline 8s linear infinite;
+  background-size: 100% 400%;
+  pointer-events: none;
+  z-index: 1;
 }
+
+#title-screen > * { position: relative; z-index: 2; }
 
 #title-screen h1 {
   font-size: 4rem;
@@ -92,12 +219,29 @@ h1, h2, h3, h4 {
   line-height: 1.1;
 }
 
+.title-letter {
+  display: inline-block;
+  opacity: 0;
+  animation: letterReveal 0.4s ease forwards;
+}
+
 #title-screen .subtitle {
   font-size: 1rem;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--denim);
   margin-bottom: 0.5rem;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.typewriter-text {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  animation: typewriter 1.5s steps(40) 1.5s forwards;
+  width: 0;
+  border-right: 2px solid var(--denim);
 }
 
 #title-screen .tagline {
@@ -105,60 +249,61 @@ h1, h2, h3, h4 {
   font-size: 0.9rem;
   color: var(--rose);
   margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: fadeIn 1s ease 2.5s forwards;
 }
 
 /* CSS Vinyl Record */
 .vinyl-container {
   position: relative;
-  width: 180px;
-  height: 180px;
+  width: 200px;
+  height: 200px;
   margin: 1.5rem auto;
 }
 
 .vinyl {
-  width: 180px;
-  height: 180px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%,
-    #111 0%, #111 15%,
-    #222 15.5%, #333 18%,
-    #111 18.5%, #1a1a1a 20%,
+  background: conic-gradient(from 0deg, #111 0%, #222 25%, #111 50%, #222 75%, #111 100%);
+  box-shadow: 0 0 0 3px #333, 0 0 0 6px #111, 0 4px 20px rgba(0,0,0,0.3);
+  position: relative;
+  animation: vinylSpin 3s linear infinite;
+}
+
+.vinyl::before {
+  content: '';
+  position: absolute;
+  top: 10%; left: 10%; right: 10%; bottom: 10%;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    #111 0%, #1a1a1a 20%,
     #222 22%, #111 24%,
     #1a1a1a 26%, #222 28%,
-    #111 30%, #1a1a1a 32%,
-    #222 34%, #111 36%,
-    #1a1a1a 38%, #222 40%,
-    #111 42%, #1a1a1a 45%,
-    #222 48%, #333 50%,
-    #444 52%, #333 55%,
-    #222 58%, #111 62%,
-    #1a1a1a 65%, #222 68%,
-    #111 70%, #1a1a1a 73%,
-    #222 76%, #111 80%,
-    #1a1a1a 83%, #222 86%,
-    #111 89%, #1a1a1a 92%,
-    #111 100%
+    #111 30%, #1a1a1a 35%,
+    #222 40%, #111 45%,
+    #1a1a1a 50%, #222 55%,
+    #111 60%, #1a1a1a 65%,
+    #222 70%, #111 80%,
+    #1a1a1a 90%, #111 100%
   );
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  animation: spin 8s linear infinite;
 }
 
 .vinyl::after {
   content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 50px;
-  height: 50px;
+  top: 50%; left: 50%;
+  width: 60px; height: 60px;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: radial-gradient(circle, var(--rose) 0%, var(--faded-red) 60%, #222 62%, #111 100%);
+  background: var(--cream);
+  box-shadow: inset 0 0 0 4px var(--rose), inset 0 0 0 8px rgba(196,133,140,0.3);
 }
-
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 .label-input-group {
   margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeIn 0.8s ease 2.8s forwards;
 }
 
 .label-input-group label {
@@ -184,13 +329,12 @@ h1, h2, h3, h4 {
   transition: border-color 0.2s;
 }
 
-.label-input-group input:focus {
-  border-color: var(--rose);
-}
+.label-input-group input:focus { border-color: var(--rose); }
+.label-input-group input::placeholder { color: #999; font-style: italic; }
 
-.label-input-group input::placeholder {
-  color: #999;
-  font-style: italic;
+#start-btn {
+  opacity: 0;
+  animation: fadeIn 0.8s ease 3s forwards;
 }
 
 /* ========================================================================
@@ -515,7 +659,6 @@ h1, h2, h3, h4 {
   display: inline-block;
   vertical-align: top;
   margin-right: 0.8rem;
-  /* Polaroid border */
   padding: 5px 5px 18px 5px;
   background: white;
   box-shadow: 1px 2px 6px rgba(0,0,0,0.15);
@@ -558,6 +701,8 @@ h1, h2, h3, h4 {
   height: 60px;
 }
 
+.album-reveal { animation: albumReveal 0.4s ease forwards; }
+
 /* Review card */
 .review-card {
   background: white;
@@ -577,6 +722,7 @@ h1, h2, h3, h4 {
   display: inline-block;
   margin-right: 0.8rem;
   line-height: 1;
+  animation: scoreReveal 0.6s ease forwards;
 }
 
 .review-card .bnm {
@@ -623,21 +769,9 @@ h1, h2, h3, h4 {
   border-bottom: 1px solid var(--card-border);
 }
 
-.venue-item .venue-name {
-  font-weight: 700;
-  font-size: 0.85rem;
-}
-
-.venue-item .venue-details {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: #666;
-}
-
-.venue-item .venue-pay {
-  font-weight: 700;
-  color: var(--sage);
-}
+.venue-item .venue-name { font-weight: 700; font-size: 0.85rem; }
+.venue-item .venue-details { font-family: var(--font-mono); font-size: 0.7rem; color: #666; }
+.venue-item .venue-pay { font-weight: 700; color: var(--sage); }
 
 /* Production options */
 .production-option {
@@ -684,7 +818,7 @@ h1, h2, h3, h4 {
 .now-playing {
   background: var(--ink);
   color: var(--cream);
-  padding: 0.6rem 1rem;
+  padding: 0.5rem 1rem;
   display: flex;
   align-items: center;
   gap: 0.8rem;
@@ -713,6 +847,56 @@ h1, h2, h3, h4 {
   color: var(--rose);
   text-transform: uppercase;
   letter-spacing: 0.1em;
+}
+
+/* Equalizer icon */
+.eq-icon {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 18px;
+}
+.eq-icon .eq-bar {
+  width: 3px;
+  background: var(--sage);
+}
+.eq-icon.playing .eq-bar:nth-child(1) { animation: eqBounce1 0.5s ease infinite; }
+.eq-icon.playing .eq-bar:nth-child(2) { animation: eqBounce2 0.4s ease infinite 0.1s; }
+.eq-icon.playing .eq-bar:nth-child(3) { animation: eqBounce3 0.6s ease infinite 0.2s; }
+.eq-icon.playing .eq-bar:nth-child(4) { animation: eqBounce1 0.45s ease infinite 0.15s; }
+
+/* Lyrics display in now playing */
+.np-lyrics {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: rgba(240,235,224,0.8);
+  max-width: 300px;
+  line-height: 1.3;
+  font-style: italic;
+  min-height: 2.2em;
+}
+
+.np-lyrics .lyric-line {
+  display: block;
+  animation: lyricFadeIn 0.5s ease forwards;
+}
+
+.np-lyrics .lyric-line.fading {
+  animation: lyricFadeOut 0.5s ease forwards;
+}
+
+/* Progress bar */
+.np-progress {
+  width: 80px;
+  height: 3px;
+  background: #444;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.np-progress-fill {
+  height: 100%;
+  background: var(--sage);
+  transition: width 0.3s linear;
 }
 
 .visualizer {
@@ -769,6 +953,7 @@ h1, h2, h3, h4 {
   padding: 1.5rem;
   box-shadow: 6px 6px 0 var(--ink);
   position: relative;
+  animation: fadeInUp 0.3s ease;
 }
 
 .modal-content h3 {
@@ -858,9 +1043,7 @@ h1, h2, h3, h4 {
   font-size: 0.85rem;
 }
 
-.final-stat .stat-val {
-  font-weight: 700;
-}
+.final-stat .stat-val { font-weight: 700; }
 
 .album-gallery {
   display: flex;
@@ -870,31 +1053,14 @@ h1, h2, h3, h4 {
   margin: 1.5rem 0;
 }
 
-.album-gallery-item {
-  text-align: center;
-}
-
-.album-gallery-item .album-title {
-  font-style: italic;
-  font-size: 0.7rem;
-  margin-top: 0.3rem;
-  max-width: 120px;
-}
-
-.album-gallery-item .album-band {
-  font-size: 0.65rem;
-  color: #666;
-}
-
-.album-gallery-item .album-score-tag {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 700;
-}
+.album-gallery-item { text-align: center; }
+.album-gallery-item .album-title { font-style: italic; font-size: 0.7rem; margin-top: 0.3rem; max-width: 120px; }
+.album-gallery-item .album-band { font-size: 0.65rem; color: #666; }
+.album-gallery-item .album-score-tag { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; }
 
 /* Spacing for now-playing bar */
-#game-screen { padding-bottom: 70px; }
-#end-screen { padding-bottom: 70px; }
+#game-screen { padding-bottom: 90px; }
+#end-screen { padding-bottom: 90px; }
 
 /* Selection prompt */
 .select-band-prompt {
@@ -922,14 +1088,6 @@ h1, h2, h3, h4 {
 .text-center { text-align: center; }
 .text-muted { color: #888; }
 
-/* Album reveal animation */
-@keyframes albumReveal {
-  from { transform: scale(0.8) rotate(-5deg); opacity: 0; }
-  to { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-
-.album-reveal { animation: albumReveal 0.4s ease forwards; }
-
 /* Trend indicator */
 .trend-indicator {
   display: inline-block;
@@ -943,6 +1101,157 @@ h1, h2, h3, h4 {
 .trend-warm { background: var(--mustard); }
 .trend-cool { background: var(--denim); }
 .trend-cold { background: #999; }
+
+/* ========================================================================
+   INTERSTITIAL OVERLAYS
+   ======================================================================== */
+.interstitial-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.month-interstitial {
+  background: rgba(26,26,26,0.92);
+  color: var(--cream);
+  text-align: center;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.month-interstitial h2 {
+  font-size: 2.5rem;
+  letter-spacing: 0.3em;
+  color: var(--cream);
+  margin-bottom: 0.3rem;
+}
+
+.month-interstitial .year-num {
+  font-size: 5rem;
+  letter-spacing: 0.4em;
+  color: var(--mustard);
+  font-weight: 900;
+}
+
+.month-interstitial .trend-preview {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  margin-top: 1rem;
+  color: rgba(240,235,224,0.7);
+}
+
+/* Year-End Summary */
+.year-end-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 310;
+  background: rgba(26,26,26,0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.year-end-card {
+  background: var(--card-bg);
+  border: 3px solid var(--ink);
+  max-width: 500px;
+  width: 90%;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 6px 6px 0 rgba(0,0,0,0.3);
+}
+
+.year-end-card h2 {
+  font-size: 1.8rem;
+  letter-spacing: 0.2em;
+  margin-bottom: 1rem;
+  color: var(--ink);
+}
+
+.year-end-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--card-border);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.year-end-stat .ye-val { font-weight: 700; color: var(--sage); }
+
+.year-end-highlight {
+  margin-top: 1rem;
+  padding: 0.8rem;
+  background: var(--cream);
+  border-left: 4px solid var(--mustard);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-align: left;
+  line-height: 1.5;
+}
+
+/* Confetti */
+.confetti-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 350;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  top: -10px;
+  animation: confettiDrop 3s ease-in forwards;
+}
+
+/* Show result crowd animation */
+.crowd-container {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 0.5rem;
+}
+
+.crowd-person {
+  width: 12px;
+  height: 20px;
+  background: var(--ink);
+  border-radius: 50% 50% 0 0;
+}
+
+.crowd-person.bobbing { animation: crowdBob 0.6s ease infinite; }
+.crowd-person.bobbing2 { animation: crowdBob2 0.5s ease infinite 0.15s; }
+.crowd-person.bobbing3 { animation: crowdBob 0.7s ease infinite 0.3s; }
+
+/* Signed stamp */
+.signed-stamp {
+  display: inline-block;
+  color: var(--sage);
+  font-size: 2rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  border: 4px solid var(--sage);
+  padding: 0.3rem 1rem;
+  animation: stampSlam 0.5s ease forwards;
+  transform-origin: center center;
+}
+
+/* Revenue counter */
+.revenue-counter {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--sage);
+  animation: countUp 0.3s ease;
+}
 </style>
 </head>
 <body>
@@ -950,12 +1259,12 @@ h1, h2, h3, h4 {
 <!-- TITLE SCREEN -->
 <div id="title-screen">
   <div class="vinyl-container"><div class="vinyl"></div></div>
-  <h1>MATADOR DREAMS</h1>
-  <div class="subtitle">An Indie Label Simulator, 2001 - 2006</div>
+  <h1 id="title-text"></h1>
+  <div class="subtitle"><span class="typewriter-text">An Indie Label Simulator, 2001 - 2006</span></div>
   <div class="tagline">How long can you keep it real?</div>
   <div class="label-input-group">
     <label>Name Your Label</label>
-    <input type="text" id="label-name-input" placeholder="Trembling Ear Records" maxlength="30" autofocus>
+    <input type="text" id="label-name-input" placeholder="Trembling Ear Records" maxlength="30">
   </div>
   <button class="btn" id="start-btn" onclick="startGame()">Start</button>
 </div>
@@ -1027,12 +1336,20 @@ h1, h2, h3, h4 {
 
 <!-- NOW PLAYING BAR -->
 <div class="now-playing" id="now-playing" style="display:none;">
+  <div class="eq-icon" id="eq-icon">
+    <div class="eq-bar" style="height:4px;"></div>
+    <div class="eq-bar" style="height:8px;"></div>
+    <div class="eq-bar" style="height:6px;"></div>
+    <div class="eq-bar" style="height:10px;"></div>
+  </div>
   <div>
     <div class="np-label">Now Playing</div>
     <div class="np-track" id="np-track-name">--</div>
   </div>
   <div class="np-genre" id="np-genre">--</div>
+  <div class="np-lyrics" id="np-lyrics"></div>
   <div class="visualizer" id="visualizer"></div>
+  <div class="np-progress"><div class="np-progress-fill" id="np-progress-fill" style="width:0%"></div></div>
   <div class="np-controls">
     <button class="btn-stop" onclick="stopMusic()">Stop</button>
   </div>
@@ -1049,7 +1366,197 @@ h1, h2, h3, h4 {
 
 <script>
 // =========================================================================
-// MUSIC ENGINE — INLINED FROM indie-music-engine.js
+// PERSISTENT AUDIO CONTEXT (PROBLEM 2 FIX)
+// =========================================================================
+let audioCtx = null;
+let activeNodes = [];
+let analyserNode = null;
+
+function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function stopAllAudio() {
+  activeNodes.forEach(node => {
+    try { if (node.stop) node.stop(0); } catch(e) {}
+    try { if (node.disconnect) node.disconnect(); } catch(e) {}
+  });
+  activeNodes = [];
+}
+
+// =========================================================================
+// LYRICS ENGINE (PROBLEM 3)
+// =========================================================================
+const LYRICS_DB = {
+  'post-punk': [
+    ["Standing in the doorway", "watching shadows crawl"],
+    ["The city never answers", "when I try to call"],
+    ["Concrete and fluorescent", "another sleepless night"],
+    ["The subway keeps on running", "but nothing feels quite right"],
+    ["Elevator music", "in an empty hall"],
+    ["I wrote your name in neon", "on a basement wall"],
+    ["The telephone is ringing", "in an empty room"],
+    ["The monitor is glowing", "pale electric bloom"],
+    ["Cut the transmission", "break the satellite"],
+    ["Walking through the district", "under sodium light"],
+    ["The buildings have no windows", "the hallways have no end"],
+    ["I keep receiving messages", "from someone I pretend"],
+    ["Surveillance in the stairwell", "cameras on the wire"],
+    ["The frequency is shifting", "higher, always higher"],
+    ["Parallel lines converging", "in a vanishing point"],
+    ["The architecture crumbles", "at every single joint"],
+  ],
+  'indie-folk': [
+    ["Down by the river", "where the willow bends"],
+    ["I left a letter", "for you my oldest friend"],
+    ["Your grandmother's garden", "overgrown with thyme"],
+    ["We spent one summer", "counting stars and time"],
+    ["Paper boats on puddles", "after autumn rain"],
+    ["I'll walk this dirt road", "till I find you again"],
+    ["The porch light flickers", "moths against the screen"],
+    ["You hummed a melody", "I'd never heard but always dreamed"],
+    ["Fireflies in mason jars", "fading one by one"],
+    ["The hay is golden", "warm beneath the sun"],
+    ["Old photographs are curling", "in a shoebox on the shelf"],
+    ["I'm learning how to be alone", "and be okay with myself"],
+    ["The orchard in the winter", "bare branches reaching high"],
+    ["A cardinal on the fence post", "red against the sky"],
+    ["Honey on the biscuits", "coffee on the stove"],
+    ["The simplest kind of morning", "the only kind I know"],
+  ],
+  'garage': [
+    ["Yeah! Yeah! Yeah!", "Burn it down!"],
+    ["Yeah! Yeah! Yeah!", "Hit the ground!"],
+    ["Don't need your money", "Don't need your time"],
+    ["Just need the volume", "Turned up to nine!"],
+    ["Get in the van!", "Play the show!"],
+    ["Turn it up loud!", "Let it go!"],
+    ["She said she's leaving", "I said alright!"],
+    ["Gonna play it LOUDER", "Every single night!"],
+    ["Broken amplifier", "Broken guitar string!"],
+    ["Doesn't even matter", "When you start to sing!"],
+    ["Three chords forever", "That's all you need!"],
+    ["Plug it in and", "Let the speakers bleed!"],
+    ["Kick down the door!", "Storm the stage!"],
+    ["Every single night", "Is a brand new rage!"],
+    ["No one's listening?", "That's just fine!"],
+    ["We're playing for ourselves", "And we're doing just fine!"],
+  ],
+  'shoegaze': [
+    ["Dissolving into colors", "I can't remember names"],
+    ["The ceiling is an ocean", "and everything's the same"],
+    ["Whisper through the static", "your voice is silver thread"],
+    ["I'm floating in the feedback", "of everything you said"],
+    ["Blur the edges softly", "let the boundaries fade"],
+    ["We are made of echoes", "in the walls we made"],
+    ["Dripping through the speakers", "honey-colored noise"],
+    ["The world becomes a murmur", "delicate and poised"],
+    ["Sunlight through the curtain", "dust suspended still"],
+    ["Time is just a feeling", "and feelings can be killed"],
+    ["The room is breathing slowly", "walls expand and sigh"],
+    ["Everything is melting", "into lullaby"],
+    ["Kaleidoscope of whispers", "fracturing the air"],
+    ["I can feel you somewhere", "everywhere, nowhere"],
+    ["The dream refuses ending", "morning never comes"],
+    ["We are caught in amber", "frequency and hum"],
+  ],
+  'art-rock': [
+    ["We built a city", "from the bones of what we lost"],
+    ["We lit the fires", "and we never counted cost"],
+    ["The orchestra is burning", "but the music carries on"],
+    ["We're marching toward the sunrise", "singing our unfinished song"],
+    ["Raise the banners higher!", "Sound the battle cry!"],
+    ["We are the believers", "who refused to die!"],
+    ["From the rooftops screaming", "from the basement floor"],
+    ["We are building something", "that has never been before"],
+    ["History is watching", "and we answer back"],
+    ["With everything we've broken", "and everything we lack"],
+    ["The cathedral is collapsing", "beauty in the fall"],
+    ["We will build it better", "we will build it for them all"],
+    ["Rise! Rise! Rise up!", "From the ashes, from the dust!"],
+    ["Everything that matters", "is built upon our trust!"],
+    ["The movement starts in whispers", "but it ends in song"],
+    ["And every voice that joins us", "makes the chorus strong"],
+  ],
+  'lo-fi': [
+    ["I left my keys", "at your apartment again"],
+    ["You left your shoes", "in my hallway and then"],
+    ["The coffee's getting cold", "the record's skipping again"],
+    ["I'm writing songs about", "the art of doing nothing, friend"],
+    ["Tuesday afternoon", "staring at the wall"],
+    ["Thinking about calling you", "but I don't think I will"],
+    ["There's a pile of dishes", "in my kitchen sink"],
+    ["I've been meaning to do them", "but I'd rather sit and think"],
+    ["The landlord's knocking", "rent is overdue"],
+    ["I spent the money on a", "vintage record or two"],
+    ["Walking to the corner store", "for cigarettes and milk"],
+    ["The sidewalk cracks remind me of", "the patterns in your quilt"],
+    ["Forgot to set the alarm", "woke up at two"],
+    ["The cat is on the windowsill", "watching the avenue"],
+    ["Found a dollar in my pocket", "from last November's coat"],
+    ["Spent it on a candy bar", "and wrote myself a note"],
+  ],
+  'dance-punk': [
+    ["Move your body", "to the sound"],
+    ["Move your body", "underground"],
+    ["Losing my edge", "to the kids"],
+    ["Losing my edge", "but I never did"],
+    ["The bass is dropping", "feel the floor"],
+    ["Keep on dancing", "give me more!"],
+    ["Synthesizer", "in my blood"],
+    ["The rhythm's rising", "like a flood"],
+    ["Don't stop moving", "don't think twice"],
+    ["The beat is hot and", "cold as ice"],
+    ["North side, south side", "east to west"],
+    ["The dance floor's packed", "we never rest"],
+    ["Everybody's watching", "everybody's here"],
+    ["The DJ's spinning", "our darkest fear"],
+    ["One more track!", "One more song!"],
+    ["We've been dancing", "all night long!"],
+  ],
+};
+
+let currentLyricInterval = null;
+let currentLyricIndex = 0;
+let currentLyricGenre = null;
+
+function startLyrics(genre, bpm) {
+  stopLyrics();
+  currentLyricGenre = genre;
+  currentLyricIndex = 0;
+  const lyrics = LYRICS_DB[genre] || LYRICS_DB['post-punk'];
+  const beatsPerBar = 4;
+  const barsPerLyric = 4;
+  const msPerBeat = 60000 / bpm;
+  const msPerLyricChange = msPerBeat * beatsPerBar * barsPerLyric;
+
+  function showNextLyric() {
+    const el = document.getElementById('np-lyrics');
+    if (!el) return;
+    const pair = lyrics[currentLyricIndex % lyrics.length];
+    el.innerHTML = `<span class="lyric-line">${pair[0]}</span><span class="lyric-line">${pair[1]}</span>`;
+    currentLyricIndex++;
+  }
+
+  showNextLyric();
+  currentLyricInterval = setInterval(showNextLyric, msPerLyricChange);
+}
+
+function stopLyrics() {
+  if (currentLyricInterval) {
+    clearInterval(currentLyricInterval);
+    currentLyricInterval = null;
+  }
+  const el = document.getElementById('np-lyrics');
+  if (el) el.innerHTML = '';
+}
+
+// =========================================================================
+// MUSIC ENGINE (PROBLEM 1 & 2 FIX - COMPLETE REWRITE)
 // =========================================================================
 (function () {
   'use strict';
@@ -1057,7 +1564,7 @@ h1, h2, h3, h4 {
   const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
   const NOTES = {};
 
-  for (let octave = 2; octave <= 5; octave++) {
+  for (let octave = 1; octave <= 6; octave++) {
     NOTE_NAMES.forEach((name, semitone) => {
       const midi = 12 * (octave + 1) + semitone;
       NOTES[name + octave] = 440 * Math.pow(2, (midi - 69) / 12);
@@ -1066,14 +1573,13 @@ h1, h2, h3, h4 {
 
   const FLAT_MAP = { 'Db': 'C#', 'Eb': 'D#', 'Fb': 'E', 'Gb': 'F#', 'Ab': 'G#', 'Bb': 'A#', 'Cb': 'B' };
   Object.keys(FLAT_MAP).forEach(flat => {
-    for (let octave = 2; octave <= 5; octave++) {
+    for (let octave = 1; octave <= 6; octave++) {
       NOTES[flat + octave] = NOTES[FLAT_MAP[flat] + octave];
     }
   });
 
   function freq(note, octave) {
-    const key = note + octave;
-    return NOTES[key] || 440;
+    return NOTES[note + octave] || 440;
   }
 
   const SCALE_INTERVALS = {
@@ -1083,10 +1589,7 @@ h1, h2, h3, h4 {
     major:           [0, 2, 4, 5, 7, 9, 11],
     mixolydian:      [0, 2, 4, 5, 7, 9, 10],
     harmonicMinor:   [0, 2, 3, 5, 7, 8, 11],
-  };
-
-  const KEY_ROOTS = {
-    'C': 0, 'Dm': 2, 'Em': 4, 'G': 7, 'Am': 9, 'Bm': 11,
+    dorian:          [0, 2, 3, 5, 7, 9, 10],
   };
 
   const CHORD_SHAPES = {
@@ -1134,12 +1637,15 @@ h1, h2, h3, h4 {
     return notes;
   }
 
+  // Genre-specific chord progressions
   const PROGRESSIONS = {
     'post-punk': {
+      // Dark minor keys: Em, Am, Bm
       verse:  [[0,'minor'], [3,'major'], [10,'major'], [8,'major']],
       chorus: [[0,'minor'], [5,'minor'], [7,'minor'], [0,'minor']],
     },
     'indie-folk': {
+      // Major keys: G, C, D
       verse:  [[0,'major'], [7,'major'], [9,'minor'], [5,'major']],
       chorus: [[9,'minor'], [5,'major'], [0,'major'], [7,'major']],
     },
@@ -1148,10 +1654,12 @@ h1, h2, h3, h4 {
       chorus: [[0,'major'], [10,'major'], [0,'major'], [10,'major']],
     },
     'garage': {
+      // Power chords only
       verse:  [[0,'power'], [5,'power'], [7,'power'], [5,'power']],
       chorus: [[0,'power'], [0,'power'], [5,'power'], [7,'power']],
     },
     'art-rock': {
+      // Complex 5-6 chord progressions
       verse:  [[0,'minor'], [3,'major'], [10,'major'], [5,'minor'], [0,'minor'], [8,'major']],
       chorus: [[8,'major'], [3,'major'], [5,'major'], [0,'minor'], [7,'major'], [10,'major']],
     },
@@ -1165,40 +1673,93 @@ h1, h2, h3, h4 {
     },
   };
 
-  const GENRE_SCALES = {
-    'post-punk':   'minorPentatonic',
-    'indie-folk':  'majorPentatonic',
-    'shoegaze':    'naturalMinor',
-    'garage':      'minorPentatonic',
-    'art-rock':    'majorPentatonic',
-    'lo-fi':       'naturalMinor',
-    'dance-punk':  'mixolydian',
+  // Genre-specific keys
+  const GENRE_KEYS = {
+    'post-punk':   ['Em', 'Am', 'Bm'],
+    'indie-folk':  ['G', 'C', 'D'],
+    'garage':      ['Em', 'Am', 'G'],
+    'shoegaze':    ['Em', 'C', 'Am'],
+    'art-rock':    ['Am', 'Em', 'C'],
+    'lo-fi':       ['C', 'G', 'D'],
+    'dance-punk':  ['Am', 'Em', 'Dm'],
   };
 
-  function createReverb(audioCtx, duration, decay) {
-    duration = duration || 2;
-    decay = decay || 2;
-    const length = Math.floor(audioCtx.sampleRate * duration);
-    const impulse = audioCtx.createBuffer(2, length, audioCtx.sampleRate);
+  const GENRE_SCALES = {
+    'post-punk':   'naturalMinor',
+    'indie-folk':  'major',
+    'shoegaze':    'naturalMinor',
+    'garage':      'minorPentatonic',
+    'art-rock':    'dorian',
+    'lo-fi':       'major',
+    'dance-punk':  'dorian',
+  };
+
+  // Genre-specific drum patterns (16-step)
+  const DRUM_PATTERNS = {
+    'post-punk': [
+      // Motorik: kick every beat, snare 2&4, constant 8th note hi-hats
+      { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+      { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1] },
+    ],
+    'indie-folk': [
+      // Minimal: just a shaker pattern (using hihat)
+      { kick:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], snare:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+      { kick:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], snare:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    ],
+    'shoegaze': [
+      // Almost inaudible
+      { kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    ],
+    'garage': [
+      // LOUD kick and snare, minimal hihat
+      { kick:[1,0,1,0,1,0,0,0,1,0,1,0,1,0,0,0], snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,1,0], hihat:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+      { kick:[1,0,0,0,1,0,1,0,1,0,0,0,1,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    ],
+    'art-rock': [
+      { kick:[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0] },
+      { kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+    ],
+    'lo-fi': [
+      { kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    ],
+    'dance-punk': [
+      // Four-on-the-floor kick, offbeat hihats, clap/cowbell on 2&4
+      { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], cowbell:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0] },
+      { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], cowbell:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0] },
+    ],
+  };
+
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function seededRandom(seed) {
+    let s = 0;
+    for (let i = 0; i < seed.length; i++) s = ((s << 5) - s) + seed.charCodeAt(i) | 0;
+    return function () {
+      s = (s * 16807 + 0) % 2147483647;
+      return (s & 0x7fffffff) / 2147483647;
+    };
+  }
+
+  function createReverb(ctx, duration, decay) {
+    const length = Math.floor(ctx.sampleRate * duration);
+    const impulse = ctx.createBuffer(2, length, ctx.sampleRate);
     for (let ch = 0; ch < 2; ch++) {
       const data = impulse.getChannelData(ch);
       for (let i = 0; i < length; i++) {
         data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
       }
     }
-    const convolver = audioCtx.createConvolver();
+    const convolver = ctx.createConvolver();
     convolver.buffer = impulse;
     return convolver;
   }
 
-  function createDelay(audioCtx, time, feedback) {
-    time = time || 0.3;
-    feedback = feedback || 0.4;
-    const delay = audioCtx.createDelay(4.0);
+  function createDelay(ctx, time, feedback) {
+    const delay = ctx.createDelay(4.0);
     delay.delayTime.value = time;
-    const feedbackGain = audioCtx.createGain();
+    const feedbackGain = ctx.createGain();
     feedbackGain.gain.value = feedback;
-    const filter = audioCtx.createBiquadFilter();
+    const filter = ctx.createBiquadFilter();
     filter.type = 'lowpass';
     filter.frequency.value = 3000;
     delay.connect(feedbackGain);
@@ -1218,715 +1779,1081 @@ h1, h2, h3, h4 {
     return curve;
   }
 
-  function createTapeSaturation(audioCtx) {
-    const waveshaper = audioCtx.createWaveShaper();
-    waveshaper.curve = makeDistortionCurve(5);
-    waveshaper.oversample = '2x';
-    const lpf = audioCtx.createBiquadFilter();
-    lpf.type = 'lowpass';
-    lpf.frequency.value = 8000;
-    const noiseGain = audioCtx.createGain();
-    noiseGain.gain.value = 0.008;
-    const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 2, audioCtx.sampleRate);
-    const noiseData = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < noiseData.length; i++) {
-      noiseData[i] = Math.random() * 2 - 1;
-    }
-    waveshaper.connect(lpf);
-    return { input: waveshaper, output: lpf, noiseBuffer, noiseGain };
-  }
-
-  function getGenreParams(genre, energy, talent) {
-    const e = energy / 10;
-    const t = talent / 10;
-
-    const defaults = {
-      guitarDetune: 6, guitarDistortion: 20, guitarFilterFreq: 3000,
-      guitarAttack: 0.01, guitarRelease: 0.15, guitarGain: 0.12,
-      bassFilterFreq: 1000, bassDistortion: 5, bassGain: 0.18,
-      drumGain: 0.25, kickGain: 0.35, snareGain: 0.25, hihatGain: 0.12,
-      reverbDuration: 1.5, reverbDecay: 2.5, reverbMix: 0.2,
-      delayTime: 0.3, delayFeedback: 0.25, delayMix: 0.1,
-      useSynth: false, useVocals: false, vocalGain: 0.03,
-      tremoloRate: 0, tremoloDepth: 0, masterGain: 0.45,
-    };
-
-    const params = { ...defaults };
-
-    switch (genre) {
-      case 'post-punk':
-        params.guitarDetune = 4 + (1 - t) * 4;
-        params.guitarDistortion = 15 + e * 20;
-        params.guitarFilterFreq = 4000 + e * 2000;
-        params.guitarAttack = 0.005; params.guitarRelease = 0.08;
-        params.guitarGain = 0.09 + e * 0.06;
-        params.bassFilterFreq = 1200; params.bassDistortion = 8; params.bassGain = 0.22;
-        params.reverbDuration = 2.5; params.reverbDecay = 2.0; params.reverbMix = 0.35;
-        params.delayTime = 0.375; params.delayFeedback = 0.45; params.delayMix = 0.25;
-        params.useVocals = true; params.vocalGain = 0.025; params.masterGain = 0.4;
-        break;
-      case 'indie-folk':
-        params.guitarDetune = 2 + (1 - t) * 3;
-        params.guitarDistortion = 2; params.guitarFilterFreq = 5000;
-        params.guitarAttack = 0.01; params.guitarRelease = 0.3;
-        params.guitarGain = 0.1; params.bassGain = 0.1;
-        params.drumGain = 0.12; params.kickGain = 0.18;
-        params.snareGain = 0.12; params.hihatGain = 0.06;
-        params.reverbDuration = 1.8; params.reverbDecay = 3.0;
-        params.reverbMix = 0.2; params.delayMix = 0.05; params.masterGain = 0.38;
-        break;
-      case 'shoegaze':
-        params.guitarDetune = 10 + (1 - t) * 8;
-        params.guitarDistortion = 40 + e * 30;
-        params.guitarFilterFreq = 2000 + e * 1000;
-        params.guitarAttack = 0.08; params.guitarRelease = 0.8;
-        params.guitarGain = 0.14 + e * 0.08; params.bassGain = 0.15;
-        params.reverbDuration = 4.0; params.reverbDecay = 1.5; params.reverbMix = 0.6;
-        params.delayTime = 0.5; params.delayFeedback = 0.5; params.delayMix = 0.3;
-        params.tremoloRate = 4 + e * 3; params.tremoloDepth = 0.4;
-        params.useSynth = true; params.masterGain = 0.35;
-        break;
-      case 'garage':
-        params.guitarDetune = 5 + (1 - t) * 6;
-        params.guitarDistortion = 50 + e * 40;
-        params.guitarFilterFreq = 3500 + e * 2000;
-        params.guitarAttack = 0.003; params.guitarRelease = 0.1;
-        params.guitarGain = 0.16 + e * 0.08;
-        params.bassFilterFreq = 900; params.bassDistortion = 15; params.bassGain = 0.2;
-        params.drumGain = 0.35; params.kickGain = 0.45;
-        params.snareGain = 0.35; params.hihatGain = 0.18;
-        params.reverbDuration = 0.8; params.reverbDecay = 3.0;
-        params.reverbMix = 0.1; params.delayMix = 0.03; params.masterGain = 0.42;
-        break;
-      case 'art-rock':
-        params.guitarDetune = 3 + (1 - t) * 3;
-        params.guitarDistortion = 10 + e * 25;
-        params.guitarFilterFreq = 4500; params.guitarAttack = 0.02; params.guitarRelease = 0.25;
-        params.guitarGain = 0.08 + e * 0.1; params.bassGain = 0.16;
-        params.reverbDuration = 2.0; params.reverbDecay = 2.0; params.reverbMix = 0.25;
-        params.delayTime = 0.4; params.delayFeedback = 0.3; params.delayMix = 0.15;
-        params.useSynth = true; params.useVocals = true;
-        params.vocalGain = 0.02; params.masterGain = 0.4;
-        break;
-      case 'lo-fi':
-        params.guitarDetune = 8 + (1 - t) * 10;
-        params.guitarDistortion = 8; params.guitarFilterFreq = 3000;
-        params.guitarAttack = 0.015; params.guitarRelease = 0.25;
-        params.guitarGain = 0.1; params.bassFilterFreq = 800; params.bassGain = 0.12;
-        params.drumGain = 0.15; params.kickGain = 0.2;
-        params.snareGain = 0.15; params.hihatGain = 0.07;
-        params.reverbDuration = 1.2; params.reverbDecay = 3.0;
-        params.reverbMix = 0.15; params.delayMix = 0.08;
-        params.useVocals = true; params.vocalGain = 0.02; params.masterGain = 0.35;
-        break;
-      case 'dance-punk':
-        params.guitarDetune = 4;
-        params.guitarDistortion = 15 + e * 15;
-        params.guitarFilterFreq = 3500; params.guitarAttack = 0.003; params.guitarRelease = 0.05;
-        params.guitarGain = 0.1 + e * 0.05;
-        params.bassFilterFreq = 1200; params.bassDistortion = 10; params.bassGain = 0.25;
-        params.drumGain = 0.3; params.kickGain = 0.4;
-        params.snareGain = 0.28; params.hihatGain = 0.15;
-        params.reverbDuration = 1.0; params.reverbDecay = 3.0; params.reverbMix = 0.12;
-        params.delayTime = 0.25; params.delayFeedback = 0.3; params.delayMix = 0.1;
-        params.useSynth = true; params.masterGain = 0.42;
-        break;
-    }
-    return params;
-  }
-
-  const DRUM_PATTERNS = {
-    'post-punk': [
-      { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
-      { kick:[1,0,0,0,1,0,0,0,1,0,0,1,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0] },
-      { kick:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-    ],
-    'indie-folk': [
-      { kick:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0], snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-      { kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-    ],
-    'shoegaze': [
-      { kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1] },
-      { kick:[1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], open:[0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1] },
-    ],
-    'garage': [
-      { kick:[1,0,1,0,1,0,0,0,1,0,1,0,1,0,0,0], snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,1,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-      { kick:[1,0,0,0,1,0,1,0,1,0,0,0,1,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
-      { kick:[1,0,1,0,0,0,1,0,1,0,1,0,0,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,1,0,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-    ],
-    'art-rock': [
-      { kick:[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0] },
-      { kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
-    ],
-    'lo-fi': [
-      { kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-      { kick:[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1], hihat:[1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-    ],
-    'dance-punk': [
-      { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-      { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,1], hihat:[1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1], open:[0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0] },
-      { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-    ],
-  };
-
-  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
-  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-  function seededRandom(seed) {
-    let s = 0;
-    for (let i = 0; i < seed.length; i++) s = ((s << 5) - s) + seed.charCodeAt(i) | 0;
-    return function () {
-      s = (s * 16807 + 0) % 2147483647;
-      return (s & 0x7fffffff) / 2147483647;
-    };
-  }
-
   const MusicEngine = {
-    _ctx: null, _playing: false, _scheduledNodes: [], _masterGain: null, _stopTimeout: null,
+    _playing: false,
+    _stopTimeout: null,
+    _masterGain: null,
+    _progressInterval: null,
 
-    init(audioCtx) { this._ctx = audioCtx; this._playing = false; this._scheduledNodes = []; },
     isPlaying() { return this._playing; },
 
     stop() {
       this._playing = false;
       if (this._stopTimeout) { clearTimeout(this._stopTimeout); this._stopTimeout = null; }
-      this._scheduledNodes.forEach(node => {
-        try { if (node.stop) node.stop(0); if (node.disconnect) node.disconnect(); } catch (e) {}
-      });
-      this._scheduledNodes = [];
+      if (this._progressInterval) { clearInterval(this._progressInterval); this._progressInterval = null; }
+
+      // Fade out master gain quickly
       if (this._masterGain) {
+        const ctx = getAudioContext();
         try {
-          this._masterGain.gain.cancelScheduledValues(this._ctx.currentTime);
-          this._masterGain.gain.setValueAtTime(this._masterGain.gain.value, this._ctx.currentTime);
-          this._masterGain.gain.linearRampToValueAtTime(0, this._ctx.currentTime + 0.05);
+          this._masterGain.gain.cancelScheduledValues(ctx.currentTime);
+          this._masterGain.gain.setValueAtTime(this._masterGain.gain.value, ctx.currentTime);
+          this._masterGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.05);
         } catch (e) {}
       }
+
+      // Stop and disconnect all nodes
+      stopAllAudio();
+      this._masterGain = null;
     },
 
     playBand(bandParams) {
       if (this._playing) this.stop();
-      const ctx = this._ctx;
-      if (!ctx) throw new Error('MusicEngine.init() must be called first');
-      if (ctx.state === 'suspended') ctx.resume();
+
+      const ctx = getAudioContext();
       this._playing = true;
-      this._scheduledNodes = [];
 
       const { genre = 'post-punk', talent = 5, key = 'Em', tempo = 130, energy = 5, name = 'Unknown Band' } = bandParams;
       const rng = seededRandom(name + genre);
-      const gp = getGenreParams(genre, energy, talent);
       const { rootSemitone, isMinor } = parseKey(key);
+      const e = energy / 10;
+      const t = talent / 10;
 
       const beatDur = 60 / tempo;
       const sixteenth = beatDur / 4;
       const bar = beatDur * 4;
       const now = ctx.currentTime + 0.1;
 
+      // Song structure
       const introStart = now;
       const verseStart = now + 4 * bar;
       const chorusStart = now + 12 * bar;
       const songEnd = now + 20 * bar + 2;
 
+      // Master chain
       const masterGain = ctx.createGain();
-      masterGain.gain.value = gp.masterGain;
       this._masterGain = masterGain;
 
       const compressor = ctx.createDynamicsCompressor();
-      compressor.threshold.value = -18; compressor.knee.value = 12;
-      compressor.ratio.value = 4; compressor.attack.value = 0.003; compressor.release.value = 0.15;
+      compressor.threshold.value = -18;
+      compressor.knee.value = 12;
+      compressor.ratio.value = 4;
+      compressor.attack.value = 0.003;
+      compressor.release.value = 0.15;
 
-      const reverb = createReverb(ctx, gp.reverbDuration, gp.reverbDecay);
-      const reverbSend = ctx.createGain(); reverbSend.gain.value = gp.reverbMix;
-      const reverbReturn = ctx.createGain(); reverbReturn.gain.value = 1.0;
-      reverbSend.connect(reverb); reverb.connect(reverbReturn); reverbReturn.connect(compressor);
+      // Genre-specific reverb
+      let reverbDuration, reverbDecay, reverbMix;
+      switch (genre) {
+        case 'post-punk':   reverbDuration=2.5; reverbDecay=2.0; reverbMix=0.35; break;
+        case 'indie-folk':  reverbDuration=0.8; reverbDecay=3.0; reverbMix=0.08; break;
+        case 'shoegaze':    reverbDuration=4.5; reverbDecay=1.2; reverbMix=0.7; break;
+        case 'garage':      reverbDuration=0.5; reverbDecay=4.0; reverbMix=0.05; break;
+        case 'art-rock':    reverbDuration=2.0; reverbDecay=2.0; reverbMix=0.25; break;
+        case 'lo-fi':       reverbDuration=1.0; reverbDecay=3.0; reverbMix=0.1; break;
+        case 'dance-punk':  reverbDuration=0.8; reverbDecay=3.0; reverbMix=0.08; break;
+        default:            reverbDuration=1.5; reverbDecay=2.5; reverbMix=0.2;
+      }
 
-      const delayEffect = createDelay(ctx, gp.delayTime, gp.delayFeedback);
-      const delaySend = ctx.createGain(); delaySend.gain.value = gp.delayMix;
-      const delayReturn = ctx.createGain(); delayReturn.gain.value = 1.0;
-      delaySend.connect(delayEffect.input); delayEffect.output.connect(delayReturn); delayReturn.connect(compressor);
+      const reverb = createReverb(ctx, reverbDuration, reverbDecay);
+      const reverbSend = ctx.createGain();
+      reverbSend.gain.value = reverbMix;
+      const reverbReturn = ctx.createGain();
+      reverbReturn.gain.value = 1.0;
+      reverbSend.connect(reverb);
+      reverb.connect(reverbReturn);
+      reverbReturn.connect(compressor);
 
-      let tapeSat = null;
+      // Genre-specific delay
+      let delayTime, delayFeedback, delayMix;
+      if (genre === 'post-punk') {
+        delayTime = beatDur * 0.75; // Dotted 8th
+        delayFeedback = 0.45;
+        delayMix = 0.3;
+      } else if (genre === 'shoegaze') {
+        delayTime = 0.5;
+        delayFeedback = 0.5;
+        delayMix = 0.3;
+      } else if (genre === 'garage') {
+        delayTime = 0.2;
+        delayFeedback = 0.1;
+        delayMix = 0.02;
+      } else if (genre === 'indie-folk') {
+        delayTime = 0.3;
+        delayFeedback = 0.2;
+        delayMix = 0.03;
+      } else if (genre === 'dance-punk') {
+        delayTime = 0.25;
+        delayFeedback = 0.3;
+        delayMix = 0.08;
+      } else {
+        delayTime = 0.3;
+        delayFeedback = 0.3;
+        delayMix = 0.1;
+      }
+
+      const delayEffect = createDelay(ctx, delayTime, delayFeedback);
+      const delaySend = ctx.createGain();
+      delaySend.gain.value = delayMix;
+      const delayReturn = ctx.createGain();
+      delayReturn.gain.value = 1.0;
+      delaySend.connect(delayEffect.input);
+      delayEffect.output.connect(delayReturn);
+      delayReturn.connect(compressor);
+
+      // Lo-fi specific: tape saturation + low-pass everything + tape hiss
+      let globalLPF = null;
       if (genre === 'lo-fi') {
-        tapeSat = createTapeSaturation(ctx);
-        compressor.connect(tapeSat.input); tapeSat.output.connect(masterGain);
-        const noiseSource = ctx.createBufferSource();
-        noiseSource.buffer = tapeSat.noiseBuffer; noiseSource.loop = true;
-        noiseSource.connect(tapeSat.noiseGain); tapeSat.noiseGain.connect(masterGain);
-        noiseSource.start(now); this._scheduledNodes.push(noiseSource);
+        globalLPF = ctx.createBiquadFilter();
+        globalLPF.type = 'lowpass';
+        globalLPF.frequency.value = 6000;
+        compressor.connect(globalLPF);
+        globalLPF.connect(masterGain);
+
+        // Tape hiss
+        const hissBuffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+        const hissData = hissBuffer.getChannelData(0);
+        for (let i = 0; i < hissData.length; i++) hissData[i] = Math.random() * 2 - 1;
+        const hissSource = ctx.createBufferSource();
+        hissSource.buffer = hissBuffer;
+        hissSource.loop = true;
+        const hissGain = ctx.createGain();
+        hissGain.gain.value = 0.015;
+        const hissFilter = ctx.createBiquadFilter();
+        hissFilter.type = 'lowpass';
+        hissFilter.frequency.value = 4000;
+        hissSource.connect(hissFilter);
+        hissFilter.connect(hissGain);
+        hissGain.connect(masterGain);
+        hissSource.start(now);
+        activeNodes.push(hissSource);
       } else {
         compressor.connect(masterGain);
       }
+
+      // Master gain per genre
+      switch (genre) {
+        case 'post-punk':   masterGain.gain.value = 0.38; break;
+        case 'indie-folk':  masterGain.gain.value = 0.30; break;
+        case 'shoegaze':    masterGain.gain.value = 0.32; break;
+        case 'garage':      masterGain.gain.value = 0.42; break;
+        case 'art-rock':    masterGain.gain.value = 0.38; break;
+        case 'lo-fi':       masterGain.gain.value = 0.30; break;
+        case 'dance-punk':  masterGain.gain.value = 0.40; break;
+        default:            masterGain.gain.value = 0.38;
+      }
+
       masterGain.connect(ctx.destination);
 
-      // Also connect to analyser for visualizer
-      if (window._gameAnalyser) {
-        try { masterGain.connect(window._gameAnalyser); } catch(e) {}
+      // Connect to analyser for visualizer
+      if (analyserNode) {
+        try { masterGain.connect(analyserNode); } catch(e) {}
       }
 
       function connectToMix(sourceNode) {
-        sourceNode.connect(compressor); sourceNode.connect(reverbSend); sourceNode.connect(delaySend);
+        sourceNode.connect(compressor);
+        sourceNode.connect(reverbSend);
+        sourceNode.connect(delaySend);
       }
 
+      function connectDry(sourceNode) {
+        sourceNode.connect(compressor);
+      }
+
+      // Build chord data
       const progs = PROGRESSIONS[genre] || PROGRESSIONS['post-punk'];
       const verseChords = progs.verse.map(([offset, quality]) => buildChord((rootSemitone + offset) % 12, quality, 3));
       const chorusChords = progs.chorus.map(([offset, quality]) => buildChord((rootSemitone + offset) % 12, quality, 3));
       const verseBassRoots = progs.verse.map(([offset]) => freq(semitoneToNote((rootSemitone + offset) % 12), 2));
       const chorusBassRoots = progs.chorus.map(([offset]) => freq(semitoneToNote((rootSemitone + offset) % 12), 2));
-
       const scaleType = GENRE_SCALES[genre] || 'naturalMinor';
       const melodyScale = buildScale(rootSemitone, scaleType, 4, 1);
 
-      const self = this;
-
+      // ================================================================
+      // NOTE SCHEDULING FUNCTION
+      // ================================================================
       function scheduleNote(freqVal, startTime, duration, gainVal, opts) {
         opts = opts || {};
+        if (startTime < ctx.currentTime) return;
         const oscType = opts.type || 'sawtooth';
         const attack = opts.attack || 0.01;
         const release = opts.release || 0.1;
         const filterFreq = opts.filterFreq || 5000;
         const distAmount = opts.distortion || 0;
         const numOscs = opts.numOscs || 2;
-        const destinationNode = opts.destination;
-        if (startTime < ctx.currentTime) return;
+        const detune = opts.detune || 6;
+        const dest = opts.destination;
+        const jitter = opts.jitter || 0;
+        const actualStart = startTime + (jitter ? (rng() - 0.5) * jitter * 0.001 : 0);
+        if (actualStart < ctx.currentTime) return;
 
         const noteGain = ctx.createGain();
-        noteGain.gain.setValueAtTime(0, startTime);
-        noteGain.gain.linearRampToValueAtTime(gainVal, startTime + attack);
-        noteGain.gain.setValueAtTime(gainVal, startTime + duration - release);
-        noteGain.gain.linearRampToValueAtTime(0, startTime + duration);
+        noteGain.gain.setValueAtTime(0, actualStart);
+        noteGain.gain.linearRampToValueAtTime(gainVal, actualStart + attack);
+        const sustainEnd = actualStart + duration - release;
+        if (sustainEnd > actualStart + attack) {
+          noteGain.gain.setValueAtTime(gainVal, sustainEnd);
+        }
+        noteGain.gain.linearRampToValueAtTime(0, actualStart + duration);
 
         const filter = ctx.createBiquadFilter();
-        filter.type = 'lowpass'; filter.frequency.value = filterFreq;
+        filter.type = 'lowpass';
+        filter.frequency.value = filterFreq;
         filter.Q.value = opts.filterQ || 1;
 
-        let distNode = null;
+        let lastNode = noteGain;
         if (distAmount > 0) {
-          distNode = ctx.createWaveShaper();
-          distNode.curve = makeDistortionCurve(distAmount); distNode.oversample = '2x';
+          const distNode = ctx.createWaveShaper();
+          distNode.curve = makeDistortionCurve(distAmount);
+          distNode.oversample = '2x';
+          lastNode.connect(distNode);
+          lastNode = distNode;
         }
+        lastNode.connect(filter);
 
-        const chain = [noteGain];
-        if (distNode) chain.push(distNode);
-        chain.push(filter);
-        for (let i = 0; i < chain.length - 1; i++) chain[i].connect(chain[i + 1]);
-        if (destinationNode) { filter.connect(destinationNode); } else { connectToMix(filter); }
+        if (dest) {
+          filter.connect(dest);
+        } else {
+          connectToMix(filter);
+        }
 
         for (let o = 0; o < numOscs; o++) {
           const osc = ctx.createOscillator();
-          osc.type = oscType; osc.frequency.value = freqVal;
-          if (numOscs > 1) { osc.detune.value = (o === 0 ? (opts.detune||0) : -(opts.detune||0)) * (o === 2 ? 0.5 : 1); }
-          osc.connect(noteGain); osc.start(startTime); osc.stop(startTime + duration + 0.05);
-          self._scheduledNodes.push(osc);
-        }
-      }
-
-      function scheduleGuitar(chords, sectionStart, numBars, isChorus) {
-        const barsPerChord = genre === 'art-rock' ? 1 : Math.max(1, Math.floor(numBars / chords.length));
-        const gain = gp.guitarGain * (isChorus ? 1.3 : 1.0);
-        for (let barIdx = 0; barIdx < numBars; barIdx++) {
-          const chordIdx = Math.floor(barIdx / barsPerChord) % chords.length;
-          const chord = chords[chordIdx];
-          const barStart = sectionStart + barIdx * bar;
-          switch (genre) {
-            case 'post-punk':
-              for (let eighth = 0; eighth < 8; eighth++) {
-                const noteFreq = chord[eighth % chord.length];
-                const t = barStart + eighth * (beatDur / 2);
-                if (rng() > 0.85 - talent * 0.03) {
-                  scheduleNote(noteFreq, t, beatDur * 0.3, gain, { type:'sawtooth', detune:gp.guitarDetune, attack:gp.guitarAttack, release:gp.guitarRelease, filterFreq:gp.guitarFilterFreq, distortion:gp.guitarDistortion, numOscs:2 });
-                }
-              }
-              break;
-            case 'indie-folk':
-              for (let s = 0; s < 16; s++) {
-                const pattern = [0,1,2,1];
-                const noteIdx = pattern[s % 4];
-                const noteFreq = chord[noteIdx % chord.length];
-                const t = barStart + s * sixteenth;
-                const vel = gain * (0.6 + 0.4 * Math.sin(s * 0.8));
-                scheduleNote(noteFreq, t, sixteenth * 3, vel, { type:'triangle', detune:gp.guitarDetune, attack:gp.guitarAttack, release:gp.guitarRelease, filterFreq:gp.guitarFilterFreq, distortion:gp.guitarDistortion, numOscs:2 });
-              }
-              break;
-            case 'shoegaze':
-              {
-                const strumDelay = 0.03;
-                const chordDur = bar * 0.95;
-                for (let n = 0; n < chord.length; n++) {
-                  const t = barStart + n * strumDelay;
-                  const noteGain2 = ctx.createGain(); noteGain2.gain.value = gain; connectToMix(noteGain2);
-                  if (gp.tremoloRate > 0) {
-                    const lfo = ctx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = gp.tremoloRate;
-                    const lfoGain = ctx.createGain(); lfoGain.gain.value = gp.tremoloDepth * gain;
-                    lfo.connect(lfoGain); lfoGain.connect(noteGain2.gain);
-                    lfo.start(t); lfo.stop(t + chordDur + 0.1); self._scheduledNodes.push(lfo);
-                  }
-                  scheduleNote(chord[n], t, chordDur, gain, { type:'sawtooth', detune:gp.guitarDetune, attack:gp.guitarAttack, release:gp.guitarRelease, filterFreq:gp.guitarFilterFreq, distortion:gp.guitarDistortion, numOscs:3, destination:noteGain2 });
-                }
-              }
-              break;
-            case 'garage':
-              for (let eighth = 0; eighth < 8; eighth++) {
-                const t = barStart + eighth * (beatDur / 2);
-                chord.forEach(noteFreq => {
-                  scheduleNote(noteFreq, t, beatDur * 0.4, gain, { type:'sawtooth', detune:gp.guitarDetune, attack:gp.guitarAttack, release:gp.guitarRelease, filterFreq:gp.guitarFilterFreq, distortion:gp.guitarDistortion, numOscs:2 });
-                });
-              }
-              break;
-            case 'art-rock':
-              if (barIdx % 2 === 0) {
-                for (let s = 0; s < 8; s++) {
-                  const noteFreq = chord[s % chord.length];
-                  const t = barStart + s * (beatDur / 2);
-                  const dynGain = gain * (isChorus ? (0.5 + barIdx/numBars*0.5) : 0.6);
-                  scheduleNote(noteFreq, t, beatDur*0.6, dynGain, { type:'triangle', detune:gp.guitarDetune, attack:gp.guitarAttack, release:gp.guitarRelease, filterFreq:gp.guitarFilterFreq, distortion:gp.guitarDistortion, numOscs:2 });
-                }
-              } else {
-                for (let beat = 0; beat < 4; beat++) {
-                  const t = barStart + beat * beatDur;
-                  const dynGain = gain * (isChorus ? (0.7+barIdx/numBars*0.3) : 0.5);
-                  chord.forEach((noteFreq, ni) => {
-                    scheduleNote(noteFreq, t+ni*0.01, beatDur*0.8, dynGain, { type:'sawtooth', detune:gp.guitarDetune, attack:gp.guitarAttack, release:gp.guitarRelease, filterFreq:gp.guitarFilterFreq, distortion:gp.guitarDistortion*(isChorus?1.5:1), numOscs:2 });
-                  });
-                }
-              }
-              break;
-            case 'lo-fi':
-              for (let beat = 0; beat < 4; beat++) {
-                const t = barStart + beat * beatDur;
-                const strumDir = beat % 2 === 0 ? 1 : -1;
-                chord.forEach((noteFreq, ni) => {
-                  const strumOffset = strumDir > 0 ? ni*0.015 : (chord.length-1-ni)*0.015;
-                  const wobble = 1 + (rng()-0.5)*0.004;
-                  scheduleNote(noteFreq*wobble, t+strumOffset, beatDur*0.85, gain*0.8, { type:'triangle', detune:gp.guitarDetune, attack:gp.guitarAttack, release:gp.guitarRelease, filterFreq:gp.guitarFilterFreq, distortion:gp.guitarDistortion, numOscs:2 });
-                });
-              }
-              break;
-            case 'dance-punk':
-              for (let s = 0; s < 16; s++) {
-                const funkPattern = [1,0,1,0,0,1,0,1,1,0,1,0,0,1,1,0];
-                if (!funkPattern[s]) continue;
-                const t = barStart + s * sixteenth;
-                chord.forEach(noteFreq => {
-                  scheduleNote(noteFreq, t, sixteenth*0.6, gain*0.7, { type:'square', detune:gp.guitarDetune, attack:gp.guitarAttack, release:gp.guitarRelease, filterFreq:gp.guitarFilterFreq, distortion:gp.guitarDistortion, numOscs:2 });
-                });
-              }
-              break;
+          osc.type = oscType;
+          osc.frequency.value = freqVal;
+          if (numOscs > 1) {
+            const sign = o === 0 ? 1 : -1;
+            const mult = o >= 2 ? 0.5 : 1;
+            osc.detune.value = sign * detune * mult;
           }
+          osc.connect(noteGain);
+          osc.start(actualStart);
+          osc.stop(actualStart + duration + 0.05);
+          activeNodes.push(osc);
         }
       }
 
-      function scheduleBass(bassRoots, chords, sectionStart, numBars, isChorus) {
-        const barsPerChord = genre === 'art-rock' ? 1 : Math.max(1, Math.floor(numBars / bassRoots.length));
-        const gain = gp.bassGain * (isChorus ? 1.2 : 1.0);
-        for (let barIdx = 0; barIdx < numBars; barIdx++) {
-          const chordIdx = Math.floor(barIdx / barsPerChord) % bassRoots.length;
-          const rootFreq = bassRoots[chordIdx];
-          const barStart = sectionStart + barIdx * bar;
-          switch (genre) {
-            case 'post-punk':
-              {
-                const bassScale = buildScale(rootSemitone, 'naturalMinor', 2, 2);
-                const rootIdx = bassScale.findIndex(f => Math.abs(f - rootFreq) < 5) || 0;
-                const patterns = [[0,2,3,4,3,2,0,-1],[0,0,2,3,4,4,3,2],[0,4,3,2,0,-1,0,2]];
-                const pat = patterns[barIdx % patterns.length];
-                for (let eighth = 0; eighth < 8; eighth++) {
-                  const scaleIdx = clamp(rootIdx + pat[eighth], 0, bassScale.length - 1);
-                  const noteFreq = bassScale[scaleIdx];
-                  const t = barStart + eighth * (beatDur / 2);
-                  scheduleNote(noteFreq, t, beatDur*0.45, gain, { type:'sawtooth', detune:0, attack:0.005, release:0.08, filterFreq:gp.bassFilterFreq, distortion:gp.bassDistortion, numOscs:1 });
-                }
-              }
-              break;
-            case 'indie-folk':
-              { const noteDur = rng() > 0.5 ? beatDur*2 : bar;
-                for (let t = barStart; t < barStart+bar-0.01; t += noteDur) {
-                  scheduleNote(rootFreq, t, noteDur*0.9, gain*0.8, { type:'sine', detune:0, attack:0.02, release:0.15, filterFreq:gp.bassFilterFreq, distortion:0, numOscs:1 });
-                }
-              }
-              break;
-            case 'shoegaze':
-              scheduleNote(rootFreq, barStart, bar*0.95, gain, { type:'sawtooth', detune:0, attack:0.05, release:0.3, filterFreq:gp.bassFilterFreq, distortion:gp.bassDistortion, numOscs:1 });
-              break;
-            case 'garage':
-              { const fifth = rootFreq * 1.5;
-                for (let eighth = 0; eighth < 8; eighth++) {
-                  const noteFreq = eighth % 2 === 0 ? rootFreq : fifth;
-                  const t = barStart + eighth * (beatDur / 2);
-                  scheduleNote(noteFreq, t, beatDur*0.4, gain, { type:'sawtooth', detune:0, attack:0.003, release:0.08, filterFreq:gp.bassFilterFreq, distortion:gp.bassDistortion, numOscs:1 });
-                }
-              }
-              break;
-            case 'art-rock':
-              { const bassScale = buildScale(rootSemitone, 'naturalMinor', 2, 2);
-                const rootIdx = bassScale.findIndex(f => Math.abs(f - rootFreq) < 5) || 0;
-                for (let beat = 0; beat < 4; beat++) {
-                  const offset = [0,1,2,3][beat] * (isChorus ? 1 : (rng() > 0.5 ? 1 : -1));
-                  const idx = clamp(rootIdx + offset, 0, bassScale.length - 1);
-                  const t = barStart + beat * beatDur;
-                  scheduleNote(bassScale[idx], t, beatDur*0.85, gain, { type:'sawtooth', detune:0, attack:0.01, release:0.1, filterFreq:gp.bassFilterFreq, distortion:gp.bassDistortion, numOscs:1 });
-                }
-              }
-              break;
-            case 'lo-fi':
-              [0,2].forEach(beat => {
-                const t = barStart + beat * beatDur;
-                scheduleNote(rootFreq, t, beatDur*1.5, gain*0.9, { type:'triangle', detune:0, attack:0.02, release:0.2, filterFreq:gp.bassFilterFreq, distortion:0, numOscs:1 });
-              });
-              break;
-            case 'dance-punk':
-              { const octaveUp = rootFreq * 2;
-                const jumpPattern = [1,0,0,1,0,0,1,0,1,0,0,1,0,1,0,0];
-                const highPattern = [0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,0];
-                for (let s = 0; s < 16; s++) {
-                  if (!jumpPattern[s]) continue;
-                  const noteFreq = highPattern[s] ? octaveUp : rootFreq;
-                  const t = barStart + s * sixteenth;
-                  scheduleNote(noteFreq, t, sixteenth*1.5, gain, { type:'sawtooth', detune:0, attack:0.003, release:0.06, filterFreq:gp.bassFilterFreq, distortion:gp.bassDistortion, numOscs:1 });
-                }
-              }
-              break;
-          }
-        }
-      }
-
+      // ================================================================
+      // KICK
+      // ================================================================
       function scheduleKick(time, gainVal) {
-        const osc = ctx.createOscillator(); osc.type = 'sine';
+        if (time < ctx.currentTime) return;
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
         const oscGain = ctx.createGain();
         osc.frequency.setValueAtTime(150, time);
         osc.frequency.exponentialRampToValueAtTime(40, time + 0.08);
         oscGain.gain.setValueAtTime(gainVal, time);
         oscGain.gain.exponentialRampToValueAtTime(0.001, time + 0.2);
-        osc.connect(oscGain); connectToMix(oscGain);
-        osc.start(time); osc.stop(time + 0.25); self._scheduledNodes.push(osc);
+        osc.connect(oscGain);
+        if (genre === 'garage') {
+          connectDry(oscGain); // Dry
+        } else {
+          connectToMix(oscGain);
+        }
+        osc.start(time);
+        osc.stop(time + 0.25);
+        activeNodes.push(osc);
       }
 
+      // ================================================================
+      // SNARE
+      // ================================================================
       function scheduleSnare(time, gainVal) {
+        if (time < ctx.currentTime) return;
         const noiseLen = Math.floor(ctx.sampleRate * 0.15);
         const noiseBuf = ctx.createBuffer(1, noiseLen, ctx.sampleRate);
         const noiseData = noiseBuf.getChannelData(0);
         for (let i = 0; i < noiseLen; i++) noiseData[i] = Math.random() * 2 - 1;
-        const noiseSource = ctx.createBufferSource(); noiseSource.buffer = noiseBuf;
-        const noiseBandpass = ctx.createBiquadFilter(); noiseBandpass.type = 'bandpass';
-        noiseBandpass.frequency.value = 2000 + energy * 200; noiseBandpass.Q.value = 0.8;
+        const noiseSource = ctx.createBufferSource();
+        noiseSource.buffer = noiseBuf;
+        const noiseBandpass = ctx.createBiquadFilter();
+        noiseBandpass.type = 'bandpass';
+        noiseBandpass.frequency.value = 2000 + energy * 200;
+        noiseBandpass.Q.value = 0.8;
         const noiseGain = ctx.createGain();
         noiseGain.gain.setValueAtTime(gainVal, time);
         noiseGain.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
-        noiseSource.connect(noiseBandpass); noiseBandpass.connect(noiseGain); connectToMix(noiseGain);
-        noiseSource.start(time); noiseSource.stop(time + 0.2); self._scheduledNodes.push(noiseSource);
-        const osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.value = 200;
+        noiseSource.connect(noiseBandpass);
+        noiseBandpass.connect(noiseGain);
+        if (genre === 'garage') {
+          connectDry(noiseGain);
+        } else {
+          connectToMix(noiseGain);
+        }
+        noiseSource.start(time);
+        noiseSource.stop(time + 0.2);
+        activeNodes.push(noiseSource);
+
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.value = 200;
         const oscGain = ctx.createGain();
         oscGain.gain.setValueAtTime(gainVal * 0.5, time);
         oscGain.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
-        osc.connect(oscGain); connectToMix(oscGain);
-        osc.start(time); osc.stop(time + 0.12); self._scheduledNodes.push(osc);
+        osc.connect(oscGain);
+        connectToMix(oscGain);
+        osc.start(time);
+        osc.stop(time + 0.12);
+        activeNodes.push(osc);
       }
 
+      // ================================================================
+      // HI-HAT
+      // ================================================================
       function scheduleHihat(time, gainVal, open) {
+        if (time < ctx.currentTime) return;
         const len = open ? 0.2 : 0.03;
         const bufLen = Math.floor(ctx.sampleRate * len);
         const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
         const data = buf.getChannelData(0);
         for (let i = 0; i < bufLen; i++) data[i] = Math.random() * 2 - 1;
-        const source = ctx.createBufferSource(); source.buffer = buf;
-        const hpf = ctx.createBiquadFilter(); hpf.type = 'highpass';
+        const source = ctx.createBufferSource();
+        source.buffer = buf;
+        const hpf = ctx.createBiquadFilter();
+        hpf.type = 'highpass';
         hpf.frequency.value = open ? 6000 : 8000;
         const hhGain = ctx.createGain();
         const decayTime = open ? 0.2 : 0.03;
         hhGain.gain.setValueAtTime(gainVal, time);
         hhGain.gain.exponentialRampToValueAtTime(0.001, time + decayTime);
-        source.connect(hpf); hpf.connect(hhGain); connectToMix(hhGain);
-        source.start(time); source.stop(time + decayTime + 0.05); self._scheduledNodes.push(source);
+        source.connect(hpf);
+        hpf.connect(hhGain);
+        // Indie folk hihat = shaker (very quiet)
+        if (genre === 'indie-folk') {
+          const shakerGain = ctx.createGain();
+          shakerGain.gain.value = 0.3;
+          hhGain.connect(shakerGain);
+          connectDry(shakerGain);
+        } else {
+          connectToMix(hhGain);
+        }
+        source.start(time);
+        source.stop(time + decayTime + 0.05);
+        activeNodes.push(source);
       }
 
-      function scheduleDrums(sectionStart, numBars) {
+      // ================================================================
+      // COWBELL (for dance-punk)
+      // ================================================================
+      function scheduleCowbell(time, gainVal) {
+        if (time < ctx.currentTime) return;
+        const osc1 = ctx.createOscillator();
+        osc1.type = 'square';
+        osc1.frequency.value = 560;
+        const osc2 = ctx.createOscillator();
+        osc2.type = 'square';
+        osc2.frequency.value = 845;
+        const cbGain = ctx.createGain();
+        cbGain.gain.setValueAtTime(gainVal * 0.3, time);
+        cbGain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
+        const bpf = ctx.createBiquadFilter();
+        bpf.type = 'bandpass';
+        bpf.frequency.value = 700;
+        bpf.Q.value = 3;
+        osc1.connect(bpf);
+        osc2.connect(bpf);
+        bpf.connect(cbGain);
+        connectDry(cbGain);
+        osc1.start(time);
+        osc1.stop(time + 0.15);
+        osc2.start(time);
+        osc2.stop(time + 0.15);
+        activeNodes.push(osc1, osc2);
+      }
+
+      // ================================================================
+      // DRUMS SCHEDULER
+      // ================================================================
+      function scheduleDrums(sectionStart, numBars, isChorus) {
         const patterns = DRUM_PATTERNS[genre] || DRUM_PATTERNS['post-punk'];
+
+        // Genre-specific gain levels
+        let kickGain, snareGain, hihatGain;
+        switch (genre) {
+          case 'post-punk':   kickGain=0.35; snareGain=0.25; hihatGain=0.12; break;
+          case 'indie-folk':  kickGain=0; snareGain=0; hihatGain=0.04; break; // Just shaker
+          case 'shoegaze':    kickGain=0.08; snareGain=0.06; hihatGain=0; break; // Buried
+          case 'garage':      kickGain=0.50; snareGain=0.40; hihatGain=0.05; break; // LOUD
+          case 'art-rock':    kickGain=0.28; snareGain=0.22; hihatGain=0.10; break;
+          case 'lo-fi':       kickGain=0.15; snareGain=0.12; hihatGain=0.06; break;
+          case 'dance-punk':  kickGain=0.45; snareGain=0.30; hihatGain=0.14; break; // Loud kick
+          default:            kickGain=0.30; snareGain=0.22; hihatGain=0.10;
+        }
+
         for (let barIdx = 0; barIdx < numBars; barIdx++) {
-          const isChorus = sectionStart === chorusStart;
-          const patIdx = isChorus ? (patterns.length > 1 ? 1 : 0) : (barIdx % patterns.length);
+          const patIdx = barIdx % patterns.length;
           const pat = patterns[patIdx];
           for (let step = 0; step < 16; step++) {
-            const t = sectionStart + barIdx * bar + step * sixteenth;
-            if (t < ctx.currentTime) continue;
-            const humanize = (1 - talent/10) * sixteenth * 0.1 * (rng() - 0.5);
-            const ht = t + humanize;
-            if (pat.kick[step]) scheduleKick(ht, gp.kickGain * (isChorus ? 1.15 : 1.0));
-            if (pat.snare[step]) scheduleSnare(ht, gp.snareGain * (isChorus ? 1.2 : 1.0));
-            if (pat.hihat[step]) {
-              const vel = gp.hihatGain * (0.6 + rng() * 0.4) * (isChorus ? 1.1 : 1.0);
+            const tBase = sectionStart + barIdx * bar + step * sixteenth;
+            if (tBase < ctx.currentTime) continue;
+            const humanize = (1 - t) * sixteenth * 0.08 * (rng() - 0.5);
+            // Lo-fi gets extra jitter
+            const lofiJitter = genre === 'lo-fi' ? (rng() - 0.5) * 0.02 : 0;
+            const ht = tBase + humanize + lofiJitter;
+
+            const chorusMult = isChorus ? 1.15 : 1.0;
+            if (pat.kick[step] && kickGain > 0) scheduleKick(ht, kickGain * chorusMult);
+            if (pat.snare[step] && snareGain > 0) scheduleSnare(ht, snareGain * chorusMult);
+            if (pat.hihat[step] && hihatGain > 0) {
+              const vel = hihatGain * (0.6 + rng() * 0.4) * chorusMult;
               scheduleHihat(ht, vel, false);
             }
-            if (pat.open && pat.open[step]) scheduleHihat(ht, gp.hihatGain*1.5*(isChorus?1.2:1.0), true);
+            if (pat.open && pat.open[step] && hihatGain > 0) scheduleHihat(ht, hihatGain * 1.5 * chorusMult, true);
+            if (pat.cowbell && pat.cowbell[step]) scheduleCowbell(ht, 0.25 * chorusMult);
           }
         }
       }
 
-      function scheduleSynth(chords, sectionStart, numBars, isChorus) {
-        if (!gp.useSynth) return;
+      // ================================================================
+      // GUITAR by genre
+      // ================================================================
+      function scheduleGuitar(chords, sectionStart, numBars, isChorus) {
         const barsPerChord = genre === 'art-rock' ? 1 : Math.max(1, Math.floor(numBars / chords.length));
+
         for (let barIdx = 0; barIdx < numBars; barIdx++) {
           const chordIdx = Math.floor(barIdx / barsPerChord) % chords.length;
           const chord = chords[chordIdx];
           const barStart = sectionStart + barIdx * bar;
+
           switch (genre) {
-            case 'art-rock':
-              chord.forEach(noteFreq => {
-                const padFreq = noteFreq * 2;
-                const padGain = 0.03 * (isChorus ? 1.5 : 0.8);
-                const dynamicGain = isChorus ? padGain * (0.5 + barIdx/numBars) : padGain;
-                for (let d = 0; d < 2; d++) {
-                  const osc = ctx.createOscillator(); osc.type = 'sine';
-                  osc.frequency.value = padFreq; osc.detune.value = d===0?5:-5;
-                  const g = ctx.createGain();
-                  g.gain.setValueAtTime(0, barStart);
-                  g.gain.linearRampToValueAtTime(dynamicGain, barStart+0.5);
-                  g.gain.setValueAtTime(dynamicGain, barStart+bar-0.3);
-                  g.gain.linearRampToValueAtTime(0, barStart+bar);
-                  osc.connect(g); connectToMix(g);
-                  osc.start(barStart); osc.stop(barStart+bar+0.5); self._scheduledNodes.push(osc);
+
+            // ==== POST-PUNK: Two guitar parts ====
+            case 'post-punk': {
+              const gain1 = 0.07 * (isChorus ? 1.3 : 1.0);
+              const gain2 = 0.06 * (isChorus ? 1.2 : 1.0);
+
+              // Guitar 1: Clean arpeggiated 8th notes through delay (Interpol guitar)
+              for (let eighth = 0; eighth < 8; eighth++) {
+                const noteFreq = chord[eighth % chord.length];
+                const t = barStart + eighth * (beatDur / 2);
+                scheduleNote(noteFreq * 2, t, beatDur * 0.4, gain1, {
+                  type: 'sawtooth', detune: 4, attack: 0.005, release: 0.12,
+                  filterFreq: 4500, distortion: 8, numOscs: 2
+                });
+              }
+              // Guitar 2: Staccato angular chords (on beats)
+              for (let beat = 0; beat < 4; beat++) {
+                if (beat === 1 || beat === 3) {
+                  const t = barStart + beat * beatDur;
+                  chord.forEach((noteFreq, ni) => {
+                    scheduleNote(noteFreq, t + ni * 0.008, beatDur * 0.15, gain2, {
+                      type: 'square', detune: 3, attack: 0.002, release: 0.05,
+                      filterFreq: 3500, distortion: 12, numOscs: 2
+                    });
+                  });
+                }
+              }
+              break;
+            }
+
+            // ==== INDIE FOLK: Clean fingerpicked arpeggios only ====
+            case 'indie-folk': {
+              const gain = 0.10;
+              // Fingerpicking pattern: p i m a m i (thumb index middle ring middle index)
+              const pickPattern = [0, 1, 2, 2, 2, 1];
+              for (let s = 0; s < 12; s++) {
+                const noteIdx = pickPattern[s % pickPattern.length] % chord.length;
+                const noteFreq = chord[noteIdx];
+                const t = barStart + s * (bar / 12);
+                // Triangle wave = clean, warm
+                scheduleNote(noteFreq, t, bar / 8, gain * (0.7 + 0.3 * Math.sin(s * 0.7)), {
+                  type: 'triangle', detune: 2, attack: 0.008, release: 0.2,
+                  filterFreq: 5000, distortion: 0, numOscs: 1
+                });
+              }
+              break;
+            }
+
+            // ==== GARAGE: Heavy distortion power chords ====
+            case 'garage': {
+              const gain = 0.18 * (isChorus ? 1.3 : 1.0);
+              // Aggressive downstrokes on every 8th note
+              for (let eighth = 0; eighth < 8; eighth++) {
+                const t = barStart + eighth * (beatDur / 2);
+                chord.forEach((noteFreq, ni) => {
+                  scheduleNote(noteFreq, t + ni * 0.005, beatDur * 0.35, gain, {
+                    type: 'sawtooth', detune: 6, attack: 0.002, release: 0.06,
+                    filterFreq: 4000, distortion: 80, numOscs: 2
+                  });
+                });
+              }
+              break;
+            }
+
+            // ==== SHOEGAZE: Wall of sound ====
+            case 'shoegaze': {
+              const gain = 0.04 * (isChorus ? 1.3 : 1.0);
+              // Sustained wall: 4+ oscillators heavily detuned
+              const chordDur = bar * 0.95;
+              chord.forEach((noteFreq, ni) => {
+                const noteGainNode = ctx.createGain();
+                noteGainNode.gain.value = gain;
+                connectToMix(noteGainNode);
+
+                // LFO tremolo (4-6 Hz)
+                const lfo = ctx.createOscillator();
+                lfo.type = 'sine';
+                lfo.frequency.value = 4 + rng() * 2;
+                const lfoGain = ctx.createGain();
+                lfoGain.gain.value = gain * 0.5;
+                lfo.connect(lfoGain);
+                lfoGain.connect(noteGainNode.gain);
+                lfo.start(barStart);
+                lfo.stop(barStart + chordDur + 0.1);
+                activeNodes.push(lfo);
+
+                // 4 oscillators with heavy detuning
+                for (let o = 0; o < 4; o++) {
+                  const osc = ctx.createOscillator();
+                  osc.type = 'sawtooth';
+                  osc.frequency.value = noteFreq;
+                  osc.detune.value = (o - 1.5) * 15; // Heavy detuning
+
+                  // Distortion per oscillator
+                  const dist = ctx.createWaveShaper();
+                  dist.curve = makeDistortionCurve(60);
+                  dist.oversample = '2x';
+
+                  const oscGain = ctx.createGain();
+                  oscGain.gain.setValueAtTime(0, barStart);
+                  oscGain.gain.linearRampToValueAtTime(gain * 0.3, barStart + 0.1);
+                  oscGain.gain.setValueAtTime(gain * 0.3, barStart + chordDur - 0.2);
+                  oscGain.gain.linearRampToValueAtTime(0, barStart + chordDur);
+
+                  osc.connect(dist);
+                  dist.connect(oscGain);
+                  oscGain.connect(noteGainNode);
+                  osc.start(barStart + ni * 0.02);
+                  osc.stop(barStart + chordDur + 0.1);
+                  activeNodes.push(osc);
                 }
               });
               break;
-            case 'dance-punk':
-              { const synthFreq = chord[0]*2;
-                const osc = ctx.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = synthFreq;
-                const synthFilter = ctx.createBiquadFilter(); synthFilter.type = 'lowpass';
-                synthFilter.frequency.value = 800; synthFilter.Q.value = 8;
-                const lfo = ctx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 2+barIdx*0.3;
-                const lfoGain = ctx.createGain(); lfoGain.gain.value = 600;
-                lfo.connect(lfoGain); lfoGain.connect(synthFilter.frequency);
-                const synthGain = ctx.createGain();
-                synthGain.gain.setValueAtTime(0, barStart);
-                synthGain.gain.linearRampToValueAtTime(0.06*(isChorus?1.3:1.0), barStart+0.02);
-                synthGain.gain.setValueAtTime(0.06*(isChorus?1.3:1.0), barStart+bar-0.05);
-                synthGain.gain.linearRampToValueAtTime(0, barStart+bar);
-                osc.connect(synthFilter); synthFilter.connect(synthGain); connectToMix(synthGain);
-                lfo.start(barStart); lfo.stop(barStart+bar+0.1);
-                osc.start(barStart); osc.stop(barStart+bar+0.1);
-                self._scheduledNodes.push(osc, lfo);
+            }
+
+            // ==== ART ROCK: Dynamic builds ====
+            case 'art-rock': {
+              const baseGain = 0.06;
+              // Dynamic gain that increases throughout the song
+              const dynamicMult = isChorus ? (0.5 + (barIdx / numBars) * 0.5) : 0.5;
+              const gain = baseGain * dynamicMult * (isChorus ? 1.4 : 1.0);
+
+              if (barIdx % 2 === 0) {
+                // Arpeggiated
+                for (let s = 0; s < 8; s++) {
+                  const noteFreq = chord[s % chord.length];
+                  const t = barStart + s * (beatDur / 2);
+                  scheduleNote(noteFreq, t, beatDur * 0.6, gain, {
+                    type: 'triangle', detune: 3, attack: 0.02, release: 0.2,
+                    filterFreq: 4500, distortion: 10 * dynamicMult, numOscs: 2
+                  });
+                }
+              } else {
+                // Strummed chords with building intensity
+                for (let beat = 0; beat < 4; beat++) {
+                  const t = barStart + beat * beatDur;
+                  chord.forEach((noteFreq, ni) => {
+                    scheduleNote(noteFreq, t + ni * 0.01, beatDur * 0.8, gain * 1.2, {
+                      type: 'sawtooth', detune: 4, attack: 0.01, release: 0.15,
+                      filterFreq: 4500, distortion: 15 * dynamicMult, numOscs: 2
+                    });
+                  });
+                }
               }
               break;
-            case 'shoegaze':
-              chord.forEach(noteFreq => {
-                const osc = ctx.createOscillator(); osc.type = 'triangle';
-                osc.frequency.value = noteFreq; osc.detune.value = (rng()-0.5)*10;
-                const g = ctx.createGain();
-                g.gain.setValueAtTime(0, barStart);
-                g.gain.linearRampToValueAtTime(0.015, barStart+0.8);
-                g.gain.setValueAtTime(0.015, barStart+bar-0.5);
-                g.gain.linearRampToValueAtTime(0, barStart+bar);
-                osc.connect(g); g.connect(reverbSend); g.connect(delaySend);
-                osc.start(barStart); osc.stop(barStart+bar+1); self._scheduledNodes.push(osc);
-              });
+            }
+
+            // ==== LO-FI: Detuned strummed chords with jitter ====
+            case 'lo-fi': {
+              const gain = 0.09;
+              for (let beat = 0; beat < 4; beat++) {
+                const t = barStart + beat * beatDur;
+                const strumDir = beat % 2 === 0 ? 1 : -1;
+                chord.forEach((noteFreq, ni) => {
+                  const strumOffset = strumDir > 0 ? ni * 0.015 : (chord.length - 1 - ni) * 0.015;
+                  const wobble = 1 + (rng() - 0.5) * 0.006;
+                  scheduleNote(noteFreq * wobble, t + strumOffset, beatDur * 0.85, gain * 0.8, {
+                    type: 'triangle', detune: 20, attack: 0.015, release: 0.25,
+                    filterFreq: 3500, distortion: 5, numOscs: 2,
+                    jitter: 20 // +/-20ms timing jitter
+                  });
+                });
+              }
               break;
+            }
+
+            // ==== DANCE-PUNK: Funky staccato ====
+            case 'dance-punk': {
+              const gain = 0.08 * (isChorus ? 1.2 : 1.0);
+              const funkPattern = [1,0,1,0,0,1,0,1,1,0,1,0,0,1,1,0];
+              for (let s = 0; s < 16; s++) {
+                if (!funkPattern[s]) continue;
+                const t = barStart + s * sixteenth;
+                chord.forEach(noteFreq => {
+                  scheduleNote(noteFreq, t, sixteenth * 0.5, gain, {
+                    type: 'square', detune: 4, attack: 0.003, release: 0.04,
+                    filterFreq: 3500, distortion: 15, numOscs: 2
+                  });
+                });
+              }
+              break;
+            }
           }
         }
       }
 
+      // ================================================================
+      // BASS by genre
+      // ================================================================
+      function scheduleBass(bassRoots, chords, sectionStart, numBars, isChorus) {
+        const barsPerChord = genre === 'art-rock' ? 1 : Math.max(1, Math.floor(numBars / bassRoots.length));
+
+        for (let barIdx = 0; barIdx < numBars; barIdx++) {
+          const chordIdx = Math.floor(barIdx / barsPerChord) % bassRoots.length;
+          const rootFreq = bassRoots[chordIdx];
+          const barStart = sectionStart + barIdx * bar;
+
+          switch (genre) {
+
+            // ==== POST-PUNK: Prominent melodic bass (Peter Hook) ====
+            case 'post-punk': {
+              const gain = 0.22 * (isChorus ? 1.2 : 1.0);
+              const bassScale = buildScale(rootSemitone, 'naturalMinor', 2, 2);
+              const rootIdx = bassScale.findIndex(f => Math.abs(f - rootFreq) < 5) || 0;
+              // Moving 8th note patterns with octave jumps
+              const patterns = [
+                [0, 2, 4, 7, 4, 2, 0, -2],
+                [0, 0, 3, 5, 7, 5, 3, 0],
+                [0, 4, 3, 2, 0, -1, 0, 4],
+                [0, 7, 5, 4, 3, 2, 0, 7],
+              ];
+              const pat = patterns[barIdx % patterns.length];
+              for (let eighth = 0; eighth < 8; eighth++) {
+                const scaleIdx = clamp(rootIdx + pat[eighth], 0, bassScale.length - 1);
+                let noteFreq = bassScale[scaleIdx];
+                // Occasional octave jump
+                if (eighth === 3 || eighth === 7) {
+                  if (rng() > 0.5) noteFreq *= 2;
+                }
+                const t = barStart + eighth * (beatDur / 2);
+                scheduleNote(noteFreq, t, beatDur * 0.45, gain, {
+                  type: 'sawtooth', detune: 0, attack: 0.005, release: 0.08,
+                  filterFreq: 1500, distortion: 10, numOscs: 1
+                });
+              }
+              break;
+            }
+
+            // ==== INDIE FOLK: Very sparse or no bass ====
+            case 'indie-folk': {
+              // Occasional root note, very quiet
+              if (rng() > 0.6) {
+                scheduleNote(rootFreq, barStart, bar * 0.9, 0.05, {
+                  type: 'sine', detune: 0, attack: 0.05, release: 0.3,
+                  filterFreq: 800, distortion: 0, numOscs: 1
+                });
+              }
+              break;
+            }
+
+            // ==== GARAGE: No bass (White Stripes style) ====
+            case 'garage': {
+              // Intentionally no bass
+              break;
+            }
+
+            // ==== SHOEGAZE: Low drone ====
+            case 'shoegaze': {
+              scheduleNote(rootFreq, barStart, bar * 0.95, 0.06, {
+                type: 'sawtooth', detune: 0, attack: 0.1, release: 0.4,
+                filterFreq: 400, distortion: 5, numOscs: 1
+              });
+              break;
+            }
+
+            // ==== ART ROCK: Walking bass that builds ====
+            case 'art-rock': {
+              const gain = 0.14 * (isChorus ? 1.2 : 1.0);
+              const bassScale = buildScale(rootSemitone, 'naturalMinor', 2, 2);
+              const rootIdx = bassScale.findIndex(f => Math.abs(f - rootFreq) < 5) || 0;
+              for (let beat = 0; beat < 4; beat++) {
+                const offset = [0, 1, 2, 3][beat];
+                const idx = clamp(rootIdx + offset, 0, bassScale.length - 1);
+                const t = barStart + beat * beatDur;
+                scheduleNote(bassScale[idx], t, beatDur * 0.85, gain, {
+                  type: 'sawtooth', detune: 0, attack: 0.01, release: 0.1,
+                  filterFreq: 1200, distortion: 8, numOscs: 1
+                });
+              }
+              break;
+            }
+
+            // ==== LO-FI: Simple sparse ====
+            case 'lo-fi': {
+              [0, 2].forEach(beat => {
+                const t = barStart + beat * beatDur;
+                scheduleNote(rootFreq, t, beatDur * 1.5, 0.10, {
+                  type: 'triangle', detune: 0, attack: 0.02, release: 0.2,
+                  filterFreq: 800, distortion: 0, numOscs: 1,
+                  jitter: 15
+                });
+              });
+              break;
+            }
+
+            // ==== DANCE-PUNK: Synth bass with filter sweep ====
+            case 'dance-punk': {
+              const gain = 0.20 * (isChorus ? 1.2 : 1.0);
+              const octaveUp = rootFreq * 2;
+              // Synth bass pattern
+              const jumpPattern = [1,0,0,1,0,0,1,0,1,0,0,1,0,1,0,0];
+              const highPattern = [0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,0];
+
+              // Create resonant lowpass filter with LFO sweep
+              for (let s = 0; s < 16; s++) {
+                if (!jumpPattern[s]) continue;
+                const noteFreq = highPattern[s] ? octaveUp : rootFreq;
+                const t = barStart + s * sixteenth;
+
+                // Synth bass: sawtooth through resonant LPF
+                const osc = ctx.createOscillator();
+                osc.type = 'sawtooth';
+                osc.frequency.value = noteFreq;
+                const synthFilter = ctx.createBiquadFilter();
+                synthFilter.type = 'lowpass';
+                synthFilter.frequency.value = 600;
+                synthFilter.Q.value = 6;
+                // Filter envelope
+                synthFilter.frequency.setValueAtTime(1200, t);
+                synthFilter.frequency.exponentialRampToValueAtTime(400, t + sixteenth * 1.5);
+
+                const synthGain = ctx.createGain();
+                synthGain.gain.setValueAtTime(gain, t);
+                synthGain.gain.exponentialRampToValueAtTime(0.001, t + sixteenth * 1.8);
+                osc.connect(synthFilter);
+                synthFilter.connect(synthGain);
+                connectDry(synthGain);
+                osc.start(t);
+                osc.stop(t + sixteenth * 2);
+                activeNodes.push(osc);
+              }
+              break;
+            }
+          }
+        }
+      }
+
+      // ================================================================
+      // SYNTH PADS (art-rock, dance-punk, shoegaze)
+      // ================================================================
+      function scheduleSynth(chords, sectionStart, numBars, isChorus) {
+        const barsPerChord = genre === 'art-rock' ? 1 : Math.max(1, Math.floor(numBars / chords.length));
+
+        for (let barIdx = 0; barIdx < numBars; barIdx++) {
+          const chordIdx = Math.floor(barIdx / barsPerChord) % chords.length;
+          const chord = chords[chordIdx];
+          const barStart = sectionStart + barIdx * bar;
+
+          if (genre === 'art-rock') {
+            // Synth pad that builds dynamically
+            const dynamicGain = 0.02 * (isChorus ? (0.5 + barIdx / numBars * 0.5) : 0.3);
+            chord.forEach(noteFreq => {
+              const padFreq = noteFreq * 2;
+              for (let d = 0; d < 2; d++) {
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.value = padFreq;
+                osc.detune.value = d === 0 ? 5 : -5;
+                const g = ctx.createGain();
+                g.gain.setValueAtTime(0, barStart);
+                g.gain.linearRampToValueAtTime(dynamicGain, barStart + 0.5);
+                g.gain.setValueAtTime(dynamicGain, barStart + bar - 0.3);
+                g.gain.linearRampToValueAtTime(0, barStart + bar);
+                osc.connect(g);
+                connectToMix(g);
+                osc.start(barStart);
+                osc.stop(barStart + bar + 0.5);
+                activeNodes.push(osc);
+              }
+            });
+          } else if (genre === 'dance-punk') {
+            // Synth lead: square wave with filter sweep
+            const synthFreq = chord[0] * 2;
+            const osc = ctx.createOscillator();
+            osc.type = 'square';
+            osc.frequency.value = synthFreq;
+            const synthFilter = ctx.createBiquadFilter();
+            synthFilter.type = 'lowpass';
+            synthFilter.frequency.value = 800;
+            synthFilter.Q.value = 8;
+            // LFO filter sweep
+            const lfo = ctx.createOscillator();
+            lfo.type = 'sine';
+            lfo.frequency.value = 2 + barIdx * 0.3;
+            const lfoGain = ctx.createGain();
+            lfoGain.gain.value = 600;
+            lfo.connect(lfoGain);
+            lfoGain.connect(synthFilter.frequency);
+            const synthGain = ctx.createGain();
+            synthGain.gain.setValueAtTime(0, barStart);
+            synthGain.gain.linearRampToValueAtTime(0.05 * (isChorus ? 1.3 : 1.0), barStart + 0.02);
+            synthGain.gain.setValueAtTime(0.05 * (isChorus ? 1.3 : 1.0), barStart + bar - 0.05);
+            synthGain.gain.linearRampToValueAtTime(0, barStart + bar);
+            osc.connect(synthFilter);
+            synthFilter.connect(synthGain);
+            connectToMix(synthGain);
+            lfo.start(barStart);
+            lfo.stop(barStart + bar + 0.1);
+            osc.start(barStart);
+            osc.stop(barStart + bar + 0.1);
+            activeNodes.push(osc, lfo);
+          } else if (genre === 'shoegaze') {
+            // Extra shimmer layer
+            chord.forEach(noteFreq => {
+              const osc = ctx.createOscillator();
+              osc.type = 'triangle';
+              osc.frequency.value = noteFreq * 2;
+              osc.detune.value = (rng() - 0.5) * 20;
+              const g = ctx.createGain();
+              g.gain.setValueAtTime(0, barStart);
+              g.gain.linearRampToValueAtTime(0.01, barStart + 0.8);
+              g.gain.setValueAtTime(0.01, barStart + bar - 0.5);
+              g.gain.linearRampToValueAtTime(0, barStart + bar);
+              osc.connect(g);
+              g.connect(reverbSend);
+              g.connect(delaySend);
+              osc.start(barStart);
+              osc.stop(barStart + bar + 1);
+              activeNodes.push(osc);
+            });
+          }
+        }
+      }
+
+      // ================================================================
+      // VOCALS (formant synthesis)
+      // ================================================================
       function scheduleVocals(sectionStart, numBars, isChorus) {
-        if (!gp.useVocals) return;
-        const vocalGain = gp.vocalGain * (isChorus ? 1.4 : 1.0);
-        const vowels = { A:[800,1200,2800], E:[400,2000,2800], O:[500,800,2800] };
-        const vowelNames = ['A','E','O'];
+        const vowels = {
+          A: [800, 1200, 2800],
+          E: [400, 2000, 2800],
+          I: [300, 2300, 3000],
+          O: [500, 800, 2800],
+          U: [350, 600, 2800],
+        };
+        const vowelCycle = ['A', 'E', 'I', 'O', 'U'];
+
+        // Genre-specific vocal gain
+        let vocalGain;
+        switch (genre) {
+          case 'post-punk':   vocalGain = 0.06; break;
+          case 'garage':      vocalGain = 0.08; break;
+          case 'shoegaze':    vocalGain = 0.03; break;
+          case 'lo-fi':       vocalGain = 0.05; break;
+          case 'art-rock':    vocalGain = 0.06; break;
+          case 'dance-punk':  vocalGain = 0.07; break;
+          case 'indie-folk':  vocalGain = 0.04; break;
+          default:            vocalGain = 0.05;
+        }
+
+        if (isChorus) vocalGain *= 1.4;
+
+        // Get chord roots for melody pitch
+        const prg = isChorus ? progs.chorus : progs.verse;
+        const barsPerChord = genre === 'art-rock' ? 1 : Math.max(1, Math.floor(numBars / prg.length));
+
         for (let barIdx = 0; barIdx < numBars; barIdx += 2) {
+          const chordIdx = Math.floor(barIdx / barsPerChord) % prg.length;
+          const chordRoot = (rootSemitone + prg[chordIdx][0]) % 12;
           const phraseStart = sectionStart + barIdx * bar;
           const phraseDur = bar * 1.8;
           const numNotes = 3 + Math.floor(rng() * 3);
           const noteDur = phraseDur / numNotes;
+
           for (let n = 0; n < numNotes; n++) {
             const noteStart = phraseStart + n * noteDur;
+            if (noteStart < ctx.currentTime) continue;
+            // Pitch follows melody scale, biased toward chord root
             const noteFreq = melodyScale[Math.floor(rng() * melodyScale.length)];
-            const vowel = vowels[vowelNames[Math.floor(rng() * vowelNames.length)]];
-            const osc = ctx.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = noteFreq;
-            const formantGain = ctx.createGain(); formantGain.gain.value = 0;
+            const vowelName = vowelCycle[n % vowelCycle.length];
+            const vowel = vowels[vowelName];
+
+            const osc = ctx.createOscillator();
+            osc.type = 'sawtooth';
+            osc.frequency.value = noteFreq;
+
+            const formantGain = ctx.createGain();
             formantGain.gain.setValueAtTime(0, noteStart);
-            formantGain.gain.linearRampToValueAtTime(vocalGain, noteStart+0.1);
-            formantGain.gain.setValueAtTime(vocalGain, noteStart+noteDur-0.1);
-            formantGain.gain.linearRampToValueAtTime(0, noteStart+noteDur);
+            formantGain.gain.linearRampToValueAtTime(vocalGain, noteStart + 0.08);
+            formantGain.gain.setValueAtTime(vocalGain, noteStart + noteDur - 0.08);
+            formantGain.gain.linearRampToValueAtTime(0, noteStart + noteDur);
+
             vowel.forEach((formantFreq, fi) => {
-              const bp = ctx.createBiquadFilter(); bp.type = 'bandpass';
-              bp.frequency.value = formantFreq; bp.Q.value = 8+fi*4;
-              const fGain = ctx.createGain(); fGain.gain.value = fi===0?1.0:(fi===1?0.6:0.3);
-              osc.connect(bp); bp.connect(fGain); fGain.connect(formantGain);
+              const bp = ctx.createBiquadFilter();
+              bp.type = 'bandpass';
+              bp.frequency.value = formantFreq;
+              bp.Q.value = 8 + fi * 4;
+              const fGain = ctx.createGain();
+              fGain.gain.value = fi === 0 ? 1.0 : (fi === 1 ? 0.6 : 0.3);
+              osc.connect(bp);
+              bp.connect(fGain);
+              fGain.connect(formantGain);
             });
-            formantGain.connect(reverbSend);
-            const dryVocal = ctx.createGain(); dryVocal.gain.value = 0.3;
-            formantGain.connect(dryVocal); dryVocal.connect(compressor);
-            osc.start(noteStart); osc.stop(noteStart+noteDur+0.1); self._scheduledNodes.push(osc);
+
+            // Genre-specific vocal processing
+            if (genre === 'garage') {
+              // Harsh vocal: add distortion
+              const vocalDist = ctx.createWaveShaper();
+              vocalDist.curve = makeDistortionCurve(30);
+              vocalDist.oversample = '2x';
+              formantGain.connect(vocalDist);
+              vocalDist.connect(compressor);
+            } else if (genre === 'shoegaze') {
+              // Completely buried in reverb
+              formantGain.connect(reverbSend);
+            } else if (genre === 'lo-fi') {
+              // Distant: low-pass at 3000Hz
+              const vocalLPF = ctx.createBiquadFilter();
+              vocalLPF.type = 'lowpass';
+              vocalLPF.frequency.value = 3000;
+              formantGain.connect(vocalLPF);
+              vocalLPF.connect(compressor);
+              formantGain.connect(reverbSend);
+            } else {
+              formantGain.connect(reverbSend);
+              const dryVocal = ctx.createGain();
+              dryVocal.gain.value = 0.4;
+              formantGain.connect(dryVocal);
+              dryVocal.connect(compressor);
+            }
+
+            osc.start(noteStart);
+            osc.stop(noteStart + noteDur + 0.1);
+            activeNodes.push(osc);
           }
         }
       }
 
+      // ================================================================
+      // EXTRA GUITAR LAYER (chorus thickening)
+      // ================================================================
       function scheduleExtraGuitarLayer(chords, sectionStart, numBars) {
+        if (genre === 'indie-folk' || genre === 'lo-fi') return; // Keep these sparse
         const altChords = chords.map(chord => chord.map(f => f * 2));
-        const gain = gp.guitarGain * 0.5;
+        const gain = 0.04;
         const barsPerChord = genre === 'art-rock' ? 1 : Math.max(1, Math.floor(numBars / chords.length));
         for (let barIdx = 0; barIdx < numBars; barIdx++) {
           const chordIdx = Math.floor(barIdx / barsPerChord) % altChords.length;
           const chord = altChords[chordIdx];
           const barStart = sectionStart + barIdx * bar;
           chord.forEach(noteFreq => {
-            scheduleNote(noteFreq, barStart, bar*0.9, gain, { type:'sawtooth', detune:gp.guitarDetune*1.5, attack:0.05, release:0.3, filterFreq:gp.guitarFilterFreq*0.8, distortion:gp.guitarDistortion*0.7, numOscs:2 });
+            scheduleNote(noteFreq, barStart, bar * 0.9, gain, {
+              type: 'sawtooth', detune: genre === 'shoegaze' ? 20 : 8,
+              attack: 0.05, release: 0.3,
+              filterFreq: 3000, distortion: genre === 'shoegaze' ? 40 : 10, numOscs: 2
+            });
           });
         }
       }
 
-      // Adjust delay for post-punk
-      if (genre === 'post-punk') {
-        const dottedEighth = beatDur * 0.75;
-        delayEffect.input.delayTime.value = dottedEighth;
+      // ================================================================
+      // ART ROCK CRESCENDO ENVELOPE
+      // ================================================================
+      if (genre === 'art-rock') {
+        // Master gain envelope: starts quiet, builds to loud
+        const totalBars = 20;
+        for (let b = 0; b < totalBars; b++) {
+          const t = now + b * bar;
+          const vol = masterGain.gain.value * (0.4 + 0.6 * (b / totalBars));
+          masterGain.gain.setValueAtTime(vol, t);
+        }
       }
 
-      // INTRO
+      // ================================================================
+      // SCHEDULE ALL SECTIONS
+      // ================================================================
+
+      // INTRO (4 bars)
       switch (genre) {
-        case 'post-punk': case 'dance-punk':
-          scheduleDrums(introStart, 4); scheduleBass(verseBassRoots, verseChords, introStart, 4, false);
+        case 'post-punk':
+          scheduleDrums(introStart, 4, false);
+          scheduleBass(verseBassRoots, verseChords, introStart, 4, false);
           break;
-        case 'indie-folk': case 'lo-fi':
-          scheduleGuitar(verseChords, introStart, 4, false); break;
+        case 'indie-folk':
+          scheduleGuitar(verseChords, introStart, 4, false);
+          break;
         case 'shoegaze':
           scheduleGuitar([verseChords[0]], introStart, 4, false);
-          scheduleSynth([verseChords[0]], introStart, 4, false); break;
+          scheduleSynth([verseChords[0]], introStart, 4, false);
+          break;
         case 'garage':
-          for (let beat = 0; beat < 4; beat++) scheduleHihat(introStart + beat*beatDur, gp.hihatGain*1.5, false);
-          scheduleDrums(introStart + bar, 3); scheduleGuitar(verseChords, introStart + bar, 3, false);
+          // Count-in hits then crash in
+          for (let beat = 0; beat < 4; beat++) {
+            scheduleSnare(introStart + beat * beatDur, 0.3);
+          }
+          scheduleDrums(introStart + bar, 3, false);
+          scheduleGuitar(verseChords, introStart + bar, 3, false);
           break;
         case 'art-rock':
-          scheduleGuitar(verseChords, introStart, 4, false); break;
+          scheduleGuitar(verseChords, introStart, 4, false);
+          break;
+        case 'lo-fi':
+          scheduleGuitar(verseChords, introStart, 4, false);
+          break;
+        case 'dance-punk':
+          scheduleDrums(introStart, 4, false);
+          scheduleBass(verseBassRoots, verseChords, introStart, 4, false);
+          break;
       }
 
-      // VERSE
+      // VERSE (8 bars)
       scheduleGuitar(verseChords, verseStart, 8, false);
       scheduleBass(verseBassRoots, verseChords, verseStart, 8, false);
-      scheduleDrums(verseStart, 8);
+      scheduleDrums(verseStart, 8, false);
       scheduleSynth(verseChords, verseStart, 8, false);
       scheduleVocals(verseStart, 8, false);
 
-      // CHORUS
+      // CHORUS (8 bars)
       scheduleGuitar(chorusChords, chorusStart, 8, true);
       scheduleBass(chorusBassRoots, chorusChords, chorusStart, 8, true);
-      scheduleDrums(chorusStart, 8);
+      scheduleDrums(chorusStart, 8, true);
       scheduleSynth(chorusChords, chorusStart, 8, true);
       scheduleVocals(chorusStart, 8, true);
       scheduleExtraGuitarLayer(chorusChords, chorusStart, 8);
 
       // Fade out
       const fadeStart = chorusStart + 6 * bar;
-      masterGain.gain.setValueAtTime(gp.masterGain, fadeStart);
+      masterGain.gain.setValueAtTime(masterGain.gain.value, fadeStart);
       masterGain.gain.linearRampToValueAtTime(0, songEnd);
 
-      const totalDuration = (songEnd - now) * 1000 + 500;
+      // Progress tracking
+      const totalDuration = songEnd - now;
+      const startTime = ctx.currentTime;
+      this._progressInterval = setInterval(() => {
+        const elapsed = ctx.currentTime - startTime;
+        const pct = Math.min(100, (elapsed / totalDuration) * 100);
+        const fill = document.getElementById('np-progress-fill');
+        if (fill) fill.style.width = pct + '%';
+      }, 200);
+
+      // Auto-stop
+      const totalMs = totalDuration * 1000 + 500;
       this._stopTimeout = setTimeout(() => {
         this._playing = false;
-        this._scheduledNodes.forEach(node => { try { if (node.disconnect) node.disconnect(); } catch(e){} });
-        this._scheduledNodes = [];
-        // Notify game that song ended
+        if (this._progressInterval) { clearInterval(this._progressInterval); this._progressInterval = null; }
+        activeNodes.forEach(node => { try { if (node.disconnect) node.disconnect(); } catch(e){} });
+        activeNodes = [];
+        this._masterGain = null;
         if (window._onSongEnd) window._onSongEnd();
-      }, totalDuration);
+      }, totalMs);
 
-      return songEnd - now;
+      return totalDuration;
     },
   };
 
   window.MusicEngine = MusicEngine;
 })();
+
 
 // =========================================================================
 // GAME CODE
@@ -1936,7 +2863,7 @@ h1, h2, h3, h4 {
 function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
-function shuffleArray(arr) { const a = [...arr]; for (let i = a.length-1; i > 0; i--) { const j = randInt(0, i); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function shuffleArray(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = randInt(0, i); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
 // ---- Constants ----
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -1944,8 +2871,23 @@ const GENRES = ['post-punk','garage','lo-fi','indie-folk','art-rock','shoegaze',
 const KEYS = ['C','Dm','Em','G','Am','Bm'];
 
 const GENRE_TEMPOS = {
-  'post-punk': [125, 145], 'garage': [140, 175], 'lo-fi': [80, 110],
-  'indie-folk': [100, 130], 'art-rock': [90, 135], 'shoegaze': [85, 115], 'dance-punk': [120, 150],
+  'post-punk': [130, 145],
+  'garage': [150, 170],
+  'lo-fi': [80, 95],
+  'indie-folk': [85, 100],
+  'art-rock': [110, 125],
+  'shoegaze': [95, 110],
+  'dance-punk': [120, 135],
+};
+
+const GENRE_KEYS_MAP = {
+  'post-punk':   ['Em', 'Am', 'Bm'],
+  'indie-folk':  ['G', 'C', 'D'],
+  'garage':      ['Em', 'Am', 'G'],
+  'shoegaze':    ['Em', 'C', 'Am'],
+  'art-rock':    ['Am', 'Em', 'C'],
+  'lo-fi':       ['C', 'G', 'D'],
+  'dance-punk':  ['Am', 'Em', 'Dm'],
 };
 
 const GENRE_COLORS = {
@@ -1986,13 +2928,8 @@ const NAME_POOLS = {
 
 function generateBandName() {
   const pool = pick(['theNouns','adjAnimal','pretentious','placeThing','randomCombo']);
-  let name;
-  if (pool === 'theNouns') {
-    name = 'The ' + pick(NAME_POOLS.theNouns);
-  } else {
-    name = pick(NAME_POOLS[pool]);
-  }
-  return name;
+  if (pool === 'theNouns') return 'The ' + pick(NAME_POOLS.theNouns);
+  return pick(NAME_POOLS[pool]);
 }
 
 // ---- Look Generator ----
@@ -2034,9 +2971,7 @@ const LOOK_TEMPLATES = {
   ],
 };
 
-function generateLook(genre) {
-  return pick(LOOK_TEMPLATES[genre] || LOOK_TEMPLATES['post-punk']);
-}
+function generateLook(genre) { return pick(LOOK_TEMPLATES[genre] || LOOK_TEMPLATES['post-punk']); }
 
 // ---- Album Name Generator ----
 const ALBUM_NAMES = {
@@ -2065,7 +3000,6 @@ function generateAlbumName() {
 // ---- Album Art Generator (CSS) ----
 function generateAlbumArtCSS(genre, albumTitle) {
   const seed = albumTitle.split('').reduce((a, c) => ((a << 5) - a) + c.charCodeAt(0), 0);
-  const r = () => { const x = Math.sin(seed * 9301 + 49297) % 1; return Math.abs(x); };
   const hue1 = Math.abs(seed % 360);
   const hue2 = (hue1 + 120 + (seed % 60)) % 360;
   const hue3 = (hue1 + 240 + (seed % 40)) % 360;
@@ -2085,35 +3019,27 @@ function generateAlbumArtCSS(genre, albumTitle) {
 
   switch (genre) {
     case 'post-punk':
-      // Stark geometric lines
       style += `background: linear-gradient(${45 + seed%90}deg, ${pal.bg} 40%, ${pal.accent} 40%, ${pal.accent} 42%, ${pal.bg} 42%, ${pal.bg} 60%, ${pal.fg} 60%, ${pal.fg} 61%, ${pal.bg} 61%);`;
       break;
     case 'indie-folk':
-      // Warm organic circles
       style += `background: radial-gradient(circle at ${30+seed%40}% ${30+seed%40}%, ${pal.fg} 0%, ${pal.fg} ${15+seed%10}%, transparent ${15+seed%10+1}%), radial-gradient(circle at ${60+seed%30}% ${50+seed%30}%, ${pal.accent} 0%, ${pal.accent} ${10+seed%8}%, transparent ${10+seed%8+1}%), ${pal.bg};`;
       break;
     case 'shoegaze':
-      // Blurred pastel gradients
       style += `background: linear-gradient(${seed%180}deg, ${pal.bg}, ${pal.fg}, ${pal.accent});`;
       break;
     case 'garage':
-      // Bold rough blocks
       style += `background: linear-gradient(${seed%45}deg, ${pal.bg} 0%, ${pal.bg} 50%, ${pal.accent} 50%, ${pal.accent} 100%); border: 3px solid ${pal.fg};`;
       break;
     case 'art-rock':
-      // Complex layered shapes
       style += `background: conic-gradient(from ${seed%360}deg at ${40+seed%20}% ${40+seed%20}%, ${pal.bg}, ${pal.fg}, ${pal.accent}, ${pal.bg});`;
       break;
     case 'lo-fi':
-      // Simple, faded, off-center
       style += `background: ${pal.bg}; box-shadow: inset ${-20+seed%40}px ${-15+seed%30}px 0 ${pal.fg}, inset ${10+seed%20}px ${10+seed%15}px 0 ${pal.accent};`;
       break;
     case 'dance-punk':
-      // Neon angular bold
       style += `background: repeating-linear-gradient(${seed%90+45}deg, ${pal.bg}, ${pal.bg} 10px, ${pal.accent} 10px, ${pal.accent} 12px);`;
       break;
   }
-
   return style;
 }
 
@@ -2163,12 +3089,10 @@ function generateReview(band, album, score) {
   else if (score >= 5.0) pool = 'mid';
   else if (score >= 3.0) pool = 'poor';
   else pool = 'terrible';
-
   let text = pick(REVIEW_TEMPLATES[pool]);
-  const year = getYear();
   text = text.replace(/\[BAND\]/g, band.name);
   text = text.replace(/\[ALBUM\]/g, '<i>' + album.name + '</i>');
-  text = text.replace(/\[YEAR\]/g, year);
+  text = text.replace(/\[YEAR\]/g, getYear());
   return text;
 }
 
@@ -2202,98 +3126,45 @@ const DRAMA_EVENTS = [
 
 // ---- Industry Offers ----
 const INDUSTRY_OFFERS = [
-  {
-    title: "Major Label Buyout",
-    getText: (state, band) => `Interscope wants to acquire your label for $${state.budget * 5}. Your roster gets marketing budgets. Your soul gets... flexible.`,
-    accept: (state, band) => { const payout = state.budget * 5; state.budget += payout; state.credibility -= 25; state.hype += 20; return `+$${payout}, Cred -25, Hype +20`; },
-    decline: (state) => { state.credibility += 5; return 'Cred +5 (stayed indie)'; },
-  },
-  {
-    title: "Sync Deal",
-    getText: (state, band) => `A car brand wants ${band ? band.name + "'s" : "your band's"} song in a commercial. $5,000. Your band's credibility may not survive.`,
-    accept: (state, band) => { state.budget += 5000; state.credibility -= 8; if (band) band.morale -= 15; return '+$5,000, Cred -8'; },
-    decline: (state) => { state.credibility += 3; return 'Cred +3'; },
-  },
-  {
-    title: "PBR Sponsorship",
-    getText: () => `$1,500/month to be their 'official label of authentic taste.' Yes, the irony is part of the deal.`,
-    accept: (state) => { state.budget += 1500; state.credibility -= 5; state.hype += 3; return '+$1,500, Cred -5, Hype +3'; },
-    decline: (state) => { state.credibility += 2; return 'Cred +2'; },
-  },
-  {
-    title: "American Apparel Collab",
-    getText: () => `They want your bands in their ads. You get $3,000 and a lifetime supply of deep-V t-shirts.`,
-    accept: (state) => { state.budget += 3000; state.credibility -= 6; state.hype += 5; return '+$3,000, Cred -6, Hype +5'; },
-    decline: (state) => { state.credibility += 2; return 'Cred +2'; },
-  },
-  {
-    title: "Converse Deal",
-    getText: () => `Every band on your roster gets free shoes. You get $2,000. It's actually kind of cool?`,
-    accept: (state) => { state.budget += 2000; state.credibility -= 2; state.hype += 3; state.roster.forEach(b => b.morale = clamp(b.morale + 5, 0, 100)); return '+$2,000, Cred -2, Hype +3, All morale +5'; },
-    decline: (state) => { state.credibility += 1; return 'Cred +1'; },
-  },
-  {
-    title: "Festival Headliner",
-    getText: (state, band) => `Coachella wants ${band ? band.name : "your biggest band"} for $15,000. But it's Coachella.`,
-    accept: (state, band) => { state.budget += 15000; state.credibility -= 10; state.hype += 25; if (band) band.fanBase += 500; return '+$15,000, Cred -10, Hype +25'; },
-    decline: (state) => { state.credibility += 5; return 'Cred +5'; },
-  },
-  {
-    title: "Movie Soundtrack",
-    getText: () => `A Zach Braff movie wants to license 3 songs. $8,000. Could be the next Garden State moment.`,
-    accept: (state) => { state.budget += 8000; state.credibility -= 3; state.hype += 12; return '+$8,000, Cred -3, Hype +12'; },
-    decline: (state) => { state.credibility += 2; return 'Cred +2'; },
-  },
-  {
-    title: "Vice Magazine Feature",
-    getText: () => `They'll do a 10-page spread on your label. Free. But the photographer insists on shooting everything in a laundromat.`,
-    accept: (state) => { state.hype += 10; state.credibility += 3; return 'Hype +10, Cred +3'; },
-    decline: (state) => { return 'No effect'; },
-  },
-  {
-    title: "Distribution Deal",
-    getText: () => `Merge Records offers distribution. 30% cut but your albums hit every indie record store in America.`,
-    accept: (state) => { state.budget += 2000; state.credibility += 8; state.hype += 8; return '+$2,000, Cred +8, Hype +8'; },
-    decline: (state) => { return 'No effect'; },
-  },
-  {
-    title: "Blog Partnership",
-    getText: () => `Stereogum wants to 'partner' with your label for exclusive premieres. Free press but you lose some independence.`,
-    accept: (state) => { state.hype += 8; state.credibility -= 2; return 'Hype +8, Cred -2'; },
-    decline: (state) => { state.credibility += 1; return 'Cred +1'; },
-  },
+  { title: "Major Label Buyout", getText: (state, band) => `Interscope wants to acquire your label for $${state.budget * 5}. Your roster gets marketing budgets. Your soul gets... flexible.`, accept: (state, band) => { const payout = state.budget * 5; state.budget += payout; state.credibility -= 25; state.hype += 20; return `+$${payout}, Cred -25, Hype +20`; }, decline: (state) => { state.credibility += 5; return 'Cred +5 (stayed indie)'; } },
+  { title: "Sync Deal", getText: (state, band) => `A car brand wants ${band ? band.name + "'s" : "your band's"} song in a commercial. $5,000. Your band's credibility may not survive.`, accept: (state, band) => { state.budget += 5000; state.credibility -= 8; if (band) band.morale -= 15; return '+$5,000, Cred -8'; }, decline: (state) => { state.credibility += 3; return 'Cred +3'; } },
+  { title: "PBR Sponsorship", getText: () => `$1,500/month to be their 'official label of authentic taste.' Yes, the irony is part of the deal.`, accept: (state) => { state.budget += 1500; state.credibility -= 5; state.hype += 3; return '+$1,500, Cred -5, Hype +3'; }, decline: (state) => { state.credibility += 2; return 'Cred +2'; } },
+  { title: "American Apparel Collab", getText: () => `They want your bands in their ads. You get $3,000 and a lifetime supply of deep-V t-shirts.`, accept: (state) => { state.budget += 3000; state.credibility -= 6; state.hype += 5; return '+$3,000, Cred -6, Hype +5'; }, decline: (state) => { state.credibility += 2; return 'Cred +2'; } },
+  { title: "Converse Deal", getText: () => `Every band on your roster gets free shoes. You get $2,000. It's actually kind of cool?`, accept: (state) => { state.budget += 2000; state.credibility -= 2; state.hype += 3; state.roster.forEach(b => b.morale = clamp(b.morale + 5, 0, 100)); return '+$2,000, Cred -2, Hype +3, All morale +5'; }, decline: (state) => { state.credibility += 1; return 'Cred +1'; } },
+  { title: "Festival Headliner", getText: (state, band) => `Coachella wants ${band ? band.name : "your biggest band"} for $15,000. But it's Coachella.`, accept: (state, band) => { state.budget += 15000; state.credibility -= 10; state.hype += 25; if (band) band.fanBase += 500; return '+$15,000, Cred -10, Hype +25'; }, decline: (state) => { state.credibility += 5; return 'Cred +5'; } },
+  { title: "Movie Soundtrack", getText: () => `A Zach Braff movie wants to license 3 songs. $8,000. Could be the next Garden State moment.`, accept: (state) => { state.budget += 8000; state.credibility -= 3; state.hype += 12; return '+$8,000, Cred -3, Hype +12'; }, decline: (state) => { state.credibility += 2; return 'Cred +2'; } },
+  { title: "Vice Magazine Feature", getText: () => `They'll do a 10-page spread on your label. Free. But the photographer insists on shooting everything in a laundromat.`, accept: (state) => { state.hype += 10; state.credibility += 3; return 'Hype +10, Cred +3'; }, decline: () => { return 'No effect'; } },
+  { title: "Distribution Deal", getText: () => `Merge Records offers distribution. 30% cut but your albums hit every indie record store in America.`, accept: (state) => { state.budget += 2000; state.credibility += 8; state.hype += 8; return '+$2,000, Cred +8, Hype +8'; }, decline: () => { return 'No effect'; } },
+  { title: "Blog Partnership", getText: () => `Stereogum wants to 'partner' with your label for exclusive premieres. Free press but you lose some independence.`, accept: (state) => { state.hype += 8; state.credibility -= 2; return 'Hype +8, Cred -2'; }, decline: (state) => { state.credibility += 1; return 'Cred +1'; } },
 ];
 
 // ---- Game State ----
 let state = {};
-let audioCtx = null;
-let analyser = null;
 let vizAnimFrame = null;
 let selectedBandIndex = -1;
-let currentAction = null; // tracks what action panel is showing
+let currentAction = null;
+let songStartTime = 0;
+let songDuration = 0;
 
 function getYear() { return 2001 + Math.floor(state.month / 12); }
 function getMonthName() { return MONTHS[state.month % 12]; }
 function getDateStr() { return getMonthName() + ' ' + getYear(); }
-function getCurrentMonthIndex() { return (state.month % 12) + 1; } // 1-12
+function getCurrentMonthIndex() { return (state.month % 12) + 1; }
 
 function initAudio() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    MusicEngine.init(audioCtx);
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 64;
-    analyser.connect(audioCtx.destination);
-    window._gameAnalyser = analyser;
+  const ctx = getAudioContext();
+  if (!analyserNode) {
+    analyserNode = ctx.createAnalyser();
+    analyserNode.fftSize = 64;
+    analyserNode.connect(ctx.destination);
   }
-  if (audioCtx.state === 'suspended') audioCtx.resume();
 }
 
 // ---- Visualizer ----
 function initVisualizer() {
   const vizEl = document.getElementById('visualizer');
   vizEl.innerHTML = '';
-  for (let i = 0; i < 24; i++) {
+  for (let i = 0; i < 16; i++) {
     const bar = document.createElement('div');
     bar.className = 'viz-bar';
     bar.style.height = '2px';
@@ -2302,16 +3173,14 @@ function initVisualizer() {
 }
 
 function updateVisualizer() {
-  if (!analyser || !MusicEngine.isPlaying()) {
+  if (!analyserNode || !MusicEngine.isPlaying()) {
     if (vizAnimFrame) cancelAnimationFrame(vizAnimFrame);
     vizAnimFrame = null;
-    // Reset bars
-    const bars = document.querySelectorAll('.viz-bar');
-    bars.forEach(b => b.style.height = '2px');
+    document.querySelectorAll('.viz-bar').forEach(b => b.style.height = '2px');
     return;
   }
-  const data = new Uint8Array(analyser.frequencyBinCount);
-  analyser.getByteFrequencyData(data);
+  const data = new Uint8Array(analyserNode.frequencyBinCount);
+  analyserNode.getByteFrequencyData(data);
   const bars = document.querySelectorAll('.viz-bar');
   const step = Math.floor(data.length / bars.length);
   bars.forEach((bar, i) => {
@@ -2325,16 +3194,19 @@ function playBandMusic(band) {
   initAudio();
   const tempoRange = GENRE_TEMPOS[band.genre] || [120, 140];
   const tempo = tempoRange[0] + Math.floor(Math.random() * (tempoRange[1] - tempoRange[0]));
+  const genreKeys = GENRE_KEYS_MAP[band.genre] || KEYS;
   const params = {
     genre: band.genre,
     talent: band.talent,
-    key: band.musicParams ? band.musicParams.key : pick(KEYS),
+    key: band.musicParams ? band.musicParams.key : pick(genreKeys),
     tempo: tempo,
     energy: band.energy,
     name: band.name,
   };
 
   const duration = MusicEngine.playBand(params);
+  songStartTime = Date.now();
+  songDuration = duration * 1000;
 
   // Show now playing bar
   const np = document.getElementById('now-playing');
@@ -2346,20 +3218,170 @@ function playBandMusic(band) {
   const color = GENRE_COLORS[band.genre] || '#7A8B6F';
   document.querySelectorAll('.viz-bar').forEach(b => b.style.background = color);
 
+  // Equalizer icon
+  const eqIcon = document.getElementById('eq-icon');
+  eqIcon.classList.add('playing');
+  eqIcon.querySelectorAll('.eq-bar').forEach(b => b.style.background = color);
+
   // Start visualizer
   if (vizAnimFrame) cancelAnimationFrame(vizAnimFrame);
   vizAnimFrame = requestAnimationFrame(updateVisualizer);
 
+  // Start lyrics
+  startLyrics(band.genre, tempo);
+
+  // Progress bar
+  document.getElementById('np-progress-fill').style.width = '0%';
+
   window._onSongEnd = () => {
     document.getElementById('now-playing').style.display = 'none';
+    document.getElementById('eq-icon').classList.remove('playing');
     if (vizAnimFrame) cancelAnimationFrame(vizAnimFrame);
+    stopLyrics();
   };
 }
 
 function stopMusic() {
   MusicEngine.stop();
   document.getElementById('now-playing').style.display = 'none';
+  document.getElementById('eq-icon').classList.remove('playing');
   if (vizAnimFrame) cancelAnimationFrame(vizAnimFrame);
+  stopLyrics();
+}
+
+// =========================================================================
+// ANIMATIONS & INTERSTITIALS (PROBLEM 4)
+// =========================================================================
+
+function showTitleAnimation() {
+  const titleEl = document.getElementById('title-text');
+  const text = 'MATADOR DREAMS';
+  titleEl.innerHTML = '';
+  text.split('').forEach((letter, i) => {
+    const span = document.createElement('span');
+    span.className = 'title-letter';
+    span.textContent = letter === ' ' ? '\u00A0' : letter;
+    span.style.animationDelay = (i * 0.08) + 's';
+    titleEl.appendChild(span);
+  });
+}
+
+function showMonthInterstitial(monthName, year, isNewYear) {
+  return new Promise(resolve => {
+    const overlay = document.createElement('div');
+    overlay.className = 'interstitial-overlay month-interstitial';
+    overlay.style.pointerEvents = 'auto';
+
+    if (isNewYear) {
+      overlay.innerHTML = `
+        <div style="text-align:center;">
+          <div class="year-num" style="animation: fadeInDown 0.4s ease forwards;">${year}</div>
+          <h2 style="animation: fadeInUp 0.4s ease 0.2s forwards; opacity:0;">${monthName}</h2>
+        </div>`;
+    } else {
+      overlay.innerHTML = `<h2 style="animation: fadeInUp 0.3s ease forwards;">${monthName} ${year}</h2>`;
+    }
+
+    document.body.appendChild(overlay);
+    const duration = isNewYear ? 1500 : 700;
+    setTimeout(() => {
+      overlay.style.animation = 'fadeOut 0.3s ease forwards';
+      setTimeout(() => {
+        overlay.remove();
+        resolve();
+      }, 300);
+    }, duration);
+  });
+}
+
+function showYearEndSummary(year) {
+  return new Promise(resolve => {
+    // Gather year stats
+    const yearAlbums = state.albums.filter(a => {
+      const albumYear = 2001 + Math.floor(a.month / 12);
+      return albumYear === year;
+    });
+    const bestScore = yearAlbums.length > 0 ? Math.max(...yearAlbums.map(a => a.score)) : 0;
+    const bnmCount = yearAlbums.filter(a => a.isBNM).length;
+
+    // Gather year history for highlights
+    const yearHistory = state.history.filter(h => h.date && h.date.includes(year.toString()));
+    const highlight = yearHistory.length > 0 ? pick(yearHistory).text : 'Survived another year in Brooklyn.';
+
+    // Next year trends
+    const nextYear = year + 1;
+    const nextTrends = trends[nextYear];
+
+    const overlay = document.createElement('div');
+    overlay.className = 'year-end-overlay';
+    overlay.style.cursor = 'pointer';
+
+    let trendsHtml = '';
+    if (nextTrends) {
+      trendsHtml = '<div style="margin-top:1rem;"><div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.15em; margin-bottom:0.3rem; color:#888;">Genre Outlook for ' + nextYear + '</div>';
+      trendsHtml += Object.entries(nextTrends).map(([g, v]) => {
+        const label = v >= 0.8 ? 'HOT' : v >= 0.5 ? 'warm' : v >= 0.3 ? 'cool' : 'cold';
+        const color = v >= 0.8 ? 'var(--faded-red)' : v >= 0.5 ? 'var(--mustard)' : '#888';
+        return `<span style="color:${color}; font-weight:${v >= 0.7 ? '700' : '400'}; font-family:var(--font-mono); font-size:0.75rem;">${g}: ${label}</span>`;
+      }).join(' &bull; ');
+      trendsHtml += '</div>';
+    }
+
+    overlay.innerHTML = `
+      <div class="year-end-card">
+        <h2>${year} IN REVIEW</h2>
+        <div class="year-end-stat"><span>Albums Released</span><span class="ye-val">${yearAlbums.length}</span></div>
+        <div class="year-end-stat"><span>Best Pitchfork Score</span><span class="ye-val">${bestScore.toFixed(1)}</span></div>
+        <div class="year-end-stat"><span>Best New Music Awards</span><span class="ye-val">${bnmCount}</span></div>
+        <div class="year-end-stat"><span>Budget</span><span class="ye-val">$${state.budget.toLocaleString()}</span></div>
+        <div class="year-end-stat"><span>Credibility</span><span class="ye-val">${state.credibility}/100</span></div>
+        <div class="year-end-stat"><span>Roster Size</span><span class="ye-val">${state.roster.length} bands</span></div>
+        <div class="year-end-highlight"><b>Notable moment:</b> ${highlight}</div>
+        ${trendsHtml}
+        <div style="margin-top:1.2rem; font-size:0.7rem; color:#999; text-transform:uppercase; letter-spacing:0.15em;">Click to continue</div>
+      </div>`;
+
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', () => {
+      overlay.style.animation = 'fadeOut 0.3s ease forwards';
+      setTimeout(() => {
+        overlay.remove();
+        resolve();
+      }, 300);
+    });
+  });
+}
+
+function spawnConfetti() {
+  const container = document.createElement('div');
+  container.className = 'confetti-container';
+  document.body.appendChild(container);
+  const colors = ['#B85450', '#C49B3F', '#7A8B6F', '#4A6B8A', '#C4858C', '#b8a9c9', '#ff6b9d'];
+  for (let i = 0; i < 50; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.background = pick(colors);
+    piece.style.animationDelay = Math.random() * 1.5 + 's';
+    piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+    piece.style.width = (6 + Math.random() * 6) + 'px';
+    piece.style.height = (6 + Math.random() * 6) + 'px';
+    container.appendChild(piece);
+  }
+  setTimeout(() => container.remove(), 4000);
+}
+
+function createCrowdAnimation(success) {
+  let html = '<div class="crowd-container">';
+  const count = success > 0.75 ? 20 : success > 0.45 ? 12 : 5;
+  for (let i = 0; i < count; i++) {
+    const bobClass = success > 0.45 ? pick(['bobbing', 'bobbing2', 'bobbing3']) : '';
+    const delay = Math.random() * 0.5;
+    html += `<div class="crowd-person ${bobClass}" style="animation-delay:${delay}s; height:${14 + Math.random() * 10}px;"></div>`;
+  }
+  html += '</div>';
+  return html;
 }
 
 // ---- UI Rendering ----
@@ -2373,7 +3395,6 @@ function renderAll() {
 function renderHeader() {
   document.getElementById('header-label-name').textContent = state.labelName;
   document.getElementById('header-date').textContent = getDateStr();
-
   const actionsEl = document.getElementById('actions-display');
   let html = '<span>Actions:</span>';
   for (let i = 0; i < 3; i++) {
@@ -2386,7 +3407,6 @@ function renderResources() {
   document.getElementById('budget-val').textContent = '$' + state.budget.toLocaleString();
   document.getElementById('cred-val').textContent = state.credibility;
   document.getElementById('hype-val').textContent = state.hype;
-
   const maxBudget = 50000;
   document.getElementById('budget-bar').style.width = clamp(state.budget / maxBudget * 100, 0, 100) + '%';
   document.getElementById('cred-bar').style.width = clamp(state.credibility, 0, 100) + '%';
@@ -2399,14 +3419,8 @@ function renderRoster() {
   for (let i = 0; i < 5; i++) {
     if (i < state.roster.length) {
       const band = state.roster[i];
-      const stars = Array(Math.min(band.talent, 10)).fill(0).map((_, j) => j < Math.round(band.talent / 2) ? '*' : '').join('');
-      const starStr = '';
-      for (let s = 0; s < 5; s++) {
-        starStr;
-      }
       const trendVal = getTrendValue(band.genre);
       const trendClass = trendVal >= 0.8 ? 'trend-hot' : trendVal >= 0.5 ? 'trend-warm' : trendVal >= 0.3 ? 'trend-cool' : 'trend-cold';
-
       html += `<div class="band-card ${i === selectedBandIndex ? 'selected' : ''}" onclick="selectBand(${i})">
         <div class="band-name">${band.name}</div>
         <div class="band-genre">${band.genre} <span class="trend-indicator ${trendClass}" title="Trend: ${Math.round(trendVal*100)}%"></span></div>
@@ -2444,7 +3458,6 @@ function renderActionButtons() {
 function selectBand(index) {
   selectedBandIndex = index;
   renderRoster();
-  // If we're in a mode that needs band selection, update
   if (currentAction === 'record-select' || currentAction === 'book-select' || currentAction === 'promote-select') {
     if (currentAction === 'record-select') showRecordOptions();
     else if (currentAction === 'book-select') showBookOptions();
@@ -2497,6 +3510,7 @@ function generateBand() {
   const genre = pick(GENRES);
   const talent = randInt(3, 10);
   const energy = randInt(3, 10);
+  const genreKeys = GENRE_KEYS_MAP[genre] || KEYS;
   return {
     name: generateBandName(),
     genre: genre,
@@ -2506,7 +3520,7 @@ function generateBand() {
     drama: randInt(1, 10),
     energy: energy,
     look: generateLook(genre),
-    musicParams: { genre, key: pick(KEYS), tempo: randInt(GENRE_TEMPOS[genre][0], GENRE_TEMPOS[genre][1]), energy, talent, name: '' },
+    musicParams: { genre, key: pick(genreKeys), tempo: randInt(GENRE_TEMPOS[genre][0], GENRE_TEMPOS[genre][1]), energy, talent, name: '' },
     albums: [],
     morale: 70,
     fanBase: randInt(0, 50),
@@ -2526,7 +3540,6 @@ function doScout() {
 
   currentAction = 'scout';
   const candidates = [generateBand(), generateBand(), generateBand()];
-  // Ensure unique names
   const usedNames = new Set(state.roster.map(b => b.name));
   candidates.forEach(c => {
     while (usedNames.has(c.name)) { c.name = generateBandName(); }
@@ -2543,7 +3556,7 @@ function doScout() {
     const rot = (i - 1) * 1.2;
 
     html += `<div class="scout-card" style="--rot:${rot}deg">
-      <div class="band-photo genre-color-${band.genre.replace('-','-')}" style="background:${getGenreGradient(band.genre)};"></div>
+      <div class="band-photo" style="background:${getGenreGradient(band.genre)};"></div>
       <div class="band-info">
         <div style="font-weight:800; font-size:0.95rem; text-transform:uppercase;">${band.name}</div>
         <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--denim);">${band.genre} <span style="font-size:0.65rem; color:${trendVal >= 0.7 ? 'var(--faded-red)' : '#888'};">[${trendLabel}]</span></div>
@@ -2559,7 +3572,6 @@ function doScout() {
   });
 
   html += `<button class="btn btn-small" onclick="passOnAll()" style="margin-top:0.5rem;">Pass on all</button>`;
-
   setActionPanel('Scouting', html);
   window._scoutCandidates = candidates;
 }
@@ -2593,7 +3605,13 @@ function signBand(idx) {
   state.budget -= cost;
   state.roster.push(band);
   addHistory(`Signed ${band.name} (${band.genre}) for $${cost}`);
-  setActionPanel('Band Signed!', `<div class="event-card info"><b>${band.name}</b> has joined your label. Welcome to the family.<br><br><i>"${pick([
+
+  // Signed animation
+  setActionPanel('Band Signed!', `
+    <div style="text-align:center; margin:1rem 0;">
+      <div class="signed-stamp">SIGNED!</div>
+    </div>
+    <div class="event-card info"><b>${band.name}</b> has joined your label. Welcome to the family.<br><br><i>"${pick([
     "We just want to make honest music and maybe pay rent.",
     "We're not in this for the money. Which is good, because there isn't any.",
     "Our influences are Pavement, Sonic Youth, and existential dread.",
@@ -2693,6 +3711,8 @@ function recordAlbum(style, cost, prodBonus) {
     state.credibility = clamp(state.credibility + 12, 0, 100);
     state.hype = clamp(state.hype + 15, 0, 100);
     band.morale = clamp(band.morale + 15, 0, 100);
+    // BNM confetti!
+    setTimeout(() => spawnConfetti(), 300);
   } else if (finalScore >= 7.0) {
     state.credibility = clamp(state.credibility + 5, 0, 100);
     state.hype = clamp(state.hype + 6, 0, 100);
@@ -2705,7 +3725,6 @@ function recordAlbum(style, cost, prodBonus) {
     band.morale = clamp(band.morale - 10, 0, 100);
   }
 
-  // Generate review
   const reviewText = generateReview(band, album, finalScore);
   const scoreColor = finalScore >= 8.5 ? 'var(--sage)' : finalScore >= 7.0 ? 'var(--denim)' : finalScore >= 5.0 ? 'var(--mustard)' : 'var(--faded-red)';
 
@@ -2767,7 +3786,7 @@ function showBookOptions() {
   if (available.length === 0) {
     html += '<div class="select-band-prompt">No venues available. Build more hype first.</div>';
   } else {
-    available.forEach((v, i) => {
+    available.forEach((v) => {
       html += `<div class="venue-item">
         <div>
           <div class="venue-name">${v.name}</div>
@@ -2780,7 +3799,6 @@ function showBookOptions() {
       </div>`;
     });
   }
-
   setActionPanel('Book Show', html);
 }
 
@@ -2791,7 +3809,6 @@ function bookVenue(venueIdx) {
   const band = state.roster[selectedBandIndex];
   const venue = venues[venueIdx];
 
-  // Calculate show success
   const energyFactor = band.energy / 10;
   const moraleFactor = band.morale / 100;
   const talentFactor = band.talent / 10;
@@ -2835,19 +3852,26 @@ function bookVenue(venueIdx) {
   band.fanBase += Math.round(hypeBonus * 10);
   band.morale = clamp(band.morale + (success > 0.6 ? 5 : -2), 0, 100);
 
-  let html = `<div class="event-card info">
-    <div style="font-weight:700; margin-bottom:0.3rem;">${band.name} @ ${venue.name}</div>
-    ${resultText}
-    <div style="margin-top:0.5rem; font-size:0.75rem; color:var(--sage);">
-      +$${pay} | Cred ${credBonus > 0 ? '+' : ''}${credBonus} | Hype +${hypeBonus}
+  // Show result with venue name, crowd animation, and revenue counter
+  let html = `
+    <div style="text-align:center; margin-bottom:0.5rem;">
+      <div style="font-size:1.2rem; font-weight:900; text-transform:uppercase; letter-spacing:0.15em; animation: fadeInDown 0.3s ease;">${venue.name}</div>
     </div>
-  </div>`;
+    <div class="event-card info" style="animation: fadeInUp 0.4s ease 0.2s forwards; opacity: 0;">
+      <div style="font-weight:700; margin-bottom:0.3rem;">${band.name} @ ${venue.name}</div>
+      ${resultText}
+      ${createCrowdAnimation(success)}
+      <div style="margin-top:0.8rem; text-align:center;">
+        <span class="revenue-counter">+$${pay}</span>
+      </div>
+      <div style="margin-top:0.3rem; font-size:0.75rem; color:var(--sage);">
+        Cred ${credBonus > 0 ? '+' : ''}${credBonus} | Hype +${hypeBonus}
+      </div>
+    </div>`;
 
   setActionPanel('Show Result', html);
   addHistory(`${band.name} played ${venue.name} (+$${pay})`);
   renderAll();
-
-  // Play the band's music
   playBandMusic(band);
 }
 
@@ -2887,7 +3911,6 @@ function showPromoteOptions() {
       <div style="font-size:0.65rem; color:var(--denim); margin-top:0.2rem;">Hype +${opt.hype} | Cred ${opt.cred > 0 ? '+' : ''}${opt.cred}</div>
     </div>`;
   });
-
   setActionPanel('Promote', html);
 }
 
@@ -2921,7 +3944,7 @@ function doPromotion(type, cost, hypeGain, credGain) {
   renderAll();
 }
 
-// DROP BAND (from roster panel click)
+// DROP BAND
 function dropBand(idx) {
   if (idx < 0 || idx >= state.roster.length) return;
   const band = state.roster[idx];
@@ -2937,7 +3960,8 @@ function dropBand(idx) {
 }
 
 // NEXT MONTH
-function nextMonth() {
+async function nextMonth() {
+  const prevMonth = state.month;
   state.month++;
 
   // Hype decay
@@ -2947,15 +3971,13 @@ function nextMonth() {
   const monthlyCosts = 200 + state.roster.length * 100;
   state.budget -= monthlyCosts;
 
-  // Morale changes based on ego/drama
+  // Morale changes
   state.roster.forEach(band => {
     if (band.ego > 7) band.morale = clamp(band.morale - 3, 0, 100);
     if (band.drama > 7 && Math.random() > 0.5) band.morale = clamp(band.morale - 5, 0, 100);
-    // Small natural morale recovery
     band.morale = clamp(band.morale + 2, 0, 100);
   });
 
-  // Reset actions
   state.actionsLeft = 3;
 
   // Check for game over
@@ -2970,36 +3992,40 @@ function nextMonth() {
     return;
   }
 
+  // Year-end summary (December -> January transition)
+  const prevMonthIdx = prevMonth % 12;
+  const prevYear = 2001 + Math.floor(prevMonth / 12);
+  if (prevMonthIdx === 11) {
+    // Show year-end summary for the year that just ended
+    await showYearEndSummary(prevYear);
+  }
+
+  // Month transition interstitial
+  const isNewYear = (state.month % 12 === 0);
+  await showMonthInterstitial(getMonthName(), getYear(), isNewYear);
+
   // Random events
   if (state.roster.length > 0 && Math.random() < 0.4) {
     triggerDramaEvent();
   } else if (Math.random() < 0.15) {
     triggerIndustryOffer();
   } else {
-    // Year-change trend notification
-    if (state.month % 12 === 0) {
+    if (isNewYear) {
       const year = getYear();
-      const hotGenres = Object.entries(trends[year] || {})
-        .filter(([g, v]) => v >= 0.7)
-        .map(([g]) => g);
-      if (hotGenres.length > 0) {
-        setActionPanel("What's Hot in " + year, `<div class="event-card info">
-          <b>Genre trends for ${year}:</b><br>
-          ${Object.entries(trends[year] || {}).map(([g, v]) => {
-            const label = v >= 0.8 ? 'HOT' : v >= 0.5 ? 'warm' : v >= 0.3 ? 'cool' : 'cold';
-            const color = v >= 0.8 ? 'var(--faded-red)' : v >= 0.5 ? 'var(--mustard)' : '#888';
-            return `<span style="color:${color}; font-weight:${v >= 0.7 ? '700' : '400'}">${g}: ${label}</span>`;
-          }).join(' | ')}
-        </div>`);
-      }
+      setActionPanel("What's Hot in " + year, `<div class="event-card info">
+        <b>Genre trends for ${year}:</b><br>
+        ${Object.entries(trends[year] || {}).map(([g, v]) => {
+          const label = v >= 0.8 ? 'HOT' : v >= 0.5 ? 'warm' : v >= 0.3 ? 'cool' : 'cold';
+          const color = v >= 0.8 ? 'var(--faded-red)' : v >= 0.5 ? 'var(--mustard)' : '#888';
+          return `<span style="color:${color}; font-weight:${v >= 0.7 ? '700' : '400'}">${g}: ${label}</span>`;
+        }).join(' | ')}
+      </div>`);
     } else {
       setActionPanel("What's the Move?", '<div class="select-band-prompt">Choose an action below.</div>');
     }
   }
 
-  // Auto-save
   saveGame();
-
   addHistory(`Advanced to ${getDateStr()}. Costs: -$${monthlyCosts}`);
   renderAll();
 }
@@ -3008,15 +4034,11 @@ function triggerDramaEvent() {
   const band = pick(state.roster);
   const event = pick(DRAMA_EVENTS);
 
-  // Check if we can afford cost-based events
   if (event.cost && state.budget < event.cost) {
-    // Pick a different event without cost
     const freeEvents = DRAMA_EVENTS.filter(e => !e.cost);
     if (freeEvents.length === 0) return;
-    const altEvent = pick(freeEvents);
-    return showDramaEvent(band, altEvent);
+    return showDramaEvent(band, pick(freeEvents));
   }
-
   showDramaEvent(band, event);
 }
 
@@ -3025,7 +4047,7 @@ function showDramaEvent(band, event) {
   text = text.replace(/\[SIDENAME\]/g, generateBandName());
   const effectStr = event.effect(band, state);
 
-  let html = `<div class="event-card drama">
+  let html = `<div class="event-card drama" style="animation: fadeInUp 0.3s ease;">
     ${text}
     <div style="margin-top:0.5rem; font-size:0.7rem; color:var(--faded-red);">${effectStr}</div>
   </div>`;
@@ -3043,13 +4065,13 @@ function triggerIndustryOffer() {
     { label: 'Accept', class: 'btn-play', action: () => {
       const result = offer.accept(state, band);
       addHistory(`Accepted: ${offer.title} (${result})`);
-      setActionPanel('Deal Done', `<div class="event-card offer">You accepted the ${offer.title}.<br><span style="font-size:0.75rem; color:var(--sage);">${result}</span></div>`);
+      setActionPanel('Deal Done', `<div class="event-card offer" style="animation: fadeInUp 0.3s ease;">You accepted the ${offer.title}.<br><span style="font-size:0.75rem; color:var(--sage);">${result}</span></div>`);
       renderAll();
     }},
     { label: 'Decline', action: () => {
       const result = offer.decline(state);
       addHistory(`Declined: ${offer.title} (${result})`);
-      setActionPanel('Stayed True', `<div class="event-card info">You turned down the ${offer.title}. Your integrity is intact.<br><span style="font-size:0.75rem; color:var(--denim);">${result}</span></div>`);
+      setActionPanel('Stayed True', `<div class="event-card info" style="animation: fadeInUp 0.3s ease;">You turned down the ${offer.title}. Your integrity is intact.<br><span style="font-size:0.75rem; color:var(--denim);">${result}</span></div>`);
       renderAll();
     }},
   ]);
@@ -3057,14 +4079,13 @@ function triggerIndustryOffer() {
 
 // ---- End Game ----
 function endGame(bankrupt) {
+  stopMusic();
   document.getElementById('game-screen').style.display = 'none';
   document.getElementById('end-screen').style.display = 'block';
 
   const bnmCount = state.albums.filter(a => a.isBNM).length;
   const avgScore = state.albums.length > 0 ? state.albums.reduce((s, a) => s + a.score, 0) / state.albums.length : 0;
-  const totalRevenue = state.budget;
 
-  // Calculate final score
   let finalPoints = 0;
   finalPoints += state.credibility * 2;
   finalPoints += Math.max(0, state.budget) / 100;
@@ -3101,7 +4122,6 @@ function endGame(bankrupt) {
   });
   document.getElementById('final-stats').innerHTML = statsHtml;
 
-  // Album gallery
   const galleryEl = document.getElementById('album-gallery');
   galleryEl.innerHTML = '';
   state.albums.forEach(album => {
@@ -3117,15 +4137,14 @@ function endGame(bankrupt) {
     galleryEl.appendChild(item);
   });
 
-  // Save high score
+  if (rank === 'True Legend') spawnConfetti();
+
   saveHighScore(rank, finalPoints);
 }
 
 // ---- Save / Load ----
 function saveGame() {
-  try {
-    localStorage.setItem('matador-dreams-save', JSON.stringify(state));
-  } catch (e) {}
+  try { localStorage.setItem('matador-dreams-save', JSON.stringify(state)); } catch (e) {}
 }
 
 function loadGame() {
@@ -3175,8 +4194,7 @@ function startGame() {
   addHistory(`${labelName} opens its doors in Brooklyn.`);
   renderAll();
 
-  // Show opening flavor text
-  setActionPanel('Welcome to Brooklyn, ' + getYear(), `<div class="event-card info">
+  setActionPanel('Welcome to Brooklyn, ' + getYear(), `<div class="event-card info" style="animation: fadeInUp 0.4s ease;">
     It's January 2001. You've got $5,000, a phone full of booking agent numbers, and a burning conviction that the world needs more bands that sound like Joy Division crossed with Pavement.<br><br>
     The Strokes just played Mercury Lounge. Interpol is rehearsing somewhere in the East Village. The internet is about to change everything, but nobody knows that yet.<br><br>
     You have six years to build something real. Scout bands. Record albums. Book shows. Chase Pitchfork reviews. Resist the temptation to sell out. Or don't -- that's a strategy too.<br><br>
@@ -3184,21 +4202,21 @@ function startGame() {
   </div>`);
 }
 
-// Check for saved game on load
+// ---- Init ----
 window.addEventListener('DOMContentLoaded', () => {
+  showTitleAnimation();
   initVisualizer();
 
-  // Handle enter key on title screen
   document.getElementById('label-name-input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') startGame();
   });
 
-  // Check for saved game
   const saved = loadGame();
   if (saved && saved.month > 0 && saved.month < 72) {
     showModal('Continue?', `Found a saved game: <b>${saved.labelName}</b>, ${MONTHS[saved.month % 12]} ${2001 + Math.floor(saved.month / 12)}.`, [
       { label: 'Continue', class: 'btn-play', action: () => {
         initAudio();
+        initVisualizer();
         state = saved;
         document.getElementById('title-screen').style.display = 'none';
         document.getElementById('game-screen').style.display = 'block';
