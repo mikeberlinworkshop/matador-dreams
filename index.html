@@ -1,0 +1,3223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATADOR DREAMS</title>
+<style>
+/* ========================================================================
+   ROOT & RESET
+   ======================================================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream: #F0EBE0;
+  --ink: #1A1A1A;
+  --rose: #C4858C;
+  --sage: #7A8B6F;
+  --denim: #4A6B8A;
+  --mustard: #C49B3F;
+  --faded-red: #B85450;
+  --card-bg: #F5F1E8;
+  --card-border: #D4CFC4;
+  --paper-shadow: 2px 3px 8px rgba(0,0,0,0.12);
+  --stamp-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+  --font-body: -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: 'Courier New', Courier, monospace;
+}
+
+html { font-size: 15px; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* Subtle paper texture via repeating gradient */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.008) 2px,
+      rgba(0,0,0,0.008) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.005) 2px,
+      rgba(0,0,0,0.005) 4px
+    );
+}
+
+/* ========================================================================
+   TYPOGRAPHY
+   ======================================================================== */
+h1, h2, h3, h4 {
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 800;
+}
+
+.mono { font-family: var(--font-mono); }
+.italic { font-style: italic; }
+
+/* ========================================================================
+   TITLE SCREEN
+   ======================================================================== */
+#title-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+  animation: fadeIn 1.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#title-screen h1 {
+  font-size: 4rem;
+  letter-spacing: 0.25em;
+  color: var(--ink);
+  margin-bottom: 0.3rem;
+  line-height: 1.1;
+}
+
+#title-screen .subtitle {
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--denim);
+  margin-bottom: 0.5rem;
+}
+
+#title-screen .tagline {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--rose);
+  margin-bottom: 2.5rem;
+}
+
+/* CSS Vinyl Record */
+.vinyl-container {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 1.5rem auto;
+}
+
+.vinyl {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%,
+    #111 0%, #111 15%,
+    #222 15.5%, #333 18%,
+    #111 18.5%, #1a1a1a 20%,
+    #222 22%, #111 24%,
+    #1a1a1a 26%, #222 28%,
+    #111 30%, #1a1a1a 32%,
+    #222 34%, #111 36%,
+    #1a1a1a 38%, #222 40%,
+    #111 42%, #1a1a1a 45%,
+    #222 48%, #333 50%,
+    #444 52%, #333 55%,
+    #222 58%, #111 62%,
+    #1a1a1a 65%, #222 68%,
+    #111 70%, #1a1a1a 73%,
+    #222 76%, #111 80%,
+    #1a1a1a 83%, #222 86%,
+    #111 89%, #1a1a1a 92%,
+    #111 100%
+  );
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  animation: spin 8s linear infinite;
+}
+
+.vinyl::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--rose) 0%, var(--faded-red) 60%, #222 62%, #111 100%);
+}
+
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.label-input-group {
+  margin-bottom: 1.5rem;
+}
+
+.label-input-group label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--sage);
+  margin-bottom: 0.5rem;
+}
+
+.label-input-group input {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--ink);
+  color: var(--ink);
+  text-align: center;
+  padding: 0.4rem 1rem;
+  width: 280px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.label-input-group input:focus {
+  border-color: var(--rose);
+}
+
+.label-input-group input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* ========================================================================
+   BUTTONS
+   ======================================================================== */
+.btn {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 0.6rem 1.4rem;
+  border: 2px solid var(--ink);
+  background: var(--card-bg);
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.btn.stamp {
+  border-radius: 3px;
+  border: 3px solid;
+  font-weight: 900;
+  transform: rotate(-2deg);
+}
+
+.btn.stamp-rose { border-color: var(--rose); color: var(--rose); }
+.btn.stamp-sage { border-color: var(--sage); color: var(--sage); }
+.btn.stamp-denim { border-color: var(--denim); color: var(--denim); }
+.btn.stamp-mustard { border-color: var(--mustard); color: var(--mustard); }
+.btn.stamp-red { border-color: var(--faded-red); color: var(--faded-red); }
+
+.btn.stamp:hover { transform: rotate(-1deg) scale(1.03); }
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: 1px 1px 0 var(--ink) !important;
+}
+
+.btn-small {
+  font-size: 0.7rem;
+  padding: 0.35rem 0.8rem;
+}
+
+.btn-play {
+  background: var(--sage);
+  color: white;
+  border-color: var(--sage);
+  box-shadow: 2px 2px 0 #5a6b50;
+}
+
+.btn-play:hover { box-shadow: 3px 3px 0 #5a6b50; }
+
+.btn-danger {
+  background: var(--faded-red);
+  color: white;
+  border-color: var(--faded-red);
+}
+
+/* ========================================================================
+   GAME SCREEN
+   ======================================================================== */
+#game-screen { display: none; padding: 1rem; max-width: 1100px; margin: 0 auto; }
+
+/* Header bar */
+.game-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1rem;
+  background: var(--ink);
+  color: var(--cream);
+  margin-bottom: 1rem;
+  gap: 0.5rem;
+}
+
+.game-header h2 {
+  font-size: 1.1rem;
+  letter-spacing: 0.2em;
+  color: var(--cream);
+  text-transform: uppercase;
+}
+
+.game-header .date-display {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--mustard);
+}
+
+.actions-left {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.actions-left span {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-right: 4px;
+}
+
+.action-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--sage);
+  display: inline-block;
+}
+
+.action-dot.spent { background: #555; }
+
+/* Resource bars */
+.resource-bar-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--paper-shadow);
+}
+
+.resource-item {
+  flex: 1;
+  min-width: 140px;
+}
+
+.resource-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 3px;
+  font-weight: 700;
+}
+
+.resource-value {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.vu-meter {
+  height: 10px;
+  background: #ddd;
+  border: 1px solid #bbb;
+  margin-top: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.vu-meter .vu-fill {
+  height: 100%;
+  transition: width 0.4s ease;
+}
+
+.vu-meter .vu-fill.budget { background: linear-gradient(90deg, var(--sage), var(--mustard)); }
+.vu-meter .vu-fill.cred { background: linear-gradient(90deg, var(--denim), var(--sage)); }
+.vu-meter .vu-fill.hype { background: linear-gradient(90deg, var(--rose), var(--faded-red)); }
+
+/* Main layout: roster + action panel */
+.game-main {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 700px) {
+  .game-main { grid-template-columns: 1fr; }
+  #title-screen h1 { font-size: 2.5rem; }
+}
+
+/* Roster panel */
+.roster-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--paper-shadow);
+  padding: 0.8rem;
+}
+
+.roster-panel h3 {
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.6rem;
+}
+
+.band-card {
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--card-border);
+  background: var(--cream);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+}
+
+.band-card:hover {
+  transform: rotate(-0.5deg) translateY(-1px);
+  box-shadow: 3px 3px 6px rgba(0,0,0,0.12);
+}
+
+.band-card.selected {
+  border-color: var(--denim);
+  border-width: 2px;
+  box-shadow: 0 0 0 2px var(--denim);
+}
+
+.band-card .band-name {
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.band-card .band-genre {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--denim);
+  margin-top: 1px;
+}
+
+.band-card .band-stars {
+  color: var(--mustard);
+  font-size: 0.75rem;
+  margin-top: 2px;
+}
+
+.band-card .band-morale {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 3px;
+  color: #666;
+}
+
+.morale-bar {
+  height: 5px;
+  background: #ddd;
+  margin-top: 2px;
+}
+
+.morale-bar .morale-fill {
+  height: 100%;
+  background: var(--sage);
+  transition: width 0.3s;
+}
+
+.empty-slot {
+  padding: 0.6rem;
+  margin-bottom: 0.5rem;
+  border: 1px dashed var(--card-border);
+  color: #aaa;
+  text-align: center;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+}
+
+/* Action panel */
+.action-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--paper-shadow);
+  padding: 1rem;
+  min-height: 300px;
+  position: relative;
+  overflow-y: auto;
+  max-height: 520px;
+}
+
+.action-panel h3 {
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.8rem;
+}
+
+/* Action buttons row */
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Scout cards */
+.scout-card {
+  background: var(--cream);
+  border: 1px solid var(--card-border);
+  padding: 0.8rem;
+  margin-bottom: 0.8rem;
+  transform: rotate(var(--rot, 0deg));
+  box-shadow: var(--paper-shadow);
+  transition: transform 0.2s;
+}
+
+.scout-card:hover { transform: rotate(0deg) scale(1.01); }
+
+.scout-card .band-photo {
+  width: 80px;
+  height: 80px;
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 0.8rem;
+  /* Polaroid border */
+  padding: 5px 5px 18px 5px;
+  background: white;
+  box-shadow: 1px 2px 6px rgba(0,0,0,0.15);
+}
+
+.scout-card .band-info {
+  display: inline-block;
+  vertical-align: top;
+  max-width: calc(100% - 110px);
+}
+
+.scout-card .look-desc {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: #555;
+  margin-top: 0.3rem;
+  line-height: 1.4;
+}
+
+.scout-card .cost-tag {
+  font-weight: 700;
+  color: var(--faded-red);
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+}
+
+/* Album art */
+.album-art {
+  width: 120px;
+  height: 120px;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 2px 3px 8px rgba(0,0,0,0.2);
+  flex-shrink: 0;
+}
+
+.album-art-small {
+  width: 60px;
+  height: 60px;
+}
+
+/* Review card */
+.review-card {
+  background: white;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin-top: 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  position: relative;
+}
+
+.review-card .review-score {
+  font-size: 2.5rem;
+  font-weight: 900;
+  font-family: var(--font-body);
+  display: inline-block;
+  margin-right: 0.8rem;
+  line-height: 1;
+}
+
+.review-card .bnm {
+  display: inline-block;
+  background: var(--faded-red);
+  color: white;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  padding: 0.2rem 0.6rem;
+  font-weight: 800;
+}
+
+.review-card .review-source {
+  font-size: 0.65rem;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 0.5rem;
+}
+
+/* Event / drama card */
+.event-card {
+  background: var(--cream);
+  border-left: 4px solid var(--mustard);
+  padding: 0.8rem;
+  margin-bottom: 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.event-card.offer { border-left-color: var(--sage); }
+.event-card.drama { border-left-color: var(--faded-red); }
+.event-card.info { border-left-color: var(--denim); }
+
+/* Venue list */
+.venue-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.venue-item .venue-name {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.venue-item .venue-details {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: #666;
+}
+
+.venue-item .venue-pay {
+  font-weight: 700;
+  color: var(--sage);
+}
+
+/* Production options */
+.production-option {
+  display: inline-block;
+  width: calc(33% - 0.5rem);
+  min-width: 140px;
+  padding: 0.8rem;
+  margin: 0.3rem;
+  border: 2px solid var(--card-border);
+  background: var(--cream);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  vertical-align: top;
+}
+
+.production-option:hover {
+  border-color: var(--denim);
+  transform: translateY(-2px);
+  box-shadow: var(--paper-shadow);
+}
+
+.production-option .prod-name {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.85rem;
+}
+
+.production-option .prod-cost {
+  font-family: var(--font-mono);
+  color: var(--faded-red);
+  font-weight: 700;
+  margin-top: 0.2rem;
+}
+
+.production-option .prod-desc {
+  font-size: 0.7rem;
+  color: #666;
+  margin-top: 0.2rem;
+}
+
+/* Now Playing bar */
+.now-playing {
+  background: var(--ink);
+  color: var(--cream);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.now-playing .np-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--sage);
+}
+
+.now-playing .np-track {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.now-playing .np-genre {
+  font-size: 0.65rem;
+  color: var(--rose);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.visualizer {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.viz-bar {
+  width: 4px;
+  background: var(--sage);
+  transition: height 0.05s;
+  min-height: 2px;
+}
+
+.np-controls {
+  margin-left: auto;
+}
+
+.btn-stop {
+  background: transparent;
+  border: 1px solid var(--cream);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+
+.btn-stop:hover { background: rgba(255,255,255,0.1); }
+
+/* Offer modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal-content {
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  max-width: 500px;
+  width: 90%;
+  padding: 1.5rem;
+  box-shadow: 6px 6px 0 var(--ink);
+  position: relative;
+}
+
+.modal-content h3 {
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.8rem;
+}
+
+.modal-content .modal-body {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* History log */
+.history-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--paper-shadow);
+  padding: 0.8rem;
+  margin-top: 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.history-panel h3 {
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.6rem;
+}
+
+.history-entry {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 0.2rem 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  color: #555;
+}
+
+.history-entry .h-date {
+  color: var(--denim);
+  font-weight: 700;
+}
+
+/* End screen */
+#end-screen {
+  display: none;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+#end-screen h1 {
+  font-size: 2.5rem;
+  letter-spacing: 0.2em;
+  margin-bottom: 1rem;
+}
+
+.final-rank {
+  font-size: 1.5rem;
+  font-family: var(--font-mono);
+  color: var(--rose);
+  margin-bottom: 1.5rem;
+}
+
+.final-stats {
+  max-width: 400px;
+  margin: 0 auto 2rem;
+  text-align: left;
+}
+
+.final-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--card-border);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.final-stat .stat-val {
+  font-weight: 700;
+}
+
+.album-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.album-gallery-item {
+  text-align: center;
+}
+
+.album-gallery-item .album-title {
+  font-style: italic;
+  font-size: 0.7rem;
+  margin-top: 0.3rem;
+  max-width: 120px;
+}
+
+.album-gallery-item .album-band {
+  font-size: 0.65rem;
+  color: #666;
+}
+
+.album-gallery-item .album-score-tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* Spacing for now-playing bar */
+#game-screen { padding-bottom: 70px; }
+#end-screen { padding-bottom: 70px; }
+
+/* Selection prompt */
+.select-band-prompt {
+  text-align: center;
+  padding: 2rem;
+  color: #999;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+/* Genre color accent per band photo */
+.genre-color-post-punk { background: linear-gradient(135deg, #222 0%, #555 50%, #222 100%); }
+.genre-color-indie-folk { background: linear-gradient(135deg, var(--sage) 0%, var(--mustard) 100%); }
+.genre-color-shoegaze { background: linear-gradient(135deg, #b8a9c9 0%, #d4c5e2 50%, #e8ddf0 100%); }
+.genre-color-garage { background: linear-gradient(135deg, var(--faded-red) 0%, var(--mustard) 100%); }
+.genre-color-art-rock { background: linear-gradient(135deg, var(--denim) 0%, var(--rose) 50%, var(--mustard) 100%); }
+.genre-color-lo-fi { background: linear-gradient(135deg, #c9b99a 0%, #a39478 100%); }
+.genre-color-dance-punk { background: linear-gradient(135deg, var(--rose) 0%, #ff6b9d 50%, var(--mustard) 100%); }
+
+/* Inline flex row */
+.flex-row { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+.flex-col { display: flex; flex-direction: column; gap: 0.3rem; }
+.mt-1 { margin-top: 0.5rem; }
+.mb-1 { margin-bottom: 0.5rem; }
+.text-center { text-align: center; }
+.text-muted { color: #888; }
+
+/* Album reveal animation */
+@keyframes albumReveal {
+  from { transform: scale(0.8) rotate(-5deg); opacity: 0; }
+  to { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.album-reveal { animation: albumReveal 0.4s ease forwards; }
+
+/* Trend indicator */
+.trend-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-left: 4px;
+}
+
+.trend-hot { background: var(--faded-red); }
+.trend-warm { background: var(--mustard); }
+.trend-cool { background: var(--denim); }
+.trend-cold { background: #999; }
+</style>
+</head>
+<body>
+
+<!-- TITLE SCREEN -->
+<div id="title-screen">
+  <div class="vinyl-container"><div class="vinyl"></div></div>
+  <h1>MATADOR DREAMS</h1>
+  <div class="subtitle">An Indie Label Simulator, 2001 - 2006</div>
+  <div class="tagline">How long can you keep it real?</div>
+  <div class="label-input-group">
+    <label>Name Your Label</label>
+    <input type="text" id="label-name-input" placeholder="Trembling Ear Records" maxlength="30" autofocus>
+  </div>
+  <button class="btn" id="start-btn" onclick="startGame()">Start</button>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="game-screen">
+  <div class="game-header">
+    <h2 id="header-label-name">Your Label</h2>
+    <div class="date-display" id="header-date">January 2001</div>
+    <div class="actions-left" id="actions-display">
+      <span>Actions:</span>
+    </div>
+  </div>
+
+  <div class="resource-bar-container">
+    <div class="resource-item">
+      <div class="resource-label">Budget</div>
+      <div class="resource-value" id="budget-val">$5,000</div>
+      <div class="vu-meter"><div class="vu-fill budget" id="budget-bar" style="width:50%"></div></div>
+    </div>
+    <div class="resource-item">
+      <div class="resource-label">Credibility</div>
+      <div class="resource-value" id="cred-val">50</div>
+      <div class="vu-meter"><div class="vu-fill cred" id="cred-bar" style="width:50%"></div></div>
+    </div>
+    <div class="resource-item">
+      <div class="resource-label">Hype</div>
+      <div class="resource-value" id="hype-val">20</div>
+      <div class="vu-meter"><div class="vu-fill hype" id="hype-bar" style="width:20%"></div></div>
+    </div>
+  </div>
+
+  <div class="game-main">
+    <div class="roster-panel">
+      <h3>Roster</h3>
+      <div id="roster-list"></div>
+    </div>
+    <div class="action-panel" id="action-panel">
+      <h3 id="action-panel-title">What's the Move?</h3>
+      <div id="action-content">
+        <div class="select-band-prompt">Choose an action below to get started.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-buttons" id="main-actions">
+    <button class="btn stamp stamp-denim" onclick="doScout()">Scout Bands</button>
+    <button class="btn stamp stamp-sage" onclick="doRecord()" id="btn-record">Record Album</button>
+    <button class="btn stamp stamp-rose" onclick="doBookShow()" id="btn-book">Book Show</button>
+    <button class="btn stamp stamp-mustard" onclick="doPromote()" id="btn-promote">Promote</button>
+    <button class="btn stamp stamp-red" onclick="nextMonth()">Next Month</button>
+  </div>
+
+  <div class="history-panel">
+    <h3>Label Log</h3>
+    <div id="history-log"></div>
+  </div>
+</div>
+
+<!-- END SCREEN -->
+<div id="end-screen">
+  <h1>Game Over</h1>
+  <div class="final-rank" id="final-rank"></div>
+  <div class="final-stats" id="final-stats"></div>
+  <h3 style="margin-bottom:0.5rem;">Discography</h3>
+  <div class="album-gallery" id="album-gallery"></div>
+  <button class="btn" onclick="location.reload()" style="margin-top:1.5rem;">Play Again</button>
+</div>
+
+<!-- NOW PLAYING BAR -->
+<div class="now-playing" id="now-playing" style="display:none;">
+  <div>
+    <div class="np-label">Now Playing</div>
+    <div class="np-track" id="np-track-name">--</div>
+  </div>
+  <div class="np-genre" id="np-genre">--</div>
+  <div class="visualizer" id="visualizer"></div>
+  <div class="np-controls">
+    <button class="btn-stop" onclick="stopMusic()">Stop</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal-content">
+    <h3 id="modal-title">Event</h3>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-buttons" id="modal-buttons"></div>
+  </div>
+</div>
+
+<script>
+// =========================================================================
+// MUSIC ENGINE — INLINED FROM indie-music-engine.js
+// =========================================================================
+(function () {
+  'use strict';
+
+  const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+  const NOTES = {};
+
+  for (let octave = 2; octave <= 5; octave++) {
+    NOTE_NAMES.forEach((name, semitone) => {
+      const midi = 12 * (octave + 1) + semitone;
+      NOTES[name + octave] = 440 * Math.pow(2, (midi - 69) / 12);
+    });
+  }
+
+  const FLAT_MAP = { 'Db': 'C#', 'Eb': 'D#', 'Fb': 'E', 'Gb': 'F#', 'Ab': 'G#', 'Bb': 'A#', 'Cb': 'B' };
+  Object.keys(FLAT_MAP).forEach(flat => {
+    for (let octave = 2; octave <= 5; octave++) {
+      NOTES[flat + octave] = NOTES[FLAT_MAP[flat] + octave];
+    }
+  });
+
+  function freq(note, octave) {
+    const key = note + octave;
+    return NOTES[key] || 440;
+  }
+
+  const SCALE_INTERVALS = {
+    minorPentatonic: [0, 3, 5, 7, 10],
+    majorPentatonic: [0, 2, 4, 7, 9],
+    naturalMinor:    [0, 2, 3, 5, 7, 8, 10],
+    major:           [0, 2, 4, 5, 7, 9, 11],
+    mixolydian:      [0, 2, 4, 5, 7, 9, 10],
+    harmonicMinor:   [0, 2, 3, 5, 7, 8, 11],
+  };
+
+  const KEY_ROOTS = {
+    'C': 0, 'Dm': 2, 'Em': 4, 'G': 7, 'Am': 9, 'Bm': 11,
+  };
+
+  const CHORD_SHAPES = {
+    major:  [0, 4, 7],
+    minor:  [0, 3, 7],
+    power:  [0, 7],
+    dom7:   [0, 4, 7, 10],
+    min7:   [0, 3, 7, 10],
+    sus4:   [0, 5, 7],
+    dim:    [0, 3, 6],
+  };
+
+  function parseKey(keyStr) {
+    const isMinor = keyStr.endsWith('m');
+    const rootName = isMinor ? keyStr.slice(0, -1) : keyStr;
+    const rootSemitone = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[rootName] || 0;
+    return { rootSemitone, isMinor, rootName };
+  }
+
+  function semitoneToNote(semitone) {
+    return NOTE_NAMES[((semitone % 12) + 12) % 12];
+  }
+
+  function buildChord(rootSemitone, quality, octave) {
+    const shape = CHORD_SHAPES[quality] || CHORD_SHAPES.major;
+    return shape.map(offset => {
+      const s = (rootSemitone + offset) % 12;
+      const note = semitoneToNote(s);
+      const oct = (rootSemitone + offset >= 12) ? octave + 1 : octave;
+      return freq(note, oct);
+    });
+  }
+
+  function buildScale(rootSemitone, scaleType, startOctave, numOctaves) {
+    const intervals = SCALE_INTERVALS[scaleType] || SCALE_INTERVALS.naturalMinor;
+    const notes = [];
+    for (let oct = 0; oct < (numOctaves || 2); oct++) {
+      intervals.forEach(interval => {
+        const s = (rootSemitone + interval) % 12;
+        const note = semitoneToNote(s);
+        const octave = startOctave + oct + Math.floor((rootSemitone + interval) / 12);
+        notes.push(freq(note, octave));
+      });
+    }
+    return notes;
+  }
+
+  const PROGRESSIONS = {
+    'post-punk': {
+      verse:  [[0,'minor'], [3,'major'], [10,'major'], [8,'major']],
+      chorus: [[0,'minor'], [5,'minor'], [7,'minor'], [0,'minor']],
+    },
+    'indie-folk': {
+      verse:  [[0,'major'], [7,'major'], [9,'minor'], [5,'major']],
+      chorus: [[9,'minor'], [5,'major'], [0,'major'], [7,'major']],
+    },
+    'shoegaze': {
+      verse:  [[0,'major'], [10,'major'], [5,'major'], [0,'major']],
+      chorus: [[0,'major'], [10,'major'], [0,'major'], [10,'major']],
+    },
+    'garage': {
+      verse:  [[0,'power'], [5,'power'], [7,'power'], [5,'power']],
+      chorus: [[0,'power'], [0,'power'], [5,'power'], [7,'power']],
+    },
+    'art-rock': {
+      verse:  [[0,'minor'], [3,'major'], [10,'major'], [5,'minor'], [0,'minor'], [8,'major']],
+      chorus: [[8,'major'], [3,'major'], [5,'major'], [0,'minor'], [7,'major'], [10,'major']],
+    },
+    'lo-fi': {
+      verse:  [[0,'major'], [5,'major'], [9,'minor'], [7,'major']],
+      chorus: [[0,'major'], [4,'minor'], [5,'major'], [7,'major']],
+    },
+    'dance-punk': {
+      verse:  [[0,'minor'], [0,'minor'], [0,'minor'], [10,'major']],
+      chorus: [[0,'minor'], [10,'major'], [0,'minor'], [10,'major']],
+    },
+  };
+
+  const GENRE_SCALES = {
+    'post-punk':   'minorPentatonic',
+    'indie-folk':  'majorPentatonic',
+    'shoegaze':    'naturalMinor',
+    'garage':      'minorPentatonic',
+    'art-rock':    'majorPentatonic',
+    'lo-fi':       'naturalMinor',
+    'dance-punk':  'mixolydian',
+  };
+
+  function createReverb(audioCtx, duration, decay) {
+    duration = duration || 2;
+    decay = decay || 2;
+    const length = Math.floor(audioCtx.sampleRate * duration);
+    const impulse = audioCtx.createBuffer(2, length, audioCtx.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+      const data = impulse.getChannelData(ch);
+      for (let i = 0; i < length; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+      }
+    }
+    const convolver = audioCtx.createConvolver();
+    convolver.buffer = impulse;
+    return convolver;
+  }
+
+  function createDelay(audioCtx, time, feedback) {
+    time = time || 0.3;
+    feedback = feedback || 0.4;
+    const delay = audioCtx.createDelay(4.0);
+    delay.delayTime.value = time;
+    const feedbackGain = audioCtx.createGain();
+    feedbackGain.gain.value = feedback;
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 3000;
+    delay.connect(feedbackGain);
+    feedbackGain.connect(filter);
+    filter.connect(delay);
+    return { input: delay, output: feedbackGain };
+  }
+
+  function makeDistortionCurve(amount) {
+    const samples = 44100;
+    const curve = new Float32Array(samples);
+    const deg = Math.PI / 180;
+    for (let i = 0; i < samples; i++) {
+      const x = (i * 2) / samples - 1;
+      curve[i] = ((3 + amount) * x * 20 * deg) / (Math.PI + amount * Math.abs(x));
+    }
+    return curve;
+  }
+
+  function createTapeSaturation(audioCtx) {
+    const waveshaper = audioCtx.createWaveShaper();
+    waveshaper.curve = makeDistortionCurve(5);
+    waveshaper.oversample = '2x';
+    const lpf = audioCtx.createBiquadFilter();
+    lpf.type = 'lowpass';
+    lpf.frequency.value = 8000;
+    const noiseGain = audioCtx.createGain();
+    noiseGain.gain.value = 0.008;
+    const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 2, audioCtx.sampleRate);
+    const noiseData = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < noiseData.length; i++) {
+      noiseData[i] = Math.random() * 2 - 1;
+    }
+    waveshaper.connect(lpf);
+    return { input: waveshaper, output: lpf, noiseBuffer, noiseGain };
+  }
+
+  function getGenreParams(genre, energy, talent) {
+    const e = energy / 10;
+    const t = talent / 10;
+
+    const defaults = {
+      guitarDetune: 6, guitarDistortion: 20, guitarFilterFreq: 3000,
+      guitarAttack: 0.01, guitarRelease: 0.15, guitarGain: 0.12,
+      bassFilterFreq: 1000, bassDistortion: 5, bassGain: 0.18,
+      drumGain: 0.25, kickGain: 0.35, snareGain: 0.25, hihatGain: 0.12,
+      reverbDuration: 1.5, reverbDecay: 2.5, reverbMix: 0.2,
+      delayTime: 0.3, delayFeedback: 0.25, delayMix: 0.1,
+      useSynth: false, useVocals: false, vocalGain: 0.03,
+      tremoloRate: 0, tremoloDepth: 0, masterGain: 0.45,
+    };
+
+    const params = { ...defaults };
+
+    switch (genre) {
+      case 'post-punk':
+        params.guitarDetune = 4 + (1 - t) * 4;
+        params.guitarDistortion = 15 + e * 20;
+        params.guitarFilterFreq = 4000 + e * 2000;
+        params.guitarAttack = 0.005; params.guitarRelease = 0.08;
+        params.guitarGain = 0.09 + e * 0.06;
+        params.bassFilterFreq = 1200; params.bassDistortion = 8; params.bassGain = 0.22;
+        params.reverbDuration = 2.5; params.reverbDecay = 2.0; params.reverbMix = 0.35;
+        params.delayTime = 0.375; params.delayFeedback = 0.45; params.delayMix = 0.25;
+        params.useVocals = true; params.vocalGain = 0.025; params.masterGain = 0.4;
+        break;
+      case 'indie-folk':
+        params.guitarDetune = 2 + (1 - t) * 3;
+        params.guitarDistortion = 2; params.guitarFilterFreq = 5000;
+        params.guitarAttack = 0.01; params.guitarRelease = 0.3;
+        params.guitarGain = 0.1; params.bassGain = 0.1;
+        params.drumGain = 0.12; params.kickGain = 0.18;
+        params.snareGain = 0.12; params.hihatGain = 0.06;
+        params.reverbDuration = 1.8; params.reverbDecay = 3.0;
+        params.reverbMix = 0.2; params.delayMix = 0.05; params.masterGain = 0.38;
+        break;
+      case 'shoegaze':
+        params.guitarDetune = 10 + (1 - t) * 8;
+        params.guitarDistortion = 40 + e * 30;
+        params.guitarFilterFreq = 2000 + e * 1000;
+        params.guitarAttack = 0.08; params.guitarRelease = 0.8;
+        params.guitarGain = 0.14 + e * 0.08; params.bassGain = 0.15;
+        params.reverbDuration = 4.0; params.reverbDecay = 1.5; params.reverbMix = 0.6;
+        params.delayTime = 0.5; params.delayFeedback = 0.5; params.delayMix = 0.3;
+        params.tremoloRate = 4 + e * 3; params.tremoloDepth = 0.4;
+        params.useSynth = true; params.masterGain = 0.35;
+        break;
+      case 'garage':
+        params.guitarDetune = 5 + (1 - t) * 6;
+        params.guitarDistortion = 50 + e * 40;
+        params.guitarFilterFreq = 3500 + e * 2000;
+        params.guitarAttack = 0.003; params.guitarRelease = 0.1;
+        params.guitarGain = 0.16 + e * 0.08;
+        params.bassFilterFreq = 900; params.bassDistortion = 15; params.bassGain = 0.2;
+        params.drumGain = 0.35; params.kickGain = 0.45;
+        params.snareGain = 0.35; params.hihatGain = 0.18;
+        params.reverbDuration = 0.8; params.reverbDecay = 3.0;
+        params.reverbMix = 0.1; params.delayMix = 0.03; params.masterGain = 0.42;
+        break;
+      case 'art-rock':
+        params.guitarDetune = 3 + (1 - t) * 3;
+        params.guitarDistortion = 10 + e * 25;
+        params.guitarFilterFreq = 4500; params.guitarAttack = 0.02; params.guitarRelease = 0.25;
+        params.guitarGain = 0.08 + e * 0.1; params.bassGain = 0.16;
+        params.reverbDuration = 2.0; params.reverbDecay = 2.0; params.reverbMix = 0.25;
+        params.delayTime = 0.4; params.delayFeedback = 0.3; params.delayMix = 0.15;
+        params.useSynth = true; params.useVocals = true;
+        params.vocalGain = 0.02; params.masterGain = 0.4;
+        break;
+      case 'lo-fi':
+        params.guitarDetune = 8 + (1 - t) * 10;
+        params.guitarDistortion = 8; params.guitarFilterFreq = 3000;
+        params.guitarAttack = 0.015; params.guitarRelease = 0.25;
+        params.guitarGain = 0.1; params.bassFilterFreq = 800; params.bassGain = 0.12;
+        params.drumGain = 0.15; params.kickGain = 0.2;
+        params.snareGain = 0.15; params.hihatGain = 0.07;
+        params.reverbDuration = 1.2; params.reverbDecay = 3.0;
+        params.reverbMix = 0.15; params.delayMix = 0.08;
+        params.useVocals = true; params.vocalGain = 0.02; params.masterGain = 0.35;
+        break;
+      case 'dance-punk':
+        params.guitarDetune = 4;
+        params.guitarDistortion = 15 + e * 15;
+        params.guitarFilterFreq = 3500; params.guitarAttack = 0.003; params.guitarRelease = 0.05;
+        params.guitarGain = 0.1 + e * 0.05;
+        params.bassFilterFreq = 1200; params.bassDistortion = 10; params.bassGain = 0.25;
+        params.drumGain = 0.3; params.kickGain = 0.4;
+        params.snareGain = 0.28; params.hihatGain = 0.15;
+        params.reverbDuration = 1.0; params.reverbDecay = 3.0; params.reverbMix = 0.12;
+        params.delayTime = 0.25; params.delayFeedback = 0.3; params.delayMix = 0.1;
+        params.useSynth = true; params.masterGain = 0.42;
+        break;
+    }
+    return params;
+  }
+
+  const DRUM_PATTERNS = {
+    'post-punk': [
+      { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+      { kick:[1,0,0,0,1,0,0,0,1,0,0,1,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0] },
+      { kick:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    ],
+    'indie-folk': [
+      { kick:[1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0], snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+      { kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    ],
+    'shoegaze': [
+      { kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1] },
+      { kick:[1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], open:[0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1] },
+    ],
+    'garage': [
+      { kick:[1,0,1,0,1,0,0,0,1,0,1,0,1,0,0,0], snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,1,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+      { kick:[1,0,0,0,1,0,1,0,1,0,0,0,1,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+      { kick:[1,0,1,0,0,0,1,0,1,0,1,0,0,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,1,0,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    ],
+    'art-rock': [
+      { kick:[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0] },
+      { kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+    ],
+    'lo-fi': [
+      { kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+      { kick:[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1], hihat:[1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    ],
+    'dance-punk': [
+      { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+      { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,1], hihat:[1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1], open:[0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0] },
+      { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
+    ],
+  };
+
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function seededRandom(seed) {
+    let s = 0;
+    for (let i = 0; i < seed.length; i++) s = ((s << 5) - s) + seed.charCodeAt(i) | 0;
+    return function () {
+      s = (s * 16807 + 0) % 2147483647;
+      return (s & 0x7fffffff) / 2147483647;
+    };
+  }
+
+  const MusicEngine = {
+    _ctx: null, _playing: false, _scheduledNodes: [], _masterGain: null, _stopTimeout: null,
+
+    init(audioCtx) { this._ctx = audioCtx; this._playing = false; this._scheduledNodes = []; },
+    isPlaying() { return this._playing; },
+
+    stop() {
+      this._playing = false;
+      if (this._stopTimeout) { clearTimeout(this._stopTimeout); this._stopTimeout = null; }
+      this._scheduledNodes.forEach(node => {
+        try { if (node.stop) node.stop(0); if (node.disconnect) node.disconnect(); } catch (e) {}
+      });
+      this._scheduledNodes = [];
+      if (this._masterGain) {
+        try {
+          this._masterGain.gain.cancelScheduledValues(this._ctx.currentTime);
+          this._masterGain.gain.setValueAtTime(this._masterGain.gain.value, this._ctx.currentTime);
+          this._masterGain.gain.linearRampToValueAtTime(0, this._ctx.currentTime + 0.05);
+        } catch (e) {}
+      }
+    },
+
+    playBand(bandParams) {
+      if (this._playing) this.stop();
+      const ctx = this._ctx;
+      if (!ctx) throw new Error('MusicEngine.init() must be called first');
+      if (ctx.state === 'suspended') ctx.resume();
+      this._playing = true;
+      this._scheduledNodes = [];
+
+      const { genre = 'post-punk', talent = 5, key = 'Em', tempo = 130, energy = 5, name = 'Unknown Band' } = bandParams;
+      const rng = seededRandom(name + genre);
+      const gp = getGenreParams(genre, energy, talent);
+      const { rootSemitone, isMinor } = parseKey(key);
+
+      const beatDur = 60 / tempo;
+      const sixteenth = beatDur / 4;
+      const bar = beatDur * 4;
+      const now = ctx.currentTime + 0.1;
+
+      const introStart = now;
+      const verseStart = now + 4 * bar;
+      const chorusStart = now + 12 * bar;
+      const songEnd = now + 20 * bar + 2;
+
+      const masterGain = ctx.createGain();
+      masterGain.gain.value = gp.masterGain;
+      this._masterGain = masterGain;
+
+      const compressor = ctx.createDynamicsCompressor();
+      compressor.threshold.value = -18; compressor.knee.value = 12;
+      compressor.ratio.value = 4; compressor.attack.value = 0.003; compressor.release.value = 0.15;
+
+      const reverb = createReverb(ctx, gp.reverbDuration, gp.reverbDecay);
+      const reverbSend = ctx.createGain(); reverbSend.gain.value = gp.reverbMix;
+      const reverbReturn = ctx.createGain(); reverbReturn.gain.value = 1.0;
+      reverbSend.connect(reverb); reverb.connect(reverbReturn); reverbReturn.connect(compressor);
+
+      const delayEffect = createDelay(ctx, gp.delayTime, gp.delayFeedback);
+      const delaySend = ctx.createGain(); delaySend.gain.value = gp.delayMix;
+      const delayReturn = ctx.createGain(); delayReturn.gain.value = 1.0;
+      delaySend.connect(delayEffect.input); delayEffect.output.connect(delayReturn); delayReturn.connect(compressor);
+
+      let tapeSat = null;
+      if (genre === 'lo-fi') {
+        tapeSat = createTapeSaturation(ctx);
+        compressor.connect(tapeSat.input); tapeSat.output.connect(masterGain);
+        const noiseSource = ctx.createBufferSource();
+        noiseSource.buffer = tapeSat.noiseBuffer; noiseSource.loop = true;
+        noiseSource.connect(tapeSat.noiseGain); tapeSat.noiseGain.connect(masterGain);
+        noiseSource.start(now); this._scheduledNodes.push(noiseSource);
+      } else {
+        compressor.connect(masterGain);
+      }
+      masterGain.connect(ctx.destination);
+
+      // Also connect to analyser for visualizer
+      if (window._gameAnalyser) {
+        try { masterGain.connect(window._gameAnalyser); } catch(e) {}
+      }
+
+      function connectToMix(sourceNode) {
+        sourceNode.connect(compressor); sourceNode.connect(reverbSend); sourceNode.connect(delaySend);
+      }
+
+      const progs = PROGRESSIONS[genre] || PROGRESSIONS['post-punk'];
+      const verseChords = progs.verse.map(([offset, quality]) => buildChord((rootSemitone + offset) % 12, quality, 3));
+      const chorusChords = progs.chorus.map(([offset, quality]) => buildChord((rootSemitone + offset) % 12, quality, 3));
+      const verseBassRoots = progs.verse.map(([offset]) => freq(semitoneToNote((rootSemitone + offset) % 12), 2));
+      const chorusBassRoots = progs.chorus.map(([offset]) => freq(semitoneToNote((rootSemitone + offset) % 12), 2));
+
+      const scaleType = GENRE_SCALES[genre] || 'naturalMinor';
+      const melodyScale = buildScale(rootSemitone, scaleType, 4, 1);
+
+      const self = this;
+
+      function scheduleNote(freqVal, startTime, duration, gainVal, opts) {
+        opts = opts || {};
+        const oscType = opts.type || 'sawtooth';
+        const attack = opts.attack || 0.01;
+        const release = opts.release || 0.1;
+        const filterFreq = opts.filterFreq || 5000;
+        const distAmount = opts.distortion || 0;
+        const numOscs = opts.numOscs || 2;
+        const destinationNode = opts.destination;
+        if (startTime < ctx.currentTime) return;
+
+        const noteGain = ctx.createGain();
+        noteGain.gain.setValueAtTime(0, startTime);
+        noteGain.gain.linearRampToValueAtTime(gainVal, startTime + attack);
+        noteGain.gain.setValueAtTime(gainVal, startTime + duration - release);
+        noteGain.gain.linearRampToValueAtTime(0, startTime + duration);
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass'; filter.frequency.value = filterFreq;
+        filter.Q.value = opts.filterQ || 1;
+
+        let distNode = null;
+        if (distAmount > 0) {
+          distNode = ctx.createWaveShaper();
+          distNode.curve = makeDistortionCurve(distAmount); distNode.oversample = '2x';
+        }
+
+        const chain = [noteGain];
+        if (distNode) chain.push(distNode);
+        chain.push(filter);
+        for (let i = 0; i < chain.length - 1; i++) chain[i].connect(chain[i + 1]);
+        if (destinationNode) { filter.connect(destinationNode); } else { connectToMix(filter); }
+
+        for (let o = 0; o < numOscs; o++) {
+          const osc = ctx.createOscillator();
+          osc.type = oscType; osc.frequency.value = freqVal;
+          if (numOscs > 1) { osc.detune.value = (o === 0 ? (opts.detune||0) : -(opts.detune||0)) * (o === 2 ? 0.5 : 1); }
+          osc.connect(noteGain); osc.start(startTime); osc.stop(startTime + duration + 0.05);
+          self._scheduledNodes.push(osc);
+        }
+      }
+
+      function scheduleGuitar(chords, sectionStart, numBars, isChorus) {
+        const barsPerChord = genre === 'art-rock' ? 1 : Math.max(1, Math.floor(numBars / chords.length));
+        const gain = gp.guitarGain * (isChorus ? 1.3 : 1.0);
+        for (let barIdx = 0; barIdx < numBars; barIdx++) {
+          const chordIdx = Math.floor(barIdx / barsPerChord) % chords.length;
+          const chord = chords[chordIdx];
+          const barStart = sectionStart + barIdx * bar;
+          switch (genre) {
+            case 'post-punk':
+              for (let eighth = 0; eighth < 8; eighth++) {
+                const noteFreq = chord[eighth % chord.length];
+                const t = barStart + eighth * (beatDur / 2);
+                if (rng() > 0.85 - talent * 0.03) {
+                  scheduleNote(noteFreq, t, beatDur * 0.3, gain, { type:'sawtooth', detune:gp.guitarDetune, attack:gp.guitarAttack, release:gp.guitarRelease, filterFreq:gp.guitarFilterFreq, distortion:gp.guitarDistortion, numOscs:2 });
+                }
+              }
+              break;
+            case 'indie-folk':
+              for (let s = 0; s < 16; s++) {
+                const pattern = [0,1,2,1];
+                const noteIdx = pattern[s % 4];
+                const noteFreq = chord[noteIdx % chord.length];
+                const t = barStart + s * sixteenth;
+                const vel = gain * (0.6 + 0.4 * Math.sin(s * 0.8));
+                scheduleNote(noteFreq, t, sixteenth * 3, vel, { type:'triangle', detune:gp.guitarDetune, attack:gp.guitarAttack, release:gp.guitarRelease, filterFreq:gp.guitarFilterFreq, distortion:gp.guitarDistortion, numOscs:2 });
+              }
+              break;
+            case 'shoegaze':
+              {
+                const strumDelay = 0.03;
+                const chordDur = bar * 0.95;
+                for (let n = 0; n < chord.length; n++) {
+                  const t = barStart + n * strumDelay;
+                  const noteGain2 = ctx.createGain(); noteGain2.gain.value = gain; connectToMix(noteGain2);
+                  if (gp.tremoloRate > 0) {
+                    const lfo = ctx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = gp.tremoloRate;
+                    const lfoGain = ctx.createGain(); lfoGain.gain.value = gp.tremoloDepth * gain;
+                    lfo.connect(lfoGain); lfoGain.connect(noteGain2.gain);
+                    lfo.start(t); lfo.stop(t + chordDur + 0.1); self._scheduledNodes.push(lfo);
+                  }
+                  scheduleNote(chord[n], t, chordDur, gain, { type:'sawtooth', detune:gp.guitarDetune, attack:gp.guitarAttack, release:gp.guitarRelease, filterFreq:gp.guitarFilterFreq, distortion:gp.guitarDistortion, numOscs:3, destination:noteGain2 });
+                }
+              }
+              break;
+            case 'garage':
+              for (let eighth = 0; eighth < 8; eighth++) {
+                const t = barStart + eighth * (beatDur / 2);
+                chord.forEach(noteFreq => {
+                  scheduleNote(noteFreq, t, beatDur * 0.4, gain, { type:'sawtooth', detune:gp.guitarDetune, attack:gp.guitarAttack, release:gp.guitarRelease, filterFreq:gp.guitarFilterFreq, distortion:gp.guitarDistortion, numOscs:2 });
+                });
+              }
+              break;
+            case 'art-rock':
+              if (barIdx % 2 === 0) {
+                for (let s = 0; s < 8; s++) {
+                  const noteFreq = chord[s % chord.length];
+                  const t = barStart + s * (beatDur / 2);
+                  const dynGain = gain * (isChorus ? (0.5 + barIdx/numBars*0.5) : 0.6);
+                  scheduleNote(noteFreq, t, beatDur*0.6, dynGain, { type:'triangle', detune:gp.guitarDetune, attack:gp.guitarAttack, release:gp.guitarRelease, filterFreq:gp.guitarFilterFreq, distortion:gp.guitarDistortion, numOscs:2 });
+                }
+              } else {
+                for (let beat = 0; beat < 4; beat++) {
+                  const t = barStart + beat * beatDur;
+                  const dynGain = gain * (isChorus ? (0.7+barIdx/numBars*0.3) : 0.5);
+                  chord.forEach((noteFreq, ni) => {
+                    scheduleNote(noteFreq, t+ni*0.01, beatDur*0.8, dynGain, { type:'sawtooth', detune:gp.guitarDetune, attack:gp.guitarAttack, release:gp.guitarRelease, filterFreq:gp.guitarFilterFreq, distortion:gp.guitarDistortion*(isChorus?1.5:1), numOscs:2 });
+                  });
+                }
+              }
+              break;
+            case 'lo-fi':
+              for (let beat = 0; beat < 4; beat++) {
+                const t = barStart + beat * beatDur;
+                const strumDir = beat % 2 === 0 ? 1 : -1;
+                chord.forEach((noteFreq, ni) => {
+                  const strumOffset = strumDir > 0 ? ni*0.015 : (chord.length-1-ni)*0.015;
+                  const wobble = 1 + (rng()-0.5)*0.004;
+                  scheduleNote(noteFreq*wobble, t+strumOffset, beatDur*0.85, gain*0.8, { type:'triangle', detune:gp.guitarDetune, attack:gp.guitarAttack, release:gp.guitarRelease, filterFreq:gp.guitarFilterFreq, distortion:gp.guitarDistortion, numOscs:2 });
+                });
+              }
+              break;
+            case 'dance-punk':
+              for (let s = 0; s < 16; s++) {
+                const funkPattern = [1,0,1,0,0,1,0,1,1,0,1,0,0,1,1,0];
+                if (!funkPattern[s]) continue;
+                const t = barStart + s * sixteenth;
+                chord.forEach(noteFreq => {
+                  scheduleNote(noteFreq, t, sixteenth*0.6, gain*0.7, { type:'square', detune:gp.guitarDetune, attack:gp.guitarAttack, release:gp.guitarRelease, filterFreq:gp.guitarFilterFreq, distortion:gp.guitarDistortion, numOscs:2 });
+                });
+              }
+              break;
+          }
+        }
+      }
+
+      function scheduleBass(bassRoots, chords, sectionStart, numBars, isChorus) {
+        const barsPerChord = genre === 'art-rock' ? 1 : Math.max(1, Math.floor(numBars / bassRoots.length));
+        const gain = gp.bassGain * (isChorus ? 1.2 : 1.0);
+        for (let barIdx = 0; barIdx < numBars; barIdx++) {
+          const chordIdx = Math.floor(barIdx / barsPerChord) % bassRoots.length;
+          const rootFreq = bassRoots[chordIdx];
+          const barStart = sectionStart + barIdx * bar;
+          switch (genre) {
+            case 'post-punk':
+              {
+                const bassScale = buildScale(rootSemitone, 'naturalMinor', 2, 2);
+                const rootIdx = bassScale.findIndex(f => Math.abs(f - rootFreq) < 5) || 0;
+                const patterns = [[0,2,3,4,3,2,0,-1],[0,0,2,3,4,4,3,2],[0,4,3,2,0,-1,0,2]];
+                const pat = patterns[barIdx % patterns.length];
+                for (let eighth = 0; eighth < 8; eighth++) {
+                  const scaleIdx = clamp(rootIdx + pat[eighth], 0, bassScale.length - 1);
+                  const noteFreq = bassScale[scaleIdx];
+                  const t = barStart + eighth * (beatDur / 2);
+                  scheduleNote(noteFreq, t, beatDur*0.45, gain, { type:'sawtooth', detune:0, attack:0.005, release:0.08, filterFreq:gp.bassFilterFreq, distortion:gp.bassDistortion, numOscs:1 });
+                }
+              }
+              break;
+            case 'indie-folk':
+              { const noteDur = rng() > 0.5 ? beatDur*2 : bar;
+                for (let t = barStart; t < barStart+bar-0.01; t += noteDur) {
+                  scheduleNote(rootFreq, t, noteDur*0.9, gain*0.8, { type:'sine', detune:0, attack:0.02, release:0.15, filterFreq:gp.bassFilterFreq, distortion:0, numOscs:1 });
+                }
+              }
+              break;
+            case 'shoegaze':
+              scheduleNote(rootFreq, barStart, bar*0.95, gain, { type:'sawtooth', detune:0, attack:0.05, release:0.3, filterFreq:gp.bassFilterFreq, distortion:gp.bassDistortion, numOscs:1 });
+              break;
+            case 'garage':
+              { const fifth = rootFreq * 1.5;
+                for (let eighth = 0; eighth < 8; eighth++) {
+                  const noteFreq = eighth % 2 === 0 ? rootFreq : fifth;
+                  const t = barStart + eighth * (beatDur / 2);
+                  scheduleNote(noteFreq, t, beatDur*0.4, gain, { type:'sawtooth', detune:0, attack:0.003, release:0.08, filterFreq:gp.bassFilterFreq, distortion:gp.bassDistortion, numOscs:1 });
+                }
+              }
+              break;
+            case 'art-rock':
+              { const bassScale = buildScale(rootSemitone, 'naturalMinor', 2, 2);
+                const rootIdx = bassScale.findIndex(f => Math.abs(f - rootFreq) < 5) || 0;
+                for (let beat = 0; beat < 4; beat++) {
+                  const offset = [0,1,2,3][beat] * (isChorus ? 1 : (rng() > 0.5 ? 1 : -1));
+                  const idx = clamp(rootIdx + offset, 0, bassScale.length - 1);
+                  const t = barStart + beat * beatDur;
+                  scheduleNote(bassScale[idx], t, beatDur*0.85, gain, { type:'sawtooth', detune:0, attack:0.01, release:0.1, filterFreq:gp.bassFilterFreq, distortion:gp.bassDistortion, numOscs:1 });
+                }
+              }
+              break;
+            case 'lo-fi':
+              [0,2].forEach(beat => {
+                const t = barStart + beat * beatDur;
+                scheduleNote(rootFreq, t, beatDur*1.5, gain*0.9, { type:'triangle', detune:0, attack:0.02, release:0.2, filterFreq:gp.bassFilterFreq, distortion:0, numOscs:1 });
+              });
+              break;
+            case 'dance-punk':
+              { const octaveUp = rootFreq * 2;
+                const jumpPattern = [1,0,0,1,0,0,1,0,1,0,0,1,0,1,0,0];
+                const highPattern = [0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,0];
+                for (let s = 0; s < 16; s++) {
+                  if (!jumpPattern[s]) continue;
+                  const noteFreq = highPattern[s] ? octaveUp : rootFreq;
+                  const t = barStart + s * sixteenth;
+                  scheduleNote(noteFreq, t, sixteenth*1.5, gain, { type:'sawtooth', detune:0, attack:0.003, release:0.06, filterFreq:gp.bassFilterFreq, distortion:gp.bassDistortion, numOscs:1 });
+                }
+              }
+              break;
+          }
+        }
+      }
+
+      function scheduleKick(time, gainVal) {
+        const osc = ctx.createOscillator(); osc.type = 'sine';
+        const oscGain = ctx.createGain();
+        osc.frequency.setValueAtTime(150, time);
+        osc.frequency.exponentialRampToValueAtTime(40, time + 0.08);
+        oscGain.gain.setValueAtTime(gainVal, time);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, time + 0.2);
+        osc.connect(oscGain); connectToMix(oscGain);
+        osc.start(time); osc.stop(time + 0.25); self._scheduledNodes.push(osc);
+      }
+
+      function scheduleSnare(time, gainVal) {
+        const noiseLen = Math.floor(ctx.sampleRate * 0.15);
+        const noiseBuf = ctx.createBuffer(1, noiseLen, ctx.sampleRate);
+        const noiseData = noiseBuf.getChannelData(0);
+        for (let i = 0; i < noiseLen; i++) noiseData[i] = Math.random() * 2 - 1;
+        const noiseSource = ctx.createBufferSource(); noiseSource.buffer = noiseBuf;
+        const noiseBandpass = ctx.createBiquadFilter(); noiseBandpass.type = 'bandpass';
+        noiseBandpass.frequency.value = 2000 + energy * 200; noiseBandpass.Q.value = 0.8;
+        const noiseGain = ctx.createGain();
+        noiseGain.gain.setValueAtTime(gainVal, time);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
+        noiseSource.connect(noiseBandpass); noiseBandpass.connect(noiseGain); connectToMix(noiseGain);
+        noiseSource.start(time); noiseSource.stop(time + 0.2); self._scheduledNodes.push(noiseSource);
+        const osc = ctx.createOscillator(); osc.type = 'sine'; osc.frequency.value = 200;
+        const oscGain = ctx.createGain();
+        oscGain.gain.setValueAtTime(gainVal * 0.5, time);
+        oscGain.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
+        osc.connect(oscGain); connectToMix(oscGain);
+        osc.start(time); osc.stop(time + 0.12); self._scheduledNodes.push(osc);
+      }
+
+      function scheduleHihat(time, gainVal, open) {
+        const len = open ? 0.2 : 0.03;
+        const bufLen = Math.floor(ctx.sampleRate * len);
+        const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < bufLen; i++) data[i] = Math.random() * 2 - 1;
+        const source = ctx.createBufferSource(); source.buffer = buf;
+        const hpf = ctx.createBiquadFilter(); hpf.type = 'highpass';
+        hpf.frequency.value = open ? 6000 : 8000;
+        const hhGain = ctx.createGain();
+        const decayTime = open ? 0.2 : 0.03;
+        hhGain.gain.setValueAtTime(gainVal, time);
+        hhGain.gain.exponentialRampToValueAtTime(0.001, time + decayTime);
+        source.connect(hpf); hpf.connect(hhGain); connectToMix(hhGain);
+        source.start(time); source.stop(time + decayTime + 0.05); self._scheduledNodes.push(source);
+      }
+
+      function scheduleDrums(sectionStart, numBars) {
+        const patterns = DRUM_PATTERNS[genre] || DRUM_PATTERNS['post-punk'];
+        for (let barIdx = 0; barIdx < numBars; barIdx++) {
+          const isChorus = sectionStart === chorusStart;
+          const patIdx = isChorus ? (patterns.length > 1 ? 1 : 0) : (barIdx % patterns.length);
+          const pat = patterns[patIdx];
+          for (let step = 0; step < 16; step++) {
+            const t = sectionStart + barIdx * bar + step * sixteenth;
+            if (t < ctx.currentTime) continue;
+            const humanize = (1 - talent/10) * sixteenth * 0.1 * (rng() - 0.5);
+            const ht = t + humanize;
+            if (pat.kick[step]) scheduleKick(ht, gp.kickGain * (isChorus ? 1.15 : 1.0));
+            if (pat.snare[step]) scheduleSnare(ht, gp.snareGain * (isChorus ? 1.2 : 1.0));
+            if (pat.hihat[step]) {
+              const vel = gp.hihatGain * (0.6 + rng() * 0.4) * (isChorus ? 1.1 : 1.0);
+              scheduleHihat(ht, vel, false);
+            }
+            if (pat.open && pat.open[step]) scheduleHihat(ht, gp.hihatGain*1.5*(isChorus?1.2:1.0), true);
+          }
+        }
+      }
+
+      function scheduleSynth(chords, sectionStart, numBars, isChorus) {
+        if (!gp.useSynth) return;
+        const barsPerChord = genre === 'art-rock' ? 1 : Math.max(1, Math.floor(numBars / chords.length));
+        for (let barIdx = 0; barIdx < numBars; barIdx++) {
+          const chordIdx = Math.floor(barIdx / barsPerChord) % chords.length;
+          const chord = chords[chordIdx];
+          const barStart = sectionStart + barIdx * bar;
+          switch (genre) {
+            case 'art-rock':
+              chord.forEach(noteFreq => {
+                const padFreq = noteFreq * 2;
+                const padGain = 0.03 * (isChorus ? 1.5 : 0.8);
+                const dynamicGain = isChorus ? padGain * (0.5 + barIdx/numBars) : padGain;
+                for (let d = 0; d < 2; d++) {
+                  const osc = ctx.createOscillator(); osc.type = 'sine';
+                  osc.frequency.value = padFreq; osc.detune.value = d===0?5:-5;
+                  const g = ctx.createGain();
+                  g.gain.setValueAtTime(0, barStart);
+                  g.gain.linearRampToValueAtTime(dynamicGain, barStart+0.5);
+                  g.gain.setValueAtTime(dynamicGain, barStart+bar-0.3);
+                  g.gain.linearRampToValueAtTime(0, barStart+bar);
+                  osc.connect(g); connectToMix(g);
+                  osc.start(barStart); osc.stop(barStart+bar+0.5); self._scheduledNodes.push(osc);
+                }
+              });
+              break;
+            case 'dance-punk':
+              { const synthFreq = chord[0]*2;
+                const osc = ctx.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = synthFreq;
+                const synthFilter = ctx.createBiquadFilter(); synthFilter.type = 'lowpass';
+                synthFilter.frequency.value = 800; synthFilter.Q.value = 8;
+                const lfo = ctx.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 2+barIdx*0.3;
+                const lfoGain = ctx.createGain(); lfoGain.gain.value = 600;
+                lfo.connect(lfoGain); lfoGain.connect(synthFilter.frequency);
+                const synthGain = ctx.createGain();
+                synthGain.gain.setValueAtTime(0, barStart);
+                synthGain.gain.linearRampToValueAtTime(0.06*(isChorus?1.3:1.0), barStart+0.02);
+                synthGain.gain.setValueAtTime(0.06*(isChorus?1.3:1.0), barStart+bar-0.05);
+                synthGain.gain.linearRampToValueAtTime(0, barStart+bar);
+                osc.connect(synthFilter); synthFilter.connect(synthGain); connectToMix(synthGain);
+                lfo.start(barStart); lfo.stop(barStart+bar+0.1);
+                osc.start(barStart); osc.stop(barStart+bar+0.1);
+                self._scheduledNodes.push(osc, lfo);
+              }
+              break;
+            case 'shoegaze':
+              chord.forEach(noteFreq => {
+                const osc = ctx.createOscillator(); osc.type = 'triangle';
+                osc.frequency.value = noteFreq; osc.detune.value = (rng()-0.5)*10;
+                const g = ctx.createGain();
+                g.gain.setValueAtTime(0, barStart);
+                g.gain.linearRampToValueAtTime(0.015, barStart+0.8);
+                g.gain.setValueAtTime(0.015, barStart+bar-0.5);
+                g.gain.linearRampToValueAtTime(0, barStart+bar);
+                osc.connect(g); g.connect(reverbSend); g.connect(delaySend);
+                osc.start(barStart); osc.stop(barStart+bar+1); self._scheduledNodes.push(osc);
+              });
+              break;
+          }
+        }
+      }
+
+      function scheduleVocals(sectionStart, numBars, isChorus) {
+        if (!gp.useVocals) return;
+        const vocalGain = gp.vocalGain * (isChorus ? 1.4 : 1.0);
+        const vowels = { A:[800,1200,2800], E:[400,2000,2800], O:[500,800,2800] };
+        const vowelNames = ['A','E','O'];
+        for (let barIdx = 0; barIdx < numBars; barIdx += 2) {
+          const phraseStart = sectionStart + barIdx * bar;
+          const phraseDur = bar * 1.8;
+          const numNotes = 3 + Math.floor(rng() * 3);
+          const noteDur = phraseDur / numNotes;
+          for (let n = 0; n < numNotes; n++) {
+            const noteStart = phraseStart + n * noteDur;
+            const noteFreq = melodyScale[Math.floor(rng() * melodyScale.length)];
+            const vowel = vowels[vowelNames[Math.floor(rng() * vowelNames.length)]];
+            const osc = ctx.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = noteFreq;
+            const formantGain = ctx.createGain(); formantGain.gain.value = 0;
+            formantGain.gain.setValueAtTime(0, noteStart);
+            formantGain.gain.linearRampToValueAtTime(vocalGain, noteStart+0.1);
+            formantGain.gain.setValueAtTime(vocalGain, noteStart+noteDur-0.1);
+            formantGain.gain.linearRampToValueAtTime(0, noteStart+noteDur);
+            vowel.forEach((formantFreq, fi) => {
+              const bp = ctx.createBiquadFilter(); bp.type = 'bandpass';
+              bp.frequency.value = formantFreq; bp.Q.value = 8+fi*4;
+              const fGain = ctx.createGain(); fGain.gain.value = fi===0?1.0:(fi===1?0.6:0.3);
+              osc.connect(bp); bp.connect(fGain); fGain.connect(formantGain);
+            });
+            formantGain.connect(reverbSend);
+            const dryVocal = ctx.createGain(); dryVocal.gain.value = 0.3;
+            formantGain.connect(dryVocal); dryVocal.connect(compressor);
+            osc.start(noteStart); osc.stop(noteStart+noteDur+0.1); self._scheduledNodes.push(osc);
+          }
+        }
+      }
+
+      function scheduleExtraGuitarLayer(chords, sectionStart, numBars) {
+        const altChords = chords.map(chord => chord.map(f => f * 2));
+        const gain = gp.guitarGain * 0.5;
+        const barsPerChord = genre === 'art-rock' ? 1 : Math.max(1, Math.floor(numBars / chords.length));
+        for (let barIdx = 0; barIdx < numBars; barIdx++) {
+          const chordIdx = Math.floor(barIdx / barsPerChord) % altChords.length;
+          const chord = altChords[chordIdx];
+          const barStart = sectionStart + barIdx * bar;
+          chord.forEach(noteFreq => {
+            scheduleNote(noteFreq, barStart, bar*0.9, gain, { type:'sawtooth', detune:gp.guitarDetune*1.5, attack:0.05, release:0.3, filterFreq:gp.guitarFilterFreq*0.8, distortion:gp.guitarDistortion*0.7, numOscs:2 });
+          });
+        }
+      }
+
+      // Adjust delay for post-punk
+      if (genre === 'post-punk') {
+        const dottedEighth = beatDur * 0.75;
+        delayEffect.input.delayTime.value = dottedEighth;
+      }
+
+      // INTRO
+      switch (genre) {
+        case 'post-punk': case 'dance-punk':
+          scheduleDrums(introStart, 4); scheduleBass(verseBassRoots, verseChords, introStart, 4, false);
+          break;
+        case 'indie-folk': case 'lo-fi':
+          scheduleGuitar(verseChords, introStart, 4, false); break;
+        case 'shoegaze':
+          scheduleGuitar([verseChords[0]], introStart, 4, false);
+          scheduleSynth([verseChords[0]], introStart, 4, false); break;
+        case 'garage':
+          for (let beat = 0; beat < 4; beat++) scheduleHihat(introStart + beat*beatDur, gp.hihatGain*1.5, false);
+          scheduleDrums(introStart + bar, 3); scheduleGuitar(verseChords, introStart + bar, 3, false);
+          break;
+        case 'art-rock':
+          scheduleGuitar(verseChords, introStart, 4, false); break;
+      }
+
+      // VERSE
+      scheduleGuitar(verseChords, verseStart, 8, false);
+      scheduleBass(verseBassRoots, verseChords, verseStart, 8, false);
+      scheduleDrums(verseStart, 8);
+      scheduleSynth(verseChords, verseStart, 8, false);
+      scheduleVocals(verseStart, 8, false);
+
+      // CHORUS
+      scheduleGuitar(chorusChords, chorusStart, 8, true);
+      scheduleBass(chorusBassRoots, chorusChords, chorusStart, 8, true);
+      scheduleDrums(chorusStart, 8);
+      scheduleSynth(chorusChords, chorusStart, 8, true);
+      scheduleVocals(chorusStart, 8, true);
+      scheduleExtraGuitarLayer(chorusChords, chorusStart, 8);
+
+      // Fade out
+      const fadeStart = chorusStart + 6 * bar;
+      masterGain.gain.setValueAtTime(gp.masterGain, fadeStart);
+      masterGain.gain.linearRampToValueAtTime(0, songEnd);
+
+      const totalDuration = (songEnd - now) * 1000 + 500;
+      this._stopTimeout = setTimeout(() => {
+        this._playing = false;
+        this._scheduledNodes.forEach(node => { try { if (node.disconnect) node.disconnect(); } catch(e){} });
+        this._scheduledNodes = [];
+        // Notify game that song ended
+        if (window._onSongEnd) window._onSongEnd();
+      }, totalDuration);
+
+      return songEnd - now;
+    },
+  };
+
+  window.MusicEngine = MusicEngine;
+})();
+
+// =========================================================================
+// GAME CODE
+// =========================================================================
+
+// ---- Utility ----
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+function shuffleArray(arr) { const a = [...arr]; for (let i = a.length-1; i > 0; i--) { const j = randInt(0, i); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+// ---- Constants ----
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const GENRES = ['post-punk','garage','lo-fi','indie-folk','art-rock','shoegaze','dance-punk'];
+const KEYS = ['C','Dm','Em','G','Am','Bm'];
+
+const GENRE_TEMPOS = {
+  'post-punk': [125, 145], 'garage': [140, 175], 'lo-fi': [80, 110],
+  'indie-folk': [100, 130], 'art-rock': [90, 135], 'shoegaze': [85, 115], 'dance-punk': [120, 150],
+};
+
+const GENRE_COLORS = {
+  'post-punk': '#555', 'garage': '#B85450', 'lo-fi': '#a39478',
+  'indie-folk': '#7A8B6F', 'art-rock': '#4A6B8A', 'shoegaze': '#b8a9c9', 'dance-punk': '#C4858C',
+};
+
+const trends = {
+  2001: { 'post-punk': 0.9, 'garage': 0.8, 'lo-fi': 0.6, 'indie-folk': 0.3, 'art-rock': 0.3, 'shoegaze': 0.2, 'dance-punk': 0.4 },
+  2002: { 'post-punk': 1.0, 'garage': 0.9, 'lo-fi': 0.5, 'indie-folk': 0.4, 'art-rock': 0.4, 'shoegaze': 0.2, 'dance-punk': 0.5 },
+  2003: { 'post-punk': 0.8, 'garage': 0.7, 'lo-fi': 0.4, 'indie-folk': 0.7, 'art-rock': 0.5, 'shoegaze': 0.3, 'dance-punk': 0.7 },
+  2004: { 'post-punk': 0.6, 'garage': 0.5, 'lo-fi': 0.4, 'indie-folk': 1.0, 'art-rock': 0.8, 'shoegaze': 0.3, 'dance-punk': 0.6 },
+  2005: { 'post-punk': 0.5, 'garage': 0.4, 'lo-fi': 0.5, 'art-rock': 1.0, 'indie-folk': 0.8, 'shoegaze': 0.6, 'dance-punk': 0.7 },
+  2006: { 'post-punk': 0.4, 'garage': 0.3, 'lo-fi': 0.6, 'art-rock': 0.9, 'indie-folk': 0.7, 'shoegaze': 0.7, 'dance-punk': 1.0 },
+};
+
+const venues = [
+  { name: "Someone's Apartment", capacity: 30, pay: 50, credBonus: 3, hypeBonus: 1, minHype: 0 },
+  { name: "Pete's Candy Store", capacity: 75, pay: 150, credBonus: 2, hypeBonus: 2, minHype: 5 },
+  { name: "Trash Bar", capacity: 100, pay: 200, credBonus: 2, hypeBonus: 3, minHype: 10 },
+  { name: "Mercury Lounge", capacity: 250, pay: 500, credBonus: 3, hypeBonus: 5, minHype: 20 },
+  { name: "Bowery Ballroom", capacity: 550, pay: 1500, credBonus: 5, hypeBonus: 8, minHype: 35 },
+  { name: "Webster Hall", capacity: 1500, pay: 3000, credBonus: 3, hypeBonus: 12, minHype: 50 },
+  { name: "SXSW (Austin)", capacity: 2000, pay: 2000, credBonus: 8, hypeBonus: 15, minHype: 25, monthOnly: 3 },
+  { name: "Pitchfork Fest (Chicago)", capacity: 5000, pay: 5000, credBonus: 10, hypeBonus: 20, minHype: 50, monthOnly: 7 },
+  { name: "Terminal 5", capacity: 3000, pay: 8000, credBonus: -2, hypeBonus: 20, minHype: 65 },
+  { name: "Madison Square Garden", capacity: 20000, pay: 25000, credBonus: -15, hypeBonus: 40, minHype: 80 },
+];
+
+// ---- Band Name Generator ----
+const NAME_POOLS = {
+  theNouns: ['Ambulances','Parking Meters','Borrowed Sweaters','Telegram Machines','Screen Doors','Paper Lanterns','Milk Crates','Fire Escapes','Stray Voltages','Broken Clocks','Velvet Curtains','Exit Signs','Spare Keys','Wrong Numbers','Lost Receipts','Dim Bulbs'],
+  adjAnimal: ['Modest Elk','Casual Flamingo','Nervous Deer','Quiet Horses','Silver Foxes','Electric Owls','Pale Moths','Tired Wolves','Gentle Coyotes','Anxious Sparrows','Wistful Cranes','Reckless Herons'],
+  pretentious: ['Nomenclature','Periphery','Vestibule','Ephemera','Palimpsest','Anodyne','Cerulean','Lacuna','Penumbra','Simulacra','Catharsis','Reverie','Patina','Meridian'],
+  placeThing: ['Brooklyn Typewriter','Portland Fog Machine','Williamsburg Landlord','Austin Radiator','Silverlake Projector','Bushwick Stairwell','Echo Park Almanac','Greenpoint Radiator','Bed-Stuy Telescope'],
+  randomCombo: ['Broken Social Contract','Department of Wolves','Ceiling Fan Orchestra','Museum of Feelings','The National Anthem Singers','Committee for Public Safety','Library of Sighs','Embassy of Sound','Bureau of Lost Causes','Society for Creative Anachronism','The Emotional Rescue Society','Maps of Nowhere'],
+};
+
+function generateBandName() {
+  const pool = pick(['theNouns','adjAnimal','pretentious','placeThing','randomCombo']);
+  let name;
+  if (pool === 'theNouns') {
+    name = 'The ' + pick(NAME_POOLS.theNouns);
+  } else {
+    name = pick(NAME_POOLS[pool]);
+  }
+  return name;
+}
+
+// ---- Look Generator ----
+const LOOK_TEMPLATES = {
+  'post-punk': [
+    "Four guys in black jeans and leather jackets who look like they haven't slept since 1979.",
+    "Three people in dark turtlenecks staring at different walls. The bass player has cheekbones that could cut glass.",
+    "Two men and a woman in matching black. They rehearse in a warehouse and call it a 'space.'",
+  ],
+  'indie-folk': [
+    "A bearded man in a flannel shirt who plays the banjo ironically and the accordion sincerely.",
+    "Five people, three of whom are wearing suspenders. Someone has a mandolin. They met at a farmers market.",
+    "A couple who harmonize beautifully and argue about everything else. He wears corduroy. She wears vintage.",
+  ],
+  'shoegaze': [
+    "Three people staring at their shoes. You're not sure if they're performing or just standing there.",
+    "A blur of hair and reverb. The guitarist has seventeen pedals and hasn't looked up since soundcheck.",
+    "Four silhouettes behind a wall of amplifiers. One of them might be asleep.",
+  ],
+  'garage': [
+    "Two people, one drum kit, and enough distortion to peel wallpaper.",
+    "Three guys who look like they got dressed in the dark, which they probably did given their practice space.",
+    "A drummer who hits too hard and a guitarist who plays too loud. They wouldn't have it any other way.",
+  ],
+  'art-rock': [
+    "Seven musicians, four of whom play instruments you can't identify.",
+    "A classically trained cellist, a guy with a laptop, and someone who 'plays' a modified typewriter.",
+    "Five people whose combined music degrees could wallpaper a loft. The singer used to be a mime.",
+  ],
+  'lo-fi': [
+    "A person with a 4-track recorder and a look of deliberate underachievement.",
+    "One person in a bedroom. The microphone is duct-taped to a lamp. The album was recorded in an afternoon.",
+    "Someone who looks like they just woke up, because they did. The entire studio is a closet.",
+  ],
+  'dance-punk': [
+    "Matching tracksuits. A cowbell. An unnecessary amount of swagger.",
+    "Three people in tight jeans and vintage sneakers who move like they're being electrocuted, but stylishly.",
+    "A bassist who never stops moving and a drummer who might be running a marathon behind the kit.",
+  ],
+};
+
+function generateLook(genre) {
+  return pick(LOOK_TEMPLATES[genre] || LOOK_TEMPLATES['post-punk']);
+}
+
+// ---- Album Name Generator ----
+const ALBUM_NAMES = {
+  single: ['Meridian','Undertow','Wreckage','Ceremony','Hospice','Blueberry','Diorama','Yanqui','Antidote','Carousel','Fluorescent','Phosphene','Almanac','Departure','Signals','Broadcast','Vertigo','Silhouette','Perennial','Overture','Transmission','Nocturne','Daybreak'],
+  theAdjNoun: [
+    ['Beautiful','Erased','Midnight','Cold','Bright','Quiet','Burning','Forgotten','Last','Silver','Empty','Broken','Electric','Distant','Final'],
+    ['Letdown','Tapes','Organ Fight','Eleven','Lights','Revolution','Hours','Evidence','Dance','Broadcast','Apartment','Translation','Architecture','Frequency']
+  ],
+  nounForNoun: [
+    ['Hymns','Songs','Anthems','Letters','Postcards','Instructions','Blueprints','Recipes','Remedies','Prayers','Lullabies','Dirges','Eulogies'],
+    ['Parking Lots','Dentists','the Already Defeated','Strangers','Empty Rooms','Broken Elevators','Former Friends','the Recently Unemployed','Nobody in Particular','Sleepless Cities','Disappearing Acts']
+  ],
+  phrases: ['Is This It','Turn On the Bright Lights','You Forgot It in People','Sound of Silver','Plans','Funeral','In the Aeroplane Over the Sea','Set Yourself on Fire','I Can Hear the Heart Beating as One','Give Up','The Moon and Antarctica','Either/Or','Kill the Moonlight','Apologies to the Queen Mary','Lifted','Fox Confessor Brings the Flood','Return to Cookie Mountain','Silent Alarm','Antics','Hot Fuss'],
+};
+
+function generateAlbumName() {
+  const type = pick(['single','theAdjNoun','nounForNoun','phrases']);
+  switch (type) {
+    case 'single': return pick(ALBUM_NAMES.single);
+    case 'theAdjNoun': return 'The ' + pick(ALBUM_NAMES.theAdjNoun[0]) + ' ' + pick(ALBUM_NAMES.theAdjNoun[1]);
+    case 'nounForNoun': return pick(ALBUM_NAMES.nounForNoun[0]) + ' for ' + pick(ALBUM_NAMES.nounForNoun[1]);
+    case 'phrases': return pick(ALBUM_NAMES.phrases);
+  }
+}
+
+// ---- Album Art Generator (CSS) ----
+function generateAlbumArtCSS(genre, albumTitle) {
+  const seed = albumTitle.split('').reduce((a, c) => ((a << 5) - a) + c.charCodeAt(0), 0);
+  const r = () => { const x = Math.sin(seed * 9301 + 49297) % 1; return Math.abs(x); };
+  const hue1 = Math.abs(seed % 360);
+  const hue2 = (hue1 + 120 + (seed % 60)) % 360;
+  const hue3 = (hue1 + 240 + (seed % 40)) % 360;
+
+  const palettes = {
+    'post-punk': { bg: '#111', fg: `hsl(${hue1}, 10%, 85%)`, accent: `hsl(${hue2}, 60%, 45%)` },
+    'indie-folk': { bg: `hsl(${30 + hue1 % 30}, 40%, 75%)`, fg: `hsl(${20 + hue1 % 20}, 50%, 35%)`, accent: `hsl(${hue2}, 30%, 55%)` },
+    'shoegaze': { bg: `hsl(${hue1}, 40%, 80%)`, fg: `hsl(${hue2}, 50%, 70%)`, accent: `hsl(${hue3}, 30%, 85%)` },
+    'garage': { bg: `hsl(${hue1}, 70%, 50%)`, fg: '#111', accent: `hsl(${hue2}, 80%, 55%)` },
+    'art-rock': { bg: `hsl(${hue1}, 30%, 25%)`, fg: `hsl(${hue2}, 60%, 65%)`, accent: `hsl(${hue3}, 50%, 50%)` },
+    'lo-fi': { bg: `hsl(${40 + hue1 % 20}, 20%, 80%)`, fg: `hsl(${hue1}, 15%, 50%)`, accent: `hsl(${hue2}, 25%, 65%)` },
+    'dance-punk': { bg: `hsl(${hue1}, 80%, 55%)`, fg: '#fff', accent: `hsl(${hue2}, 90%, 60%)` },
+  };
+
+  const pal = palettes[genre] || palettes['post-punk'];
+  let style = `background: ${pal.bg};`;
+
+  switch (genre) {
+    case 'post-punk':
+      // Stark geometric lines
+      style += `background: linear-gradient(${45 + seed%90}deg, ${pal.bg} 40%, ${pal.accent} 40%, ${pal.accent} 42%, ${pal.bg} 42%, ${pal.bg} 60%, ${pal.fg} 60%, ${pal.fg} 61%, ${pal.bg} 61%);`;
+      break;
+    case 'indie-folk':
+      // Warm organic circles
+      style += `background: radial-gradient(circle at ${30+seed%40}% ${30+seed%40}%, ${pal.fg} 0%, ${pal.fg} ${15+seed%10}%, transparent ${15+seed%10+1}%), radial-gradient(circle at ${60+seed%30}% ${50+seed%30}%, ${pal.accent} 0%, ${pal.accent} ${10+seed%8}%, transparent ${10+seed%8+1}%), ${pal.bg};`;
+      break;
+    case 'shoegaze':
+      // Blurred pastel gradients
+      style += `background: linear-gradient(${seed%180}deg, ${pal.bg}, ${pal.fg}, ${pal.accent});`;
+      break;
+    case 'garage':
+      // Bold rough blocks
+      style += `background: linear-gradient(${seed%45}deg, ${pal.bg} 0%, ${pal.bg} 50%, ${pal.accent} 50%, ${pal.accent} 100%); border: 3px solid ${pal.fg};`;
+      break;
+    case 'art-rock':
+      // Complex layered shapes
+      style += `background: conic-gradient(from ${seed%360}deg at ${40+seed%20}% ${40+seed%20}%, ${pal.bg}, ${pal.fg}, ${pal.accent}, ${pal.bg});`;
+      break;
+    case 'lo-fi':
+      // Simple, faded, off-center
+      style += `background: ${pal.bg}; box-shadow: inset ${-20+seed%40}px ${-15+seed%30}px 0 ${pal.fg}, inset ${10+seed%20}px ${10+seed%15}px 0 ${pal.accent};`;
+      break;
+    case 'dance-punk':
+      // Neon angular bold
+      style += `background: repeating-linear-gradient(${seed%90+45}deg, ${pal.bg}, ${pal.bg} 10px, ${pal.accent} 10px, ${pal.accent} 12px);`;
+      break;
+  }
+
+  return style;
+}
+
+// ---- Pitchfork Review Generator ----
+const REVIEW_TEMPLATES = {
+  bnm: [
+    "[BAND] has crafted something that feels less like an album and more like a weather system. [ALBUM] arrives with the quiet confidence of a band who knows exactly what they're doing, even when -- especially when -- they sound like they don't. Best New Music.",
+    "If you pressed your ear against the floorboards of a Williamsburg loft in [YEAR], this is what you'd hear echoing up from the basement. [ALBUM] is the sound of a city that hasn't yet realized it's being gentrified. Best New Music.",
+    "There's a moment on track four where [BAND] does something so casually transcendent that you have to check if your headphones are broken or if music has simply gotten better. It's the latter. Best New Music.",
+    "What [BAND] has done here shouldn't work. [ALBUM] is too ambitious, too messy, too much. And yet it does work, brilliantly, like a Rube Goldberg machine that somehow builds a cathedral. Best New Music.",
+    "This is the record [BAND] was always threatening to make -- the one that turns casual listeners into evangelists and skeptics into grudging admirers. [ALBUM] is a masterclass in knowing exactly when to hold back and when to let everything burn. Best New Music.",
+  ],
+  good: [
+    "[ALBUM] is the kind of record that sounds better the third time, which is either a testament to its depth or a warning about Stockholm syndrome. We'll go with depth.",
+    "[BAND] has made an album that your coolest friend will casually mention they've been listening to. You will pretend you already knew about it.",
+    "Not every song here earns its runtime, but the ones that do earn it so hard that the weaker tracks function as necessary emotional palate cleansers.",
+    "There are moments on [ALBUM] where [BAND] reaches for something genuinely transcendent. They don't always get there, but the reaching itself is worth the price of admission.",
+    "[BAND] has figured out how to sound both effortless and meticulous, which is the indie-rock equivalent of a perfectly tied half-Windsor knot.",
+    "The production on [ALBUM] walks the tightrope between polished and raw with the kind of balance that suggests someone in the studio knew exactly what they were doing, even if they'll never admit it.",
+  ],
+  mid: [
+    "[BAND] seems to believe that sincerity alone constitutes artistic merit. [ALBUM] is competent without being compelling, like a cover letter that got the interview but not the job.",
+    "There's a version of [ALBUM] that would be devastating. This isn't it, but you can hear it trying, and the effort is both admirable and slightly exhausting.",
+    "The songs here range from 'pretty good' to 'I forgot this was playing,' which in this economy might be enough.",
+    "[ALBUM] is the musical equivalent of a shrug -- not dismissive, exactly, but not committed enough to leave an impression. It's fine. That's the problem.",
+    "[BAND] knows how to write a hook, they just seem reluctant to commit to one. [ALBUM] is full of moments that almost become great before retreating to safety.",
+    "You can hear the influences on [ALBUM] so clearly that it occasionally sounds less like an album and more like a well-curated playlist of bands [BAND] likes.",
+  ],
+  poor: [
+    "[BAND] has made an album that answers the question nobody asked: what if music was fine? Not bad, not good, just... present. Like elevator music for people who shop at vintage stores.",
+    "One gets the sense that [BAND] recorded [ALBUM] in a single afternoon, which would be forgivable if the afternoon had been longer.",
+    "[ALBUM] sounds like it was made by a band who read about the genre in a magazine rather than lived it. The signifiers are all correct. The feeling is absent.",
+    "There's a thin line between 'deliberately lo-fi' and 'lazy,' and [BAND] doesn't so much walk it as stumble across it repeatedly on [ALBUM].",
+  ],
+  terrible: [
+    "[ALBUM] is what happens when a band confuses 'lo-fi' with 'no effort.' The tape hiss is doing more creative work than the musicians.",
+    "We've heard worse, but only at open mic nights and in dreams where you show up to school without pants.",
+    "[BAND] has managed the rare feat of making an album that's both forgettable and irritating. [ALBUM] sounds like it was recorded in a hurry by people who had somewhere better to be.",
+    "If [ALBUM] were a meal, it would be lukewarm tap water served in a dirty glass. The glass has a chip in it. You cut your lip.",
+  ],
+};
+
+function generateReview(band, album, score) {
+  let pool;
+  if (score >= 8.5) pool = 'bnm';
+  else if (score >= 7.0) pool = 'good';
+  else if (score >= 5.0) pool = 'mid';
+  else if (score >= 3.0) pool = 'poor';
+  else pool = 'terrible';
+
+  let text = pick(REVIEW_TEMPLATES[pool]);
+  const year = getYear();
+  text = text.replace(/\[BAND\]/g, band.name);
+  text = text.replace(/\[ALBUM\]/g, '<i>' + album.name + '</i>');
+  text = text.replace(/\[YEAR\]/g, year);
+  return text;
+}
+
+// ---- Drama Events ----
+const DRAMA_EVENTS = [
+  { text: "[BAND]'s guitarist has started a side project called [SIDENAME]. They insist it won't affect the band.", effect: (band) => { band.morale -= 5; return 'Morale -5'; } },
+  { text: "The bassist and the drummer of [BAND] are dating. The guitarist found out via MySpace. Things are tense.", effect: (band) => { band.drama += 1; band.morale -= 8; return 'Morale -8, Drama +1'; } },
+  { text: "[BAND] got arrested at SXSW for 'aggressive loitering.' Bail is $500.", effect: (band, state) => { state.budget -= 500; state.hype += 5; return '-$500, Hype +5'; }, cost: 500 },
+  { text: "[BAND] refuses to play tonight because the venue 'doesn't have the right energy.' The venue is the Bowery Ballroom.", effect: (band) => { band.morale -= 10; return 'Morale -10'; } },
+  { text: "The lead singer of [BAND] has gone vegan and is insisting all merch be printed on hemp. Costs are up 40%.", effect: (band, state) => { state.budget -= 200; return '-$200'; }, cost: 200 },
+  { text: "[BAND]'s new album art is just a blank white square. They say it represents 'the void of capitalism.' The printer says it represents 'a waste of my time.'", effect: (band) => { band.ego += 1; return 'Ego +1'; } },
+  { text: "A music blog called [BAND] 'the next Arcade Fire.' [BAND] is furious. They wanted to be called 'the next Pavement.'", effect: (band, state) => { state.hype += 3; band.morale -= 5; return 'Hype +3, Morale -5'; } },
+  { text: "[BAND]'s drummer has discovered ayahuasca. Rehearsals will be 'different' from now on.", effect: (band) => { band.energy = clamp(band.energy - 1, 1, 10); band.talent = clamp(band.talent + 1, 1, 10); return 'Energy -1, Talent +1'; } },
+  { text: "Two of your bands started a fistfight at a label showcase. Pitchfork was there. They gave the fight an 8.3.", effect: (band, state) => { state.hype += 8; state.credibility -= 3; return 'Hype +8, Cred -3'; } },
+  { text: "[BAND] wants creative control over their album art. They want it to be a photo of a dead pigeon they found. 'It's about gentrification.'", effect: (band) => { band.ego += 1; band.authenticity = clamp(band.authenticity + 1, 1, 10); return 'Ego +1, Authenticity +1'; } },
+  { text: "A major label A&R guy was spotted at your showcase. Your bands are simultaneously excited and disgusted.", effect: (band, state) => { state.hype += 4; return 'Hype +4'; } },
+  { text: "[BAND]'s van broke down in Ohio. They're demanding you buy them a new one. In Ohio.", effect: (band, state) => { state.budget -= 300; band.morale -= 5; return '-$300, Morale -5'; }, cost: 300 },
+  { text: "Your intern accidentally sent the wrong master to the pressing plant. 500 copies of the latest album now have the tracks in reverse order. Some bloggers think it's intentional and love it.", effect: (band, state) => { state.hype += 5; state.credibility += 2; return 'Hype +5, Cred +2'; } },
+  { text: "The singer of [BAND] wants to change the band's name to something 'more authentic.' Their suggestion: a single umlaut character.", effect: (band) => { band.ego += 2; band.morale -= 3; return 'Ego +2, Morale -3'; } },
+  { text: "[BAND] has started a Twitter beef with another band on your label. Both are demanding you take sides.", effect: (band, state) => { state.hype += 3; band.morale -= 7; return 'Hype +3, Morale -7'; } },
+  { text: "A fan got a tattoo of your label's logo. It's misspelled.", effect: (band, state) => { state.hype += 2; return 'Hype +2'; } },
+  { text: "[BAND] insists on recording their new album entirely in a forest. 'The reverb is natural,' they say.", effect: (band) => { band.authenticity = clamp(band.authenticity + 1, 1, 10); band.ego += 1; return 'Authenticity +1, Ego +1'; } },
+  { text: "[BAND]'s rider now includes 'one Polaroid camera, pre-loaded' and 'a copy of Sartre's Being and Nothingness.'", effect: (band) => { band.ego += 1; return 'Ego +1'; } },
+  { text: "A music journalist is writing a profile of your label. They want to call it 'The Last Honest Label in Brooklyn.' You're not sure if that's a compliment.", effect: (band, state) => { state.credibility += 5; state.hype += 3; return 'Cred +5, Hype +3'; } },
+  { text: "[BAND] wants to release a limited edition vinyl on colored wax. It costs 4x more. They say 'vinyl heads will pay anything.'", effect: (band, state) => { state.budget -= 400; state.credibility += 3; state.hype += 2; return '-$400, Cred +3, Hype +2'; }, cost: 400 },
+  { text: "[BAND]'s lead singer has been seen hanging out with a member of The Strokes. Nobody knows what this means, but everyone has feelings about it.", effect: (band, state) => { state.hype += 6; return 'Hype +6'; } },
+  { text: "Someone reviewed [BAND]'s live show on a blog: 'Imagine if Joy Division had a sense of humor. Actually, don't.'", effect: (band, state) => { state.hype += 2; return 'Hype +2'; } },
+  { text: "[BAND] played an unannounced set in a laundromat. The dryers provided percussion. Three people were there. One was a photographer.", effect: (band, state) => { state.credibility += 4; state.hype += 2; return 'Cred +4, Hype +2'; } },
+  { text: "[BAND]'s merch guy quit because 'the energy was off.' He took 30 t-shirts with him.", effect: (band, state) => { state.budget -= 150; return '-$150'; }, cost: 150 },
+];
+
+// ---- Industry Offers ----
+const INDUSTRY_OFFERS = [
+  {
+    title: "Major Label Buyout",
+    getText: (state, band) => `Interscope wants to acquire your label for $${state.budget * 5}. Your roster gets marketing budgets. Your soul gets... flexible.`,
+    accept: (state, band) => { const payout = state.budget * 5; state.budget += payout; state.credibility -= 25; state.hype += 20; return `+$${payout}, Cred -25, Hype +20`; },
+    decline: (state) => { state.credibility += 5; return 'Cred +5 (stayed indie)'; },
+  },
+  {
+    title: "Sync Deal",
+    getText: (state, band) => `A car brand wants ${band ? band.name + "'s" : "your band's"} song in a commercial. $5,000. Your band's credibility may not survive.`,
+    accept: (state, band) => { state.budget += 5000; state.credibility -= 8; if (band) band.morale -= 15; return '+$5,000, Cred -8'; },
+    decline: (state) => { state.credibility += 3; return 'Cred +3'; },
+  },
+  {
+    title: "PBR Sponsorship",
+    getText: () => `$1,500/month to be their 'official label of authentic taste.' Yes, the irony is part of the deal.`,
+    accept: (state) => { state.budget += 1500; state.credibility -= 5; state.hype += 3; return '+$1,500, Cred -5, Hype +3'; },
+    decline: (state) => { state.credibility += 2; return 'Cred +2'; },
+  },
+  {
+    title: "American Apparel Collab",
+    getText: () => `They want your bands in their ads. You get $3,000 and a lifetime supply of deep-V t-shirts.`,
+    accept: (state) => { state.budget += 3000; state.credibility -= 6; state.hype += 5; return '+$3,000, Cred -6, Hype +5'; },
+    decline: (state) => { state.credibility += 2; return 'Cred +2'; },
+  },
+  {
+    title: "Converse Deal",
+    getText: () => `Every band on your roster gets free shoes. You get $2,000. It's actually kind of cool?`,
+    accept: (state) => { state.budget += 2000; state.credibility -= 2; state.hype += 3; state.roster.forEach(b => b.morale = clamp(b.morale + 5, 0, 100)); return '+$2,000, Cred -2, Hype +3, All morale +5'; },
+    decline: (state) => { state.credibility += 1; return 'Cred +1'; },
+  },
+  {
+    title: "Festival Headliner",
+    getText: (state, band) => `Coachella wants ${band ? band.name : "your biggest band"} for $15,000. But it's Coachella.`,
+    accept: (state, band) => { state.budget += 15000; state.credibility -= 10; state.hype += 25; if (band) band.fanBase += 500; return '+$15,000, Cred -10, Hype +25'; },
+    decline: (state) => { state.credibility += 5; return 'Cred +5'; },
+  },
+  {
+    title: "Movie Soundtrack",
+    getText: () => `A Zach Braff movie wants to license 3 songs. $8,000. Could be the next Garden State moment.`,
+    accept: (state) => { state.budget += 8000; state.credibility -= 3; state.hype += 12; return '+$8,000, Cred -3, Hype +12'; },
+    decline: (state) => { state.credibility += 2; return 'Cred +2'; },
+  },
+  {
+    title: "Vice Magazine Feature",
+    getText: () => `They'll do a 10-page spread on your label. Free. But the photographer insists on shooting everything in a laundromat.`,
+    accept: (state) => { state.hype += 10; state.credibility += 3; return 'Hype +10, Cred +3'; },
+    decline: (state) => { return 'No effect'; },
+  },
+  {
+    title: "Distribution Deal",
+    getText: () => `Merge Records offers distribution. 30% cut but your albums hit every indie record store in America.`,
+    accept: (state) => { state.budget += 2000; state.credibility += 8; state.hype += 8; return '+$2,000, Cred +8, Hype +8'; },
+    decline: (state) => { return 'No effect'; },
+  },
+  {
+    title: "Blog Partnership",
+    getText: () => `Stereogum wants to 'partner' with your label for exclusive premieres. Free press but you lose some independence.`,
+    accept: (state) => { state.hype += 8; state.credibility -= 2; return 'Hype +8, Cred -2'; },
+    decline: (state) => { state.credibility += 1; return 'Cred +1'; },
+  },
+];
+
+// ---- Game State ----
+let state = {};
+let audioCtx = null;
+let analyser = null;
+let vizAnimFrame = null;
+let selectedBandIndex = -1;
+let currentAction = null; // tracks what action panel is showing
+
+function getYear() { return 2001 + Math.floor(state.month / 12); }
+function getMonthName() { return MONTHS[state.month % 12]; }
+function getDateStr() { return getMonthName() + ' ' + getYear(); }
+function getCurrentMonthIndex() { return (state.month % 12) + 1; } // 1-12
+
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    MusicEngine.init(audioCtx);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 64;
+    analyser.connect(audioCtx.destination);
+    window._gameAnalyser = analyser;
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+// ---- Visualizer ----
+function initVisualizer() {
+  const vizEl = document.getElementById('visualizer');
+  vizEl.innerHTML = '';
+  for (let i = 0; i < 24; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'viz-bar';
+    bar.style.height = '2px';
+    vizEl.appendChild(bar);
+  }
+}
+
+function updateVisualizer() {
+  if (!analyser || !MusicEngine.isPlaying()) {
+    if (vizAnimFrame) cancelAnimationFrame(vizAnimFrame);
+    vizAnimFrame = null;
+    // Reset bars
+    const bars = document.querySelectorAll('.viz-bar');
+    bars.forEach(b => b.style.height = '2px');
+    return;
+  }
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(data);
+  const bars = document.querySelectorAll('.viz-bar');
+  const step = Math.floor(data.length / bars.length);
+  bars.forEach((bar, i) => {
+    const val = data[i * step] || 0;
+    bar.style.height = Math.max(2, val / 255 * 24) + 'px';
+  });
+  vizAnimFrame = requestAnimationFrame(updateVisualizer);
+}
+
+function playBandMusic(band) {
+  initAudio();
+  const tempoRange = GENRE_TEMPOS[band.genre] || [120, 140];
+  const tempo = tempoRange[0] + Math.floor(Math.random() * (tempoRange[1] - tempoRange[0]));
+  const params = {
+    genre: band.genre,
+    talent: band.talent,
+    key: band.musicParams ? band.musicParams.key : pick(KEYS),
+    tempo: tempo,
+    energy: band.energy,
+    name: band.name,
+  };
+
+  const duration = MusicEngine.playBand(params);
+
+  // Show now playing bar
+  const np = document.getElementById('now-playing');
+  np.style.display = 'flex';
+  document.getElementById('np-track-name').textContent = band.name;
+  document.getElementById('np-genre').textContent = band.genre;
+
+  // Set visualizer bar color to genre
+  const color = GENRE_COLORS[band.genre] || '#7A8B6F';
+  document.querySelectorAll('.viz-bar').forEach(b => b.style.background = color);
+
+  // Start visualizer
+  if (vizAnimFrame) cancelAnimationFrame(vizAnimFrame);
+  vizAnimFrame = requestAnimationFrame(updateVisualizer);
+
+  window._onSongEnd = () => {
+    document.getElementById('now-playing').style.display = 'none';
+    if (vizAnimFrame) cancelAnimationFrame(vizAnimFrame);
+  };
+}
+
+function stopMusic() {
+  MusicEngine.stop();
+  document.getElementById('now-playing').style.display = 'none';
+  if (vizAnimFrame) cancelAnimationFrame(vizAnimFrame);
+}
+
+// ---- UI Rendering ----
+function renderAll() {
+  renderHeader();
+  renderResources();
+  renderRoster();
+  renderActionButtons();
+}
+
+function renderHeader() {
+  document.getElementById('header-label-name').textContent = state.labelName;
+  document.getElementById('header-date').textContent = getDateStr();
+
+  const actionsEl = document.getElementById('actions-display');
+  let html = '<span>Actions:</span>';
+  for (let i = 0; i < 3; i++) {
+    html += `<div class="action-dot ${i < state.actionsLeft ? '' : 'spent'}"></div>`;
+  }
+  actionsEl.innerHTML = html;
+}
+
+function renderResources() {
+  document.getElementById('budget-val').textContent = '$' + state.budget.toLocaleString();
+  document.getElementById('cred-val').textContent = state.credibility;
+  document.getElementById('hype-val').textContent = state.hype;
+
+  const maxBudget = 50000;
+  document.getElementById('budget-bar').style.width = clamp(state.budget / maxBudget * 100, 0, 100) + '%';
+  document.getElementById('cred-bar').style.width = clamp(state.credibility, 0, 100) + '%';
+  document.getElementById('hype-bar').style.width = clamp(state.hype, 0, 100) + '%';
+}
+
+function renderRoster() {
+  const el = document.getElementById('roster-list');
+  let html = '';
+  for (let i = 0; i < 5; i++) {
+    if (i < state.roster.length) {
+      const band = state.roster[i];
+      const stars = Array(Math.min(band.talent, 10)).fill(0).map((_, j) => j < Math.round(band.talent / 2) ? '*' : '').join('');
+      const starStr = '';
+      for (let s = 0; s < 5; s++) {
+        starStr;
+      }
+      const trendVal = getTrendValue(band.genre);
+      const trendClass = trendVal >= 0.8 ? 'trend-hot' : trendVal >= 0.5 ? 'trend-warm' : trendVal >= 0.3 ? 'trend-cool' : 'trend-cold';
+
+      html += `<div class="band-card ${i === selectedBandIndex ? 'selected' : ''}" onclick="selectBand(${i})">
+        <div class="band-name">${band.name}</div>
+        <div class="band-genre">${band.genre} <span class="trend-indicator ${trendClass}" title="Trend: ${Math.round(trendVal*100)}%"></span></div>
+        <div class="band-stars">${renderStars(band.talent)}</div>
+        <div class="band-morale">Morale</div>
+        <div class="morale-bar"><div class="morale-fill" style="width:${band.morale}%; background:${band.morale > 50 ? 'var(--sage)' : band.morale > 25 ? 'var(--mustard)' : 'var(--faded-red)'}"></div></div>
+        <div style="font-size:0.65rem; color:#888; margin-top:2px;">Fans: ${band.fanBase} | Albums: ${band.albums.length}</div>
+      </div>`;
+    } else {
+      html += `<div class="empty-slot">--- empty slot ---</div>`;
+    }
+  }
+  el.innerHTML = html;
+}
+
+function renderStars(talent) {
+  const full = Math.round(talent / 2);
+  let s = '';
+  for (let i = 0; i < 5; i++) s += i < full ? '\u2605' : '\u2606';
+  return s;
+}
+
+function getTrendValue(genre) {
+  const year = getYear();
+  return (trends[year] && trends[year][genre]) || 0.3;
+}
+
+function renderActionButtons() {
+  const hasBands = state.roster.length > 0;
+  document.getElementById('btn-record').disabled = !hasBands;
+  document.getElementById('btn-book').disabled = !hasBands;
+  document.getElementById('btn-promote').disabled = !hasBands;
+}
+
+function selectBand(index) {
+  selectedBandIndex = index;
+  renderRoster();
+  // If we're in a mode that needs band selection, update
+  if (currentAction === 'record-select' || currentAction === 'book-select' || currentAction === 'promote-select') {
+    if (currentAction === 'record-select') showRecordOptions();
+    else if (currentAction === 'book-select') showBookOptions();
+    else if (currentAction === 'promote-select') showPromoteOptions();
+  }
+}
+
+function setActionPanel(title, html) {
+  document.getElementById('action-panel-title').textContent = title;
+  document.getElementById('action-content').innerHTML = html;
+}
+
+function addHistory(text) {
+  state.history.push({ date: getDateStr(), text });
+  const el = document.getElementById('history-log');
+  const entry = document.createElement('div');
+  entry.className = 'history-entry';
+  entry.innerHTML = `<span class="h-date">${getDateStr()}</span> ${text}`;
+  el.insertBefore(entry, el.firstChild);
+}
+
+function useAction() {
+  if (state.actionsLeft <= 0) return false;
+  state.actionsLeft--;
+  renderHeader();
+  return true;
+}
+
+// ---- Modal ----
+function showModal(title, body, buttons) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = body;
+  const btnEl = document.getElementById('modal-buttons');
+  btnEl.innerHTML = '';
+  buttons.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'btn ' + (b.class || '');
+    btn.textContent = b.label;
+    btn.onclick = () => {
+      document.getElementById('modal-overlay').classList.remove('active');
+      if (b.action) b.action();
+    };
+    btnEl.appendChild(btn);
+  });
+  document.getElementById('modal-overlay').classList.add('active');
+}
+
+// ---- Generate Band ----
+function generateBand() {
+  const genre = pick(GENRES);
+  const talent = randInt(3, 10);
+  const energy = randInt(3, 10);
+  return {
+    name: generateBandName(),
+    genre: genre,
+    talent: talent,
+    ego: randInt(1, 10),
+    authenticity: randInt(4, 10),
+    drama: randInt(1, 10),
+    energy: energy,
+    look: generateLook(genre),
+    musicParams: { genre, key: pick(KEYS), tempo: randInt(GENRE_TEMPOS[genre][0], GENRE_TEMPOS[genre][1]), energy, talent, name: '' },
+    albums: [],
+    morale: 70,
+    fanBase: randInt(0, 50),
+  };
+}
+
+function getSigningCost(band) {
+  return 500 + (band.talent - 3) * 200;
+}
+
+// ---- Actions ----
+
+// SCOUT
+function doScout() {
+  if (state.actionsLeft <= 0) { showModal('No Actions Left', 'You have no actions left this month. Advance to the next month.', [{ label: 'OK' }]); return; }
+  if (state.roster.length >= 5) { showModal('Roster Full', 'You already have 5 bands. Drop someone first or just enjoy the chaos.', [{ label: 'OK' }]); return; }
+
+  currentAction = 'scout';
+  const candidates = [generateBand(), generateBand(), generateBand()];
+  // Ensure unique names
+  const usedNames = new Set(state.roster.map(b => b.name));
+  candidates.forEach(c => {
+    while (usedNames.has(c.name)) { c.name = generateBandName(); }
+    usedNames.add(c.name);
+    c.musicParams.name = c.name;
+  });
+
+  let html = '<div style="margin-bottom:0.5rem; font-family:var(--font-mono); font-size:0.8rem; color:#666;">Three bands want your attention. Listen, then pick one to sign (or pass).</div>';
+
+  candidates.forEach((band, i) => {
+    const cost = getSigningCost(band);
+    const trendVal = getTrendValue(band.genre);
+    const trendLabel = trendVal >= 0.8 ? 'HOT' : trendVal >= 0.5 ? 'warm' : trendVal >= 0.3 ? 'cool' : 'cold';
+    const rot = (i - 1) * 1.2;
+
+    html += `<div class="scout-card" style="--rot:${rot}deg">
+      <div class="band-photo genre-color-${band.genre.replace('-','-')}" style="background:${getGenreGradient(band.genre)};"></div>
+      <div class="band-info">
+        <div style="font-weight:800; font-size:0.95rem; text-transform:uppercase;">${band.name}</div>
+        <div style="font-family:var(--font-mono); font-size:0.75rem; color:var(--denim);">${band.genre} <span style="font-size:0.65rem; color:${trendVal >= 0.7 ? 'var(--faded-red)' : '#888'};">[${trendLabel}]</span></div>
+        <div class="band-stars">${renderStars(band.talent)} <span style="font-size:0.65rem; color:#888;">Energy: ${band.energy}/10</span></div>
+        <div class="look-desc">${band.look}</div>
+        <div class="cost-tag">Advance: $${cost}</div>
+        <div class="flex-row mt-1">
+          <button class="btn btn-small btn-play" onclick="previewBand(${i})">Listen</button>
+          <button class="btn btn-small" onclick="signBand(${i})" ${state.budget < cost ? 'disabled title="Not enough budget"' : ''}>Sign</button>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  html += `<button class="btn btn-small" onclick="passOnAll()" style="margin-top:0.5rem;">Pass on all</button>`;
+
+  setActionPanel('Scouting', html);
+  window._scoutCandidates = candidates;
+}
+
+function getGenreGradient(genre) {
+  const gradients = {
+    'post-punk': 'linear-gradient(135deg, #222 0%, #555 50%, #222 100%)',
+    'indie-folk': 'linear-gradient(135deg, #7A8B6F 0%, #C49B3F 100%)',
+    'shoegaze': 'linear-gradient(135deg, #b8a9c9 0%, #d4c5e2 50%, #e8ddf0 100%)',
+    'garage': 'linear-gradient(135deg, #B85450 0%, #C49B3F 100%)',
+    'art-rock': 'linear-gradient(135deg, #4A6B8A 0%, #C4858C 50%, #C49B3F 100%)',
+    'lo-fi': 'linear-gradient(135deg, #c9b99a 0%, #a39478 100%)',
+    'dance-punk': 'linear-gradient(135deg, #C4858C 0%, #ff6b9d 50%, #C49B3F 100%)',
+  };
+  return gradients[genre] || gradients['post-punk'];
+}
+
+function previewBand(idx) {
+  const band = window._scoutCandidates[idx];
+  if (band) playBandMusic(band);
+}
+
+function signBand(idx) {
+  const band = window._scoutCandidates[idx];
+  if (!band) return;
+  const cost = getSigningCost(band);
+  if (state.budget < cost) { showModal('Broke', "You can't afford this signing.", [{ label: 'OK' }]); return; }
+  if (state.roster.length >= 5) { showModal('Full', 'Your roster is full.', [{ label: 'OK' }]); return; }
+
+  if (!useAction()) return;
+  state.budget -= cost;
+  state.roster.push(band);
+  addHistory(`Signed ${band.name} (${band.genre}) for $${cost}`);
+  setActionPanel('Band Signed!', `<div class="event-card info"><b>${band.name}</b> has joined your label. Welcome to the family.<br><br><i>"${pick([
+    "We just want to make honest music and maybe pay rent.",
+    "We're not in this for the money. Which is good, because there isn't any.",
+    "Our influences are Pavement, Sonic Youth, and existential dread.",
+    "We promise to never play an encore. Encores are dishonest.",
+    "We're excited. Cautiously. Excitement is a little mainstream.",
+  ])}"</i></div>`);
+  renderAll();
+}
+
+function passOnAll() {
+  if (!useAction()) return;
+  addHistory('Scouted bands but passed on all three.');
+  setActionPanel("What's the Move?", '<div class="select-band-prompt">Choose an action below.</div>');
+  renderAll();
+}
+
+// RECORD
+function doRecord() {
+  if (state.actionsLeft <= 0) { showModal('No Actions', 'No actions left this month.', [{ label: 'OK' }]); return; }
+  if (state.roster.length === 0) { showModal('No Bands', 'Sign a band first.', [{ label: 'OK' }]); return; }
+
+  currentAction = 'record-select';
+  if (selectedBandIndex >= 0 && selectedBandIndex < state.roster.length) {
+    showRecordOptions();
+  } else {
+    setActionPanel('Record Album', '<div class="select-band-prompt">Select a band from your roster first.</div>');
+  }
+}
+
+function showRecordOptions() {
+  if (selectedBandIndex < 0 || selectedBandIndex >= state.roster.length) return;
+  const band = state.roster[selectedBandIndex];
+  currentAction = 'record-options';
+
+  let html = `<div style="margin-bottom:0.8rem;">Recording with <b>${band.name}</b> (${band.genre})</div>`;
+  html += `<div style="margin-bottom:0.5rem; font-family:var(--font-mono); font-size:0.8rem; color:#666;">Choose a production style:</div>`;
+
+  const options = [
+    { id: 'raw', name: 'Raw', cost: 500, desc: 'Recorded in a basement. Authentic but rough.', bonus: 0 },
+    { id: 'experimental', name: 'Experimental', cost: 1000, desc: 'Weird sounds, tape loops, found audio. Risky but rewarding.', bonus: 1 },
+    { id: 'polished', name: 'Polished', cost: 2000, desc: 'Professional studio. Clean. Maybe too clean for some.', bonus: 2 },
+  ];
+
+  options.forEach(opt => {
+    html += `<div class="production-option" onclick="recordAlbum('${opt.id}', ${opt.cost}, ${opt.bonus})" ${state.budget < opt.cost ? 'style="opacity:0.4; pointer-events:none;"' : ''}>
+      <div class="prod-name">${opt.name}</div>
+      <div class="prod-cost">$${opt.cost}</div>
+      <div class="prod-desc">${opt.desc}</div>
+    </div>`;
+  });
+
+  setActionPanel('Record Album', html);
+}
+
+function recordAlbum(style, cost, prodBonus) {
+  if (selectedBandIndex < 0) return;
+  if (state.budget < cost) return;
+  if (!useAction()) return;
+
+  const band = state.roster[selectedBandIndex];
+  state.budget -= cost;
+
+  const albumName = generateAlbumName();
+  const artCSS = generateAlbumArtCSS(band.genre, albumName);
+
+  // Calculate Pitchfork score
+  const trendVal = getTrendValue(band.genre);
+  const baseScore = band.talent * 0.6 + prodBonus * 0.2 * 10 + trendVal * 10 * 0.2;
+  const variance = (Math.random() - 0.5) * 3;
+  const experimentalBonus = style === 'experimental' ? (Math.random() > 0.5 ? 1.5 : -1) : 0;
+  const rawBonus = style === 'raw' ? (band.authenticity > 7 ? 0.5 : -0.5) : 0;
+  const polishedPenalty = style === 'polished' ? -0.3 : 0;
+  let finalScore = clamp(baseScore + variance + experimentalBonus + rawBonus + polishedPenalty, 0.0, 10.0);
+  finalScore = Math.round(finalScore * 10) / 10;
+
+  const album = {
+    name: albumName,
+    band: band.name,
+    bandIndex: selectedBandIndex,
+    genre: band.genre,
+    score: finalScore,
+    style: style,
+    month: state.month,
+    artCSS: artCSS,
+    isBNM: finalScore >= 8.5,
+  };
+
+  band.albums.push(album);
+  state.albums.push(album);
+
+  // Effects
+  const revenue = Math.round(finalScore * 100 + band.fanBase * 0.5);
+  state.budget += revenue;
+  band.fanBase += Math.round(finalScore * 20);
+
+  if (album.isBNM) {
+    state.credibility = clamp(state.credibility + 12, 0, 100);
+    state.hype = clamp(state.hype + 15, 0, 100);
+    band.morale = clamp(band.morale + 15, 0, 100);
+  } else if (finalScore >= 7.0) {
+    state.credibility = clamp(state.credibility + 5, 0, 100);
+    state.hype = clamp(state.hype + 6, 0, 100);
+    band.morale = clamp(band.morale + 8, 0, 100);
+  } else if (finalScore >= 5.0) {
+    state.hype = clamp(state.hype + 2, 0, 100);
+    band.morale = clamp(band.morale + 2, 0, 100);
+  } else {
+    state.credibility = clamp(state.credibility - 3, 0, 100);
+    band.morale = clamp(band.morale - 10, 0, 100);
+  }
+
+  // Generate review
+  const reviewText = generateReview(band, album, finalScore);
+  const scoreColor = finalScore >= 8.5 ? 'var(--sage)' : finalScore >= 7.0 ? 'var(--denim)' : finalScore >= 5.0 ? 'var(--mustard)' : 'var(--faded-red)';
+
+  let html = `<div class="flex-row" style="gap:1rem; align-items:flex-start;">
+    <div class="album-art album-reveal" style="${artCSS}"></div>
+    <div>
+      <div style="font-style:italic; font-size:1.1rem; font-weight:700;">${albumName}</div>
+      <div style="font-size:0.85rem; color:#666;">by ${band.name}</div>
+      <div style="font-family:var(--font-mono); font-size:0.75rem; color:#888; margin-top:0.2rem;">${style} production | Revenue: +$${revenue}</div>
+    </div>
+  </div>`;
+
+  // Review (50% chance, guaranteed for BNM or very low)
+  if (Math.random() < 0.5 || album.isBNM || finalScore < 3.0) {
+    html += `<div class="review-card">
+      <div style="margin-bottom:0.5rem;">
+        <span class="review-score" style="color:${scoreColor}">${finalScore.toFixed(1)}</span>
+        ${album.isBNM ? '<span class="bnm">Best New Music</span>' : ''}
+      </div>
+      <div>${reviewText}</div>
+      <div class="review-source">pitchforkmedia.com</div>
+    </div>`;
+  } else {
+    html += `<div style="font-family:var(--font-mono); font-size:0.8rem; color:#888; margin-top:0.8rem;">No major review coverage this time.</div>`;
+  }
+
+  setActionPanel('Album Released!', html);
+  addHistory(`Released "${albumName}" by ${band.name} (${finalScore.toFixed(1)}${album.isBNM ? ' BNM!' : ''})`);
+  renderAll();
+}
+
+// BOOK SHOW
+function doBookShow() {
+  if (state.actionsLeft <= 0) { showModal('No Actions', 'No actions left this month.', [{ label: 'OK' }]); return; }
+  if (state.roster.length === 0) { showModal('No Bands', 'Sign a band first.', [{ label: 'OK' }]); return; }
+
+  currentAction = 'book-select';
+  if (selectedBandIndex >= 0 && selectedBandIndex < state.roster.length) {
+    showBookOptions();
+  } else {
+    setActionPanel('Book Show', '<div class="select-band-prompt">Select a band from your roster first.</div>');
+  }
+}
+
+function showBookOptions() {
+  if (selectedBandIndex < 0 || selectedBandIndex >= state.roster.length) return;
+  const band = state.roster[selectedBandIndex];
+  currentAction = 'book-options';
+  const currentMonth = getCurrentMonthIndex();
+
+  let html = `<div style="margin-bottom:0.8rem;">Booking a show for <b>${band.name}</b></div>`;
+
+  const available = venues.filter(v => {
+    if (v.monthOnly && v.monthOnly !== currentMonth) return false;
+    if (state.hype < v.minHype) return false;
+    return true;
+  });
+
+  if (available.length === 0) {
+    html += '<div class="select-band-prompt">No venues available. Build more hype first.</div>';
+  } else {
+    available.forEach((v, i) => {
+      html += `<div class="venue-item">
+        <div>
+          <div class="venue-name">${v.name}</div>
+          <div class="venue-details">Cap: ${v.capacity} | Cred: ${v.credBonus > 0 ? '+' : ''}${v.credBonus} | Hype: +${v.hypeBonus}</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="venue-pay">$${v.pay}</div>
+          <button class="btn btn-small" onclick="bookVenue(${venues.indexOf(v)})">Book</button>
+        </div>
+      </div>`;
+    });
+  }
+
+  setActionPanel('Book Show', html);
+}
+
+function bookVenue(venueIdx) {
+  if (selectedBandIndex < 0) return;
+  if (!useAction()) return;
+
+  const band = state.roster[selectedBandIndex];
+  const venue = venues[venueIdx];
+
+  // Calculate show success
+  const energyFactor = band.energy / 10;
+  const moraleFactor = band.morale / 100;
+  const talentFactor = band.talent / 10;
+  const success = (energyFactor * 0.4 + moraleFactor * 0.3 + talentFactor * 0.3) + (Math.random() - 0.5) * 0.3;
+
+  let pay = venue.pay;
+  let credBonus = venue.credBonus;
+  let hypeBonus = venue.hypeBonus;
+
+  let resultText = '';
+  if (success > 0.75) {
+    pay = Math.round(pay * 1.3);
+    hypeBonus = Math.round(hypeBonus * 1.4);
+    resultText = pick([
+      `${band.name} absolutely destroyed ${venue.name}. The crowd was a living, breathing organism of sweat and devotion.`,
+      `The show was transcendent. Someone in the crowd was crying. Someone else was crowd-surfing. Same person.`,
+      `${band.name} played like their lives depended on it. Three people in the audience immediately started bands.`,
+      `Standing ovation at ${venue.name}. The bartender stopped pouring drinks to listen. That never happens.`,
+    ]);
+  } else if (success > 0.45) {
+    resultText = pick([
+      `Solid show at ${venue.name}. Not their best, not their worst. The merch table did okay.`,
+      `${band.name} played a good set. A few new fans, a few spilled beers. Standard Tuesday.`,
+      `Decent turnout at ${venue.name}. The sound guy actually got the monitors right for once.`,
+    ]);
+  } else {
+    pay = Math.round(pay * 0.5);
+    hypeBonus = Math.round(hypeBonus * 0.3);
+    credBonus = Math.round(credBonus * 0.5);
+    resultText = pick([
+      `${band.name} had an off night. The guitarist broke a string in the second song. The drummer was visibly annoyed.`,
+      `Sparse crowd at ${venue.name}. ${band.name} played to mostly bartenders and one very committed fan.`,
+      `The show was fine until the power went out during the encore. The acoustic improvisation did not go well.`,
+    ]);
+    band.morale = clamp(band.morale - 5, 0, 100);
+  }
+
+  state.budget += pay;
+  state.credibility = clamp(state.credibility + credBonus, 0, 100);
+  state.hype = clamp(state.hype + hypeBonus, 0, 100);
+  band.fanBase += Math.round(hypeBonus * 10);
+  band.morale = clamp(band.morale + (success > 0.6 ? 5 : -2), 0, 100);
+
+  let html = `<div class="event-card info">
+    <div style="font-weight:700; margin-bottom:0.3rem;">${band.name} @ ${venue.name}</div>
+    ${resultText}
+    <div style="margin-top:0.5rem; font-size:0.75rem; color:var(--sage);">
+      +$${pay} | Cred ${credBonus > 0 ? '+' : ''}${credBonus} | Hype +${hypeBonus}
+    </div>
+  </div>`;
+
+  setActionPanel('Show Result', html);
+  addHistory(`${band.name} played ${venue.name} (+$${pay})`);
+  renderAll();
+
+  // Play the band's music
+  playBandMusic(band);
+}
+
+// PROMOTE
+function doPromote() {
+  if (state.actionsLeft <= 0) { showModal('No Actions', 'No actions left this month.', [{ label: 'OK' }]); return; }
+  if (state.roster.length === 0) { showModal('No Bands', 'Sign a band first.', [{ label: 'OK' }]); return; }
+
+  currentAction = 'promote-select';
+  if (selectedBandIndex >= 0 && selectedBandIndex < state.roster.length) {
+    showPromoteOptions();
+  } else {
+    setActionPanel('Promote', '<div class="select-band-prompt">Select a band from your roster first.</div>');
+  }
+}
+
+function showPromoteOptions() {
+  if (selectedBandIndex < 0 || selectedBandIndex >= state.roster.length) return;
+  const band = state.roster[selectedBandIndex];
+  currentAction = 'promote-options';
+
+  const options = [
+    { id: 'flyers', name: 'Wheat-Paste Flyers', cost: 100, hype: 4, cred: 2, desc: 'Paper your neighborhood. The old-fashioned way.' },
+    { id: 'blog', name: 'Blog Outreach', cost: 200, hype: 6, cred: 1, desc: 'Email every music blog you can find. Most will ignore you.' },
+    { id: 'college', name: 'College Radio Push', cost: 300, hype: 5, cred: 4, desc: 'Send CDs to 50 college radio stations. Some will actually play them.' },
+    { id: 'nypress', name: 'NY Press Ad', cost: 500, hype: 8, cred: 3, desc: 'A quarter-page ad in the free weekly. Your mom will see it.' },
+    { id: 'zine', name: 'Zine Feature', cost: 150, hype: 3, cred: 5, desc: 'A two-page spread in a photocopied zine with a circulation of 200. Maximum credibility.' },
+    { id: 'myspace', name: 'MySpace Campaign', cost: 50, hype: 7, cred: -1, desc: 'Friend everyone. Bulletins. Top 8. Tom is proud of you.' },
+  ];
+
+  let html = `<div style="margin-bottom:0.8rem;">Promoting <b>${band.name}</b></div>`;
+  options.forEach(opt => {
+    html += `<div class="production-option" onclick="doPromotion('${opt.id}', ${opt.cost}, ${opt.hype}, ${opt.cred})" ${state.budget < opt.cost ? 'style="opacity:0.4; pointer-events:none;"' : ''}>
+      <div class="prod-name">${opt.name}</div>
+      <div class="prod-cost">$${opt.cost}</div>
+      <div class="prod-desc">${opt.desc}</div>
+      <div style="font-size:0.65rem; color:var(--denim); margin-top:0.2rem;">Hype +${opt.hype} | Cred ${opt.cred > 0 ? '+' : ''}${opt.cred}</div>
+    </div>`;
+  });
+
+  setActionPanel('Promote', html);
+}
+
+function doPromotion(type, cost, hypeGain, credGain) {
+  if (selectedBandIndex < 0) return;
+  if (state.budget < cost) return;
+  if (!useAction()) return;
+
+  const band = state.roster[selectedBandIndex];
+  state.budget -= cost;
+  state.hype = clamp(state.hype + hypeGain, 0, 100);
+  state.credibility = clamp(state.credibility + credGain, 0, 100);
+  band.fanBase += hypeGain * 5;
+
+  const messages = {
+    flyers: `You spent the night wheat-pasting flyers for ${band.name} across Williamsburg. Your hands are covered in glue. A cop asked what you were doing. You said "art."`,
+    blog: `You emailed 47 music blogs about ${band.name}. Three responded. One said "cool." One asked for a vinyl. One unsubscribed.`,
+    college: `50 college radio stations received ${band.name}'s CD. At least 12 of them will play it during the 3am slot.`,
+    nypress: `Your ad ran in the NY Press. It's right next to an ad for a psychic and a Brazilian steakhouse. The juxtaposition is somehow perfect.`,
+    zine: `The zine feature on ${band.name} is beautiful. Hand-drawn illustrations, thoughtful interview. 200 people will read it and 180 of them will start a label.`,
+    myspace: `${band.name} gained 400 MySpace friends overnight. Most of them are also bands. The bulletin you posted has been reposted twice. This is what success looks like in 200${getYear() - 2000}.`,
+  };
+
+  let html = `<div class="event-card info">${messages[type] || 'Promotion complete.'}</div>
+    <div style="font-family:var(--font-mono); font-size:0.8rem; color:#666; margin-top:0.5rem;">
+      -$${cost} | Hype +${hypeGain} | Cred ${credGain > 0 ? '+' : ''}${credGain}
+    </div>`;
+
+  setActionPanel('Promoted!', html);
+  addHistory(`Promoted ${band.name} (${type})`);
+  renderAll();
+}
+
+// DROP BAND (from roster panel click)
+function dropBand(idx) {
+  if (idx < 0 || idx >= state.roster.length) return;
+  const band = state.roster[idx];
+  showModal('Drop Band?', `Really drop <b>${band.name}</b> from your roster? This can't be undone.`, [
+    { label: 'Drop Them', class: 'btn-danger', action: () => {
+      addHistory(`Dropped ${band.name} from the roster.`);
+      state.roster.splice(idx, 1);
+      if (selectedBandIndex >= state.roster.length) selectedBandIndex = state.roster.length - 1;
+      renderAll();
+    }},
+    { label: 'Keep', action: () => {} },
+  ]);
+}
+
+// NEXT MONTH
+function nextMonth() {
+  state.month++;
+
+  // Hype decay
+  state.hype = clamp(state.hype - 3, 0, 100);
+
+  // Monthly costs
+  const monthlyCosts = 200 + state.roster.length * 100;
+  state.budget -= monthlyCosts;
+
+  // Morale changes based on ego/drama
+  state.roster.forEach(band => {
+    if (band.ego > 7) band.morale = clamp(band.morale - 3, 0, 100);
+    if (band.drama > 7 && Math.random() > 0.5) band.morale = clamp(band.morale - 5, 0, 100);
+    // Small natural morale recovery
+    band.morale = clamp(band.morale + 2, 0, 100);
+  });
+
+  // Reset actions
+  state.actionsLeft = 3;
+
+  // Check for game over
+  if (state.month >= 72) {
+    endGame();
+    return;
+  }
+
+  // Check for bankruptcy
+  if (state.budget < -2000) {
+    endGame(true);
+    return;
+  }
+
+  // Random events
+  if (state.roster.length > 0 && Math.random() < 0.4) {
+    triggerDramaEvent();
+  } else if (Math.random() < 0.15) {
+    triggerIndustryOffer();
+  } else {
+    // Year-change trend notification
+    if (state.month % 12 === 0) {
+      const year = getYear();
+      const hotGenres = Object.entries(trends[year] || {})
+        .filter(([g, v]) => v >= 0.7)
+        .map(([g]) => g);
+      if (hotGenres.length > 0) {
+        setActionPanel("What's Hot in " + year, `<div class="event-card info">
+          <b>Genre trends for ${year}:</b><br>
+          ${Object.entries(trends[year] || {}).map(([g, v]) => {
+            const label = v >= 0.8 ? 'HOT' : v >= 0.5 ? 'warm' : v >= 0.3 ? 'cool' : 'cold';
+            const color = v >= 0.8 ? 'var(--faded-red)' : v >= 0.5 ? 'var(--mustard)' : '#888';
+            return `<span style="color:${color}; font-weight:${v >= 0.7 ? '700' : '400'}">${g}: ${label}</span>`;
+          }).join(' | ')}
+        </div>`);
+      }
+    } else {
+      setActionPanel("What's the Move?", '<div class="select-band-prompt">Choose an action below.</div>');
+    }
+  }
+
+  // Auto-save
+  saveGame();
+
+  addHistory(`Advanced to ${getDateStr()}. Costs: -$${monthlyCosts}`);
+  renderAll();
+}
+
+function triggerDramaEvent() {
+  const band = pick(state.roster);
+  const event = pick(DRAMA_EVENTS);
+
+  // Check if we can afford cost-based events
+  if (event.cost && state.budget < event.cost) {
+    // Pick a different event without cost
+    const freeEvents = DRAMA_EVENTS.filter(e => !e.cost);
+    if (freeEvents.length === 0) return;
+    const altEvent = pick(freeEvents);
+    return showDramaEvent(band, altEvent);
+  }
+
+  showDramaEvent(band, event);
+}
+
+function showDramaEvent(band, event) {
+  let text = event.text.replace(/\[BAND\]/g, band.name);
+  text = text.replace(/\[SIDENAME\]/g, generateBandName());
+  const effectStr = event.effect(band, state);
+
+  let html = `<div class="event-card drama">
+    ${text}
+    <div style="margin-top:0.5rem; font-size:0.7rem; color:var(--faded-red);">${effectStr}</div>
+  </div>`;
+
+  setActionPanel('Drama!', html);
+  addHistory(`Drama: ${text.substring(0, 60)}...`);
+}
+
+function triggerIndustryOffer() {
+  const offer = pick(INDUSTRY_OFFERS);
+  const band = state.roster.length > 0 ? pick(state.roster) : null;
+  const text = offer.getText(state, band);
+
+  showModal(offer.title, text, [
+    { label: 'Accept', class: 'btn-play', action: () => {
+      const result = offer.accept(state, band);
+      addHistory(`Accepted: ${offer.title} (${result})`);
+      setActionPanel('Deal Done', `<div class="event-card offer">You accepted the ${offer.title}.<br><span style="font-size:0.75rem; color:var(--sage);">${result}</span></div>`);
+      renderAll();
+    }},
+    { label: 'Decline', action: () => {
+      const result = offer.decline(state);
+      addHistory(`Declined: ${offer.title} (${result})`);
+      setActionPanel('Stayed True', `<div class="event-card info">You turned down the ${offer.title}. Your integrity is intact.<br><span style="font-size:0.75rem; color:var(--denim);">${result}</span></div>`);
+      renderAll();
+    }},
+  ]);
+}
+
+// ---- End Game ----
+function endGame(bankrupt) {
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('end-screen').style.display = 'block';
+
+  const bnmCount = state.albums.filter(a => a.isBNM).length;
+  const avgScore = state.albums.length > 0 ? state.albums.reduce((s, a) => s + a.score, 0) / state.albums.length : 0;
+  const totalRevenue = state.budget;
+
+  // Calculate final score
+  let finalPoints = 0;
+  finalPoints += state.credibility * 2;
+  finalPoints += Math.max(0, state.budget) / 100;
+  finalPoints += bnmCount * 50;
+  finalPoints += state.roster.length * 10;
+  finalPoints += state.albums.length * 15;
+  finalPoints += avgScore * 10;
+  finalPoints += state.hype;
+
+  let rank;
+  if (bankrupt) rank = 'Bankrupt in Brooklyn';
+  else if (finalPoints < 100) rank = 'Sold Out';
+  else if (finalPoints < 200) rank = 'One-Hit Wonder';
+  else if (finalPoints < 350) rank = 'Indie Darling';
+  else if (finalPoints < 500) rank = 'The Next Sub Pop';
+  else rank = 'True Legend';
+
+  document.getElementById('final-rank').textContent = rank;
+
+  let statsHtml = '';
+  const stats = [
+    ['Label', state.labelName],
+    ['Final Budget', '$' + state.budget.toLocaleString()],
+    ['Credibility', state.credibility + '/100'],
+    ['Hype', state.hype + '/100'],
+    ['Total Albums', state.albums.length],
+    ['Best New Music', bnmCount],
+    ['Avg Pitchfork Score', avgScore.toFixed(1)],
+    ['Roster Size', state.roster.length + ' bands'],
+    ['Final Score', Math.round(finalPoints) + ' pts'],
+  ];
+  stats.forEach(([label, val]) => {
+    statsHtml += `<div class="final-stat"><span>${label}</span><span class="stat-val">${val}</span></div>`;
+  });
+  document.getElementById('final-stats').innerHTML = statsHtml;
+
+  // Album gallery
+  const galleryEl = document.getElementById('album-gallery');
+  galleryEl.innerHTML = '';
+  state.albums.forEach(album => {
+    const item = document.createElement('div');
+    item.className = 'album-gallery-item';
+    const scoreColor = album.score >= 8.5 ? 'var(--sage)' : album.score >= 7.0 ? 'var(--denim)' : album.score >= 5.0 ? 'var(--mustard)' : 'var(--faded-red)';
+    item.innerHTML = `
+      <div class="album-art" style="${album.artCSS}"></div>
+      <div class="album-title">${album.name}</div>
+      <div class="album-band">${album.band}</div>
+      <div class="album-score-tag" style="color:${scoreColor}">${album.score.toFixed(1)}${album.isBNM ? ' BNM' : ''}</div>
+    `;
+    galleryEl.appendChild(item);
+  });
+
+  // Save high score
+  saveHighScore(rank, finalPoints);
+}
+
+// ---- Save / Load ----
+function saveGame() {
+  try {
+    localStorage.setItem('matador-dreams-save', JSON.stringify(state));
+  } catch (e) {}
+}
+
+function loadGame() {
+  try {
+    const saved = localStorage.getItem('matador-dreams-save');
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return null;
+}
+
+function saveHighScore(rank, score) {
+  try {
+    const scores = JSON.parse(localStorage.getItem('matador-dreams-highscores') || '[]');
+    scores.push({ label: state.labelName, rank, score: Math.round(score), date: new Date().toISOString() });
+    scores.sort((a, b) => b.score - a.score);
+    localStorage.setItem('matador-dreams-highscores', JSON.stringify(scores.slice(0, 10)));
+  } catch (e) {}
+}
+
+// ---- Start Game ----
+function startGame() {
+  initAudio();
+  initVisualizer();
+
+  const labelName = document.getElementById('label-name-input').value.trim() || 'Trembling Ear Records';
+
+  state = {
+    month: 0,
+    budget: 5000,
+    credibility: 50,
+    hype: 20,
+    roster: [],
+    albums: [],
+    actionsLeft: 3,
+    history: [],
+    offers: [],
+    labelName: labelName,
+  };
+
+  selectedBandIndex = -1;
+  currentAction = null;
+
+  document.getElementById('title-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'block';
+  document.getElementById('history-log').innerHTML = '';
+
+  addHistory(`${labelName} opens its doors in Brooklyn.`);
+  renderAll();
+
+  // Show opening flavor text
+  setActionPanel('Welcome to Brooklyn, ' + getYear(), `<div class="event-card info">
+    It's January 2001. You've got $5,000, a phone full of booking agent numbers, and a burning conviction that the world needs more bands that sound like Joy Division crossed with Pavement.<br><br>
+    The Strokes just played Mercury Lounge. Interpol is rehearsing somewhere in the East Village. The internet is about to change everything, but nobody knows that yet.<br><br>
+    You have six years to build something real. Scout bands. Record albums. Book shows. Chase Pitchfork reviews. Resist the temptation to sell out. Or don't -- that's a strategy too.<br><br>
+    <b>3 actions per month. Use them wisely.</b>
+  </div>`);
+}
+
+// Check for saved game on load
+window.addEventListener('DOMContentLoaded', () => {
+  initVisualizer();
+
+  // Handle enter key on title screen
+  document.getElementById('label-name-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') startGame();
+  });
+
+  // Check for saved game
+  const saved = loadGame();
+  if (saved && saved.month > 0 && saved.month < 72) {
+    showModal('Continue?', `Found a saved game: <b>${saved.labelName}</b>, ${MONTHS[saved.month % 12]} ${2001 + Math.floor(saved.month / 12)}.`, [
+      { label: 'Continue', class: 'btn-play', action: () => {
+        initAudio();
+        state = saved;
+        document.getElementById('title-screen').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'block';
+        document.getElementById('history-log').innerHTML = '';
+        state.history.forEach(h => {
+          const entry = document.createElement('div');
+          entry.className = 'history-entry';
+          entry.innerHTML = `<span class="h-date">${h.date}</span> ${h.text}`;
+          document.getElementById('history-log').appendChild(entry);
+        });
+        renderAll();
+        setActionPanel("What's the Move?", '<div class="select-band-prompt">Welcome back. Choose an action below.</div>');
+      }},
+      { label: 'New Game', action: () => {
+        localStorage.removeItem('matador-dreams-save');
+      }},
+    ]);
+  }
+});
+</script>
+</body>
+</html>
