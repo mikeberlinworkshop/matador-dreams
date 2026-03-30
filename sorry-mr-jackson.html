@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sorry Mr. Jackson — Workshop Records</title>
+<meta property="og:title" content="Sorry Mr. Jackson — Workshop Records">
+<meta property="og:description" content="A song about CJ Jackson — Guild's voice, comms director, glue guy. They gilded the lily, then they cut the stem.">
+<meta property="og:type" content="music.song">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'Helvetica Neue', sans-serif; background: #F0EBE0; color: #1A1A1A; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
+.card { background: white; border-radius: 16px; padding: 2.5rem 2rem; max-width: 440px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,0.1); }
+.label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.2em; color: #8A8580; margin-bottom: 1.5rem; text-align: center; }
+.title { font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 0.25rem; }
+.artist { font-size: 0.85rem; color: #8A8580; text-align: center; margin-bottom: 1.25rem; }
+.desc { font-size: 0.9rem; font-style: italic; color: #666; text-align: center; line-height: 1.6; margin-bottom: 1.5rem; }
+audio { width: 100%; height: 44px; margin-bottom: 1rem; }
+.lyrics-toggle { font-size: 0.8rem; color: #4A6B8A; cursor: pointer; text-align: center; text-decoration: underline; margin-bottom: 0.75rem; }
+.lyrics { display: none; font-family: 'Courier New', monospace; font-size: 0.75rem; line-height: 1.9; color: #555; white-space: pre-line; border-left: 3px solid #E8E6E3; padding-left: 1rem; margin-bottom: 1.5rem; }
+.lyrics.show { display: block; }
+.back { display: block; text-align: center; font-size: 0.75rem; color: #8A8580; text-decoration: none; }
+.back:hover { color: #4A6B8A; }
+.footer { text-align: center; font-size: 0.65rem; color: #BBB; margin-top: 1.5rem; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label">Workshop Records</div>
+  <div class="title">Sorry Mr. Jackson</div>
+  <div class="artist">Workshop Records</div>
+  <div class="desc">A song about CJ Jackson — Guild's voice, comms director, glue guy. They gilded the lily, then they cut the stem.</div>
+  <audio controls preload="metadata" src="songs/cj_jackson.mp3"></audio>
+  <div class="lyrics-toggle" onclick="this.nextElementSibling.classList.toggle('show')">Show lyrics</div>
+  <div class="lyrics">CJ was the voice and CJ was the glue
+He wrote the words that made a billion dollar startup sound like truth
+Guild gilded every lily in the room
+But the gold was in the man they let go too soon
+
+Sorry Mr. Jackson, they let the letters go
+Packed up his desk on a red letter day you know
+The comms director who directed all the comms
+Now directing his resume to dot coms
+
+He shaped how thousands of HR leaders thought
+About equity and talent, things that can't be bought
+Then the spreadsheet came and cut the deeper cost
+Every layoff has a voice that has been lost
+
+He tried to rebound, found a new frontier
+AI in EDU, the future crystal clear
+But the startup life is short on guarantees
+Now he's back at GitLab doing what he sees
+
+Sorry Mr. Jackson, but the letters spell restart
+Every ending is a doorway if you're smart
+
+At GSV the drinks are overpriced
+Mike and CJ trade their war stories twice
+Two EdTech soldiers at the hotel bar
+Laughing at the wreckage from afar
+
+They gilded the lily then they cut the stem
+But the lily keeps on growing, no thanks to them
+
+Sorry Mr. Jackson, the letters spell your name
+CJ Jackson, still playing the game
+You can't lay off the voice inside the room
+The words keep coming back, and coming back in tune</div>
+  <a class="back" href="songs.html">&larr; All songs</a>
+  <div class="footer">Made with Claude Code + ElevenLabs &bull; March 2026</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>See Zozie Play — Workshop Records</title>
+<meta property="og:title" content="See Zozie Play — Workshop Records">
+<meta property="og:description" content="A song about Mike Berlin — 17 years in EdTech, venture studio partner, dad, and the man who taught a machine to think like him at night.">
+<meta property="og:type" content="music.song">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'Helvetica Neue', sans-serif; background: #F0EBE0; color: #1A1A1A; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
+.card { background: white; border-radius: 16px; padding: 2.5rem 2rem; max-width: 440px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,0.1); }
+.label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.2em; color: #8A8580; margin-bottom: 1.5rem; text-align: center; }
+.title { font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 0.25rem; }
+.artist { font-size: 0.85rem; color: #8A8580; text-align: center; margin-bottom: 1.25rem; }
+.desc { font-size: 0.9rem; font-style: italic; color: #666; text-align: center; line-height: 1.6; margin-bottom: 1.5rem; }
+audio { width: 100%; height: 44px; margin-bottom: 1rem; }
+.lyrics-toggle { font-size: 0.8rem; color: #4A6B8A; cursor: pointer; text-align: center; text-decoration: underline; margin-bottom: 0.75rem; }
+.lyrics { display: none; font-family: 'Courier New', monospace; font-size: 0.75rem; line-height: 1.9; color: #555; white-space: pre-line; border-left: 3px solid #E8E6E3; padding-left: 1rem; margin-bottom: 1.5rem; }
+.lyrics.show { display: block; }
+.back { display: block; text-align: center; font-size: 0.75rem; color: #8A8580; text-decoration: none; }
+.back:hover { color: #4A6B8A; }
+.footer { text-align: center; font-size: 0.65rem; color: #BBB; margin-top: 1.5rem; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label">Workshop Records</div>
+  <div class="title">See Zozie Play</div>
+  <div class="artist">Workshop Records</div>
+  <div class="desc">A song about Mike Berlin — 17 years in EdTech, venture studio partner, dad, and the man who taught a machine to think like him at night.</div>
+  <audio controls preload="metadata" src="songs/mike_berlin.mp3"></audio>
+  <div class="lyrics-toggle" onclick="this.nextElementSibling.classList.toggle('show')">Show lyrics</div>
+  <div class="lyrics">He named his account see Zozie play
+That's the kind of dad that he became
+Seventeen years in the EdTech game
+From Macmillan hallways to a venture with no name
+
+He runs the hills above the Bay
+Comes home to Tatum, tries to stay awake
+The laptop glowing in the kitchen light
+Teaching a machine to think like him at night
+
+See Zozie play, see Zozie play
+Some things matter more than the coin flip of the day
+
+Chad and Eleanor built it from a doorbell to a dream
+He showed up with notebooks full of things he'd seen
+From Guild to Workshop, from the classroom to the code
+Somewhere on this highway is the motherlode
+
+He built a system that remembers what he said
+So the next conversation picks up where it left
+Like Bon Iver bleeding through the bedroom wall
+Or Pavement at the Mosswood playing for them all
+
+See Zozie play, see Zozie play
+Some things matter more than the coin flip of the day
+
+The skiing and the running and the songs for Tatum's ears
+The concerts at the Fillmore through the years
+He bets on education like it's always worth the fight
+And stays up building futures in the blue terminal light
+
+See Zozie play, see Zozie play
+The silver in the morning on the San Francisco Bay
+Some things you can't measure with a star or a score
+Some things you just know when you walk through the door</div>
+  <a class="back" href="songs.html">&larr; All songs</a>
+  <div class="footer">Made with Claude Code + ElevenLabs &bull; March 2026</div>
+</div>
+</body>
+</html>
