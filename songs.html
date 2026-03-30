@@ -11,7 +11,8 @@ body { font-family: -apple-system, 'Helvetica Neue', sans-serif; background: #F0
 h1 { font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.15em; text-align: center; margin-bottom: 0.5rem; }
 .subtitle { text-align: center; font-size: 0.8rem; color: #8A8580; margin-bottom: 2rem; }
 .song-card { background: white; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
-.song-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.25rem; }
+.song-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.25rem; display: block; color: #1A1A1A; text-decoration: none; }
+.song-title:hover { color: #4A6B8A; }
 .song-artist { font-size: 0.85rem; color: #8A8580; margin-bottom: 0.75rem; }
 .song-desc { font-size: 0.85rem; font-style: italic; color: #666; margin-bottom: 1rem; line-height: 1.5; }
 audio { width: 100%; height: 40px; }
@@ -27,7 +28,7 @@ audio { width: 100%; height: 40px; }
 <p class="subtitle">AI-generated songs about real people</p>
 
 <div class="song-card">
-  <div class="song-title">Silverburg</div>
+  <a href="silverburg.html" class="song-title">Silverburg</a>
   <div class="song-artist">Workshop Records</div>
   <div class="song-desc">A song about Dan Silverburg — EdTech lifer, Ohio University marketing grad, and the man who sold the future to the past.</div>
   <audio controls preload="none" src="songs/silverburg.mp3"></audio>
@@ -62,7 +63,7 @@ delivered to an empty room that claps</div>
 </div>
 
 <div class="song-card">
-  <div class="song-title">Sorry Mr. Jackson</div>
+  <a href="sorry-mr-jackson.html" class="song-title">Sorry Mr. Jackson</a>
   <div class="song-artist">Workshop Records</div>
   <div class="song-desc">A song about CJ Jackson — Guild's voice, comms director, glue guy. They gilded the lily, then they cut the stem.</div>
   <audio controls preload="none" src="songs/cj_jackson.mp3"></audio>
@@ -105,7 +106,7 @@ The words keep coming back, and coming back in tune</div>
 </div>
 
 <div class="song-card">
-  <div class="song-title">I Don't Come Around Here Anymore</div>
+  <a href="i-dont-come-around-here-anymore.html" class="song-title">I Don't Come Around Here Anymore</a>
   <div class="song-artist">Workshop Records</div>
   <div class="song-desc">A song about Geoff Watson — Entangled, Guild, Minerva, NCFDD. Always leaving somewhere before the leaving part.</div>
   <audio controls preload="none" src="songs/geoff_watson.mp3"></audio>
@@ -149,7 +150,7 @@ Every goodbye is just the opening of another song</div>
 </div>
 
 <div class="song-card">
-  <div class="song-title">See Zozie Play</div>
+  <a href="see-zozie-play.html" class="song-title">See Zozie Play</a>
   <div class="song-artist">Workshop Records</div>
   <div class="song-desc">A song about Mike Berlin — 17 years in EdTech, venture studio partner, dad, and the man who taught a machine to think like him at night.</div>
   <audio controls preload="none" src="songs/mike_berlin.mp3"></audio>
