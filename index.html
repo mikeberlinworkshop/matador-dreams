@@ -5,25 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MATADOR DREAMS</title>
 
-<!-- WebAudioFont Player -->
-<script src='https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js'></script>
-
-<!-- Instrument Presets -->
-<script src='https://surikov.github.io/webaudiofontdata/sound/0270_Aspirin_sf2_file.js'></script>
-<script src='https://surikov.github.io/webaudiofontdata/sound/0290_Aspirin_sf2_file.js'></script>
-<script src='https://surikov.github.io/webaudiofontdata/sound/0250_Aspirin_sf2_file.js'></script>
-<script src='https://surikov.github.io/webaudiofontdata/sound/0340_Aspirin_sf2_file.js'></script>
-<script src='https://surikov.github.io/webaudiofontdata/sound/0383_Aspirin_sf2_file.js'></script>
-<script src='https://surikov.github.io/webaudiofontdata/sound/0520_Aspirin_sf2_file.js'></script>
-<script src='https://surikov.github.io/webaudiofontdata/sound/0480_Aspirin_sf2_file.js'></script>
-
-<!-- Drum Kit -->
-<script src='https://surikov.github.io/webaudiofontdata/sound/12836_6_JCLive_sf2_file.js'></script>
-<script src='https://surikov.github.io/webaudiofontdata/sound/12838_6_JCLive_sf2_file.js'></script>
-<script src='https://surikov.github.io/webaudiofontdata/sound/12842_6_JCLive_sf2_file.js'></script>
-<script src='https://surikov.github.io/webaudiofontdata/sound/12846_6_JCLive_sf2_file.js'></script>
-<script src='https://surikov.github.io/webaudiofontdata/sound/12849_6_JCLive_sf2_file.js'></script>
-
 <style>
 /* ========================================================================
    ROOT & RESET
@@ -57,59 +38,6 @@ body {
   background-image:
     repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.008) 2px, rgba(0,0,0,0.008) 4px),
     repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.005) 2px, rgba(0,0,0,0.005) 4px);
-}
-
-/* ========================================================================
-   LOADING SCREEN
-   ======================================================================== */
-#loading-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: var(--ink);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--cream);
-  transition: opacity 0.5s ease;
-}
-
-#loading-screen.fade-out {
-  opacity: 0;
-  pointer-events: none;
-}
-
-#loading-screen h2 {
-  font-family: var(--font-body);
-  font-size: 1.2rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  margin-bottom: 1.5rem;
-  color: var(--mustard);
-}
-
-.loading-bar-container {
-  width: 280px;
-  height: 6px;
-  background: #333;
-  border-radius: 3px;
-  overflow: hidden;
-  margin-bottom: 1rem;
-}
-
-.loading-bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--sage), var(--mustard));
-  width: 0%;
-  transition: width 0.3s ease;
-  border-radius: 3px;
-}
-
-.loading-status {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: #666;
 }
 
 /* ========================================================================
@@ -1292,17 +1220,8 @@ h1, h2, h3, h4 {
 </head>
 <body>
 
-<!-- LOADING SCREEN -->
-<div id="loading-screen">
-  <h2>Loading Instruments...</h2>
-  <div class="loading-bar-container">
-    <div class="loading-bar" id="loading-bar"></div>
-  </div>
-  <div class="loading-status" id="loading-status">Initializing...</div>
-</div>
-
 <!-- TITLE SCREEN -->
-<div id="title-screen" style="display:none;">
+<div id="title-screen">
   <canvas id="title-canvas"></canvas>
   <h1 id="title-text"></h1>
   <div class="subtitle"><span class="typewriter-text">An Indie Label Simulator, 2001 - 2006</span></div>
@@ -1411,117 +1330,267 @@ h1, h2, h3, h4 {
 
 <script>
 // =========================================================================
-// WEBAUDIOFONT INSTRUMENT LOADING
+// SONG LIBRARY - Real MP3 files
 // =========================================================================
-let audioCtx = null;
-let wafPlayer = null;
-let instrumentsLoaded = false;
-let instrumentsDecoded = false;
-let activeEnvelopes = [];
-let analyserNode = null;
+const SONG_LIBRARY = {
+  'post-punk': ['songs/postpunk_01.mp3', 'songs/postpunk_02.mp3', 'songs/postpunk_03.mp3'],
+  'indie-folk': ['songs/folk_01.mp3', 'songs/folk_02.mp3', 'songs/folk_03.mp3'],
+  'garage': ['songs/garage_01.mp3', 'songs/garage_02.mp3', 'songs/garage_03.mp3'],
+  'shoegaze': ['songs/shoegaze_01.mp3', 'songs/shoegaze_02.mp3', 'songs/shoegaze_03.mp3'],
+  'art-rock': ['songs/artrock_01.mp3', 'songs/artrock_02.mp3', 'songs/artrock_03.mp3'],
+  'lo-fi': ['songs/lofi_01.mp3', 'songs/lofi_02.mp3', 'songs/lofi_03.mp3'],
+  'dance-punk': ['songs/dancepunk_01.mp3', 'songs/dancepunk_02.mp3', 'songs/dancepunk_03.mp3'],
+};
 
-// Instrument presets (will be set after scripts load)
-const INSTRUMENTS = {};
-let loadedCount = 0;
-const TOTAL_INSTRUMENTS = 12;
+// =========================================================================
+// AUDIO ENGINE - HTML5 Audio + Web Audio API visualizer
+// =========================================================================
+let currentAudio = null;
+let audioCtx = null;
+let analyserNode = null;
+let sourceNode = null;
+let vizAnimFrame = null;
+let progressInterval = null;
+
+function hashString(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash) + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
 
 function getAudioContext() {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    wafPlayer = new WebAudioFontPlayer();
   }
   if (audioCtx.state === 'suspended') audioCtx.resume();
   return audioCtx;
 }
 
-function initInstruments() {
+function connectVisualizer(audioElement) {
   const ctx = getAudioContext();
+  // Disconnect previous source if any
+  if (sourceNode) {
+    try { sourceNode.disconnect(); } catch(e) {}
+  }
 
-  // Map instrument presets
-  INSTRUMENTS.cleanGuitar = typeof _tone_0270_Aspirin_sf2_file !== 'undefined' ? _tone_0270_Aspirin_sf2_file : null;
-  INSTRUMENTS.overdrivenGuitar = typeof _tone_0290_Aspirin_sf2_file !== 'undefined' ? _tone_0290_Aspirin_sf2_file : null;
-  INSTRUMENTS.acousticGuitar = typeof _tone_0250_Aspirin_sf2_file !== 'undefined' ? _tone_0250_Aspirin_sf2_file : null;
-  INSTRUMENTS.electricBass = typeof _tone_0340_Aspirin_sf2_file !== 'undefined' ? _tone_0340_Aspirin_sf2_file : null;
-  INSTRUMENTS.synthBass = typeof _tone_0383_Aspirin_sf2_file !== 'undefined' ? _tone_0383_Aspirin_sf2_file : null;
-  INSTRUMENTS.synthPad = typeof _tone_0520_Aspirin_sf2_file !== 'undefined' ? _tone_0520_Aspirin_sf2_file : null;
-  INSTRUMENTS.strings = typeof _tone_0480_Aspirin_sf2_file !== 'undefined' ? _tone_0480_Aspirin_sf2_file : null;
-  INSTRUMENTS.kick = typeof _drum_36_6_JCLive_sf2_file !== 'undefined' ? _drum_36_6_JCLive_sf2_file : null;
-  INSTRUMENTS.snare = typeof _drum_38_6_JCLive_sf2_file !== 'undefined' ? _drum_38_6_JCLive_sf2_file : null;
-  INSTRUMENTS.hihatClosed = typeof _drum_42_6_JCLive_sf2_file !== 'undefined' ? _drum_42_6_JCLive_sf2_file : null;
-  INSTRUMENTS.hihatOpen = typeof _drum_46_6_JCLive_sf2_file !== 'undefined' ? _drum_46_6_JCLive_sf2_file : null;
-  INSTRUMENTS.crash = typeof _drum_49_6_JCLive_sf2_file !== 'undefined' ? _drum_49_6_JCLive_sf2_file : null;
+  analyserNode = ctx.createAnalyser();
+  analyserNode.fftSize = 64;
 
-  // Decode all presets
-  const presetNames = [
-    '_tone_0270_Aspirin_sf2_file', '_tone_0290_Aspirin_sf2_file',
-    '_tone_0250_Aspirin_sf2_file', '_tone_0340_Aspirin_sf2_file',
-    '_tone_0383_Aspirin_sf2_file', '_tone_0520_Aspirin_sf2_file',
-    '_tone_0480_Aspirin_sf2_file',
-    '_drum_36_6_JCLive_sf2_file', '_drum_38_6_JCLive_sf2_file',
-    '_drum_42_6_JCLive_sf2_file', '_drum_46_6_JCLive_sf2_file',
-    '_drum_49_6_JCLive_sf2_file'
-  ];
-
-  presetNames.forEach(name => {
-    if (typeof window[name] !== 'undefined') {
-      wafPlayer.loader.decodeAfterLoading(ctx, name);
-    }
-  });
-
-  instrumentsDecoded = true;
+  sourceNode = ctx.createMediaElementSource(audioElement);
+  sourceNode.connect(analyserNode);
+  analyserNode.connect(ctx.destination);
 }
 
-// Loading progress tracker
-function checkLoading() {
-  const presets = [
-    '_tone_0270_Aspirin_sf2_file', '_tone_0290_Aspirin_sf2_file',
-    '_tone_0250_Aspirin_sf2_file', '_tone_0340_Aspirin_sf2_file',
-    '_tone_0383_Aspirin_sf2_file', '_tone_0520_Aspirin_sf2_file',
-    '_tone_0480_Aspirin_sf2_file',
-    '_drum_36_6_JCLive_sf2_file', '_drum_38_6_JCLive_sf2_file',
-    '_drum_42_6_JCLive_sf2_file', '_drum_46_6_JCLive_sf2_file',
-    '_drum_49_6_JCLive_sf2_file'
-  ];
+function playBandMusic(band) {
+  stopMusic();
 
-  let loaded = 0;
-  presets.forEach(name => {
-    if (typeof window[name] !== 'undefined') loaded++;
+  const songs = SONG_LIBRARY[band.genre];
+  if (!songs || songs.length === 0) return;
+
+  // Each band gets a consistent song (seeded by band name hash)
+  const songIndex = hashString(band.name) % songs.length;
+  const url = songs[songIndex];
+
+  // Always create a new Audio element (createMediaElementSource can only be called once per element)
+  currentAudio = new Audio(url);
+  currentAudio.crossOrigin = 'anonymous';
+  currentAudio.volume = 0.7;
+
+  // Connect visualizer
+  connectVisualizer(currentAudio);
+
+  currentAudio.play().catch(e => console.log('Audio play failed:', e));
+
+  // Show now-playing UI
+  const np = document.getElementById('now-playing');
+  np.style.display = 'flex';
+  document.getElementById('np-track-name').textContent = band.name;
+  document.getElementById('np-genre').textContent = band.genre;
+
+  const color = GENRE_COLORS[band.genre] || '#7A8B6F';
+  document.querySelectorAll('.viz-bar').forEach(b => b.style.background = color);
+
+  const eqIcon = document.getElementById('eq-icon');
+  eqIcon.classList.add('playing');
+  eqIcon.querySelectorAll('.eq-bar').forEach(b => b.style.background = color);
+
+  // Start visualizer animation
+  if (vizAnimFrame) cancelAnimationFrame(vizAnimFrame);
+  vizAnimFrame = requestAnimationFrame(updateVisualizer);
+
+  // Start lyrics
+  const tempoRange = GENRE_TEMPOS[band.genre] || [120, 140];
+  const tempo = tempoRange[0] + Math.floor(Math.random() * (tempoRange[1] - tempoRange[0]));
+  startLyrics(band.genre, tempo);
+
+  // Progress tracking
+  document.getElementById('np-progress-fill').style.width = '0%';
+  if (progressInterval) clearInterval(progressInterval);
+  progressInterval = setInterval(() => {
+    if (currentAudio && currentAudio.duration) {
+      const pct = (currentAudio.currentTime / currentAudio.duration) * 100;
+      document.getElementById('np-progress-fill').style.width = pct + '%';
+    }
+  }, 200);
+
+  // Auto-cleanup when song ends
+  currentAudio.addEventListener('ended', () => {
+    cleanupNowPlaying();
+    if (window._onSongEnd) window._onSongEnd();
   });
+}
 
-  const pct = Math.round((loaded / presets.length) * 100);
-  const bar = document.getElementById('loading-bar');
-  const status = document.getElementById('loading-status');
-  if (bar) bar.style.width = pct + '%';
-  if (status) status.textContent = `Loading instruments... ${loaded}/${presets.length}`;
+function stopMusic() {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio = null;
+  }
+  // sourceNode is tied to the old audio element; just null it
+  sourceNode = null;
+  cleanupNowPlaying();
+}
 
-  if (loaded >= presets.length - 1) { // Allow 1 missing preset to proceed
-    instrumentsLoaded = true;
-    if (status) status.textContent = 'Ready!';
-    setTimeout(() => {
-      const ls = document.getElementById('loading-screen');
-      if (ls) {
-        ls.classList.add('fade-out');
-        setTimeout(() => {
-          ls.style.display = 'none';
-          document.getElementById('title-screen').style.display = 'flex';
-          showTitleAnimation();
-          startTitleCanvas();
-        }, 500);
-      }
-    }, 300);
-  } else {
-    setTimeout(checkLoading, 200);
+function cleanupNowPlaying() {
+  document.getElementById('now-playing').style.display = 'none';
+  document.getElementById('eq-icon').classList.remove('playing');
+  if (vizAnimFrame) { cancelAnimationFrame(vizAnimFrame); vizAnimFrame = null; }
+  if (progressInterval) { clearInterval(progressInterval); progressInterval = null; }
+  stopLyrics();
+  stopVenueScene();
+  document.querySelectorAll('.viz-bar').forEach(b => b.style.height = '2px');
+}
+
+// =========================================================================
+// VISUALIZER
+// =========================================================================
+function initVisualizer() {
+  const vizEl = document.getElementById('visualizer');
+  vizEl.innerHTML = '';
+  for (let i = 0; i < 16; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'viz-bar';
+    bar.style.height = '2px';
+    vizEl.appendChild(bar);
   }
 }
 
-// Start checking after a brief delay to let scripts load
-window.addEventListener('DOMContentLoaded', () => {
-  setTimeout(checkLoading, 500);
-
-  document.getElementById('label-name-input').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') startGame();
+function updateVisualizer() {
+  if (!analyserNode || !currentAudio || currentAudio.paused) {
+    if (vizAnimFrame) cancelAnimationFrame(vizAnimFrame);
+    vizAnimFrame = null;
+    document.querySelectorAll('.viz-bar').forEach(b => b.style.height = '2px');
+    return;
+  }
+  const data = new Uint8Array(analyserNode.frequencyBinCount);
+  analyserNode.getByteFrequencyData(data);
+  const bars = document.querySelectorAll('.viz-bar');
+  const step = Math.floor(data.length / bars.length);
+  bars.forEach((bar, i) => {
+    const val = data[i * step] || 0;
+    bar.style.height = Math.max(2, val / 255 * 24) + 'px';
   });
-});
+  vizAnimFrame = requestAnimationFrame(updateVisualizer);
+}
+
+// =========================================================================
+// SOUND EFFECTS - Simple oscillator bursts (not music, just UI clicks)
+// =========================================================================
+function playSFX(type) {
+  try {
+    const ctx = getAudioContext();
+    const now = ctx.currentTime;
+    const gain = ctx.createGain();
+    gain.connect(ctx.destination);
+
+    switch (type) {
+      case 'click': {
+        // Short noise burst (20ms)
+        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.02, ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+        src.connect(gain);
+        src.start(now);
+        break;
+      }
+      case 'sign': {
+        // Cymbal-like burst (200ms)
+        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.2, ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 2);
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+        src.connect(gain);
+        src.start(now);
+        break;
+      }
+      case 'good-score': {
+        // Ascending 3 quick notes
+        [440, 554, 660].forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          g.gain.setValueAtTime(0.1, now + i * 0.12);
+          g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.15);
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start(now + i * 0.12);
+          osc.stop(now + i * 0.12 + 0.15);
+        });
+        return; // Don't need the gain node above
+      }
+      case 'bad-score': {
+        // Descending tone
+        const osc = ctx.createOscillator();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.exponentialRampToValueAtTime(100, now + 0.3);
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        osc.connect(gain);
+        osc.start(now);
+        osc.stop(now + 0.3);
+        break;
+      }
+      case 'album': {
+        // Two quick taps + ping
+        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        src.connect(gain);
+        src.start(now);
+        break;
+      }
+      case 'month': {
+        // Soft click
+        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.015, ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        gain.gain.setValueAtTime(0.04, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
+        src.connect(gain);
+        src.start(now);
+        break;
+      }
+    }
+  } catch(e) {}
+}
 
 // =========================================================================
 // TITLE SCREEN CANVAS - Brooklyn night scene
@@ -1561,7 +1630,6 @@ function startTitleCanvas() {
       windows: [],
       color: `hsl(240, ${5 + Math.random()*10}%, ${8 + Math.random()*8}%)`
     });
-    // Generate windows
     const cols = Math.floor(bw / 15);
     const rows = Math.floor(buildings[i].h / 20);
     for (let r = 0; r < rows; r++) {
@@ -1579,7 +1647,6 @@ function startTitleCanvas() {
     }
   }
 
-  // Venue sign
   const venueX = 0.4;
   const venueW = 120;
 
@@ -1587,7 +1654,6 @@ function startTitleCanvas() {
     const W = w();
     const H = h();
 
-    // Night sky gradient
     const skyGrad = ctx.createLinearGradient(0, 0, 0, H * 0.6);
     skyGrad.addColorStop(0, '#0a0a2e');
     skyGrad.addColorStop(0.5, '#1a1040');
@@ -1595,7 +1661,6 @@ function startTitleCanvas() {
     ctx.fillStyle = skyGrad;
     ctx.fillRect(0, 0, W, H);
 
-    // Stars
     stars.forEach(s => {
       const alpha = 0.3 + Math.sin(time / 1000 + s.twinkle) * 0.4;
       ctx.fillStyle = `rgba(255, 255, 220, ${Math.max(0, alpha)})`;
@@ -1604,7 +1669,6 @@ function startTitleCanvas() {
       ctx.fill();
     });
 
-    // Moon
     ctx.fillStyle = 'rgba(255, 250, 220, 0.9)';
     ctx.beginPath();
     ctx.arc(W * 0.8, H * 0.12, 25, 0, Math.PI * 2);
@@ -1614,22 +1678,18 @@ function startTitleCanvas() {
     ctx.arc(W * 0.8 + 8, H * 0.12 - 5, 22, 0, Math.PI * 2);
     ctx.fill();
 
-    // Ground
     ctx.fillStyle = '#111';
     ctx.fillRect(0, H * 0.7, W, H * 0.3);
 
-    // Sidewalk
     ctx.fillStyle = '#1a1a1a';
     ctx.fillRect(0, H * 0.7, W, 8);
 
-    // Buildings
     buildings.forEach(b => {
       const bx = b.x;
       const by = H * 0.7 - b.h;
       ctx.fillStyle = b.color;
       ctx.fillRect(bx, by, b.w, b.h);
 
-      // Windows
       b.windows.forEach(win => {
         if (win.lit) {
           const flick = 0.6 + Math.sin(time / 2000 + win.flicker) * 0.2;
@@ -1642,17 +1702,14 @@ function startTitleCanvas() {
       });
     });
 
-    // Venue with glowing sign
     const vx = W * venueX;
     const vy = H * 0.7 - 80;
     ctx.fillStyle = '#151520';
     ctx.fillRect(vx, vy, venueW, 80);
 
-    // Door
     ctx.fillStyle = '#2a2a35';
     ctx.fillRect(vx + 45, vy + 40, 30, 40);
 
-    // Neon sign glow
     const glowIntensity = 0.5 + Math.sin(time / 800) * 0.3;
     ctx.shadowColor = `rgba(196, 133, 140, ${glowIntensity})`;
     ctx.shadowBlur = 20;
@@ -1662,7 +1719,6 @@ function startTitleCanvas() {
     ctx.fillText('LIVE MUSIC', vx + venueW / 2, vy + 20);
     ctx.shadowBlur = 0;
 
-    // Street lamp
     ctx.strokeStyle = '#333';
     ctx.lineWidth = 3;
     ctx.beginPath();
@@ -1671,14 +1727,12 @@ function startTitleCanvas() {
     ctx.lineTo(W * 0.67, H * 0.44);
     ctx.stroke();
 
-    // Lamp glow
     const lampGlow = ctx.createRadialGradient(W * 0.67, H * 0.44, 0, W * 0.67, H * 0.44, 60);
     lampGlow.addColorStop(0, 'rgba(255, 220, 150, 0.3)');
     lampGlow.addColorStop(1, 'rgba(255, 220, 150, 0)');
     ctx.fillStyle = lampGlow;
     ctx.fillRect(W * 0.67 - 60, H * 0.44 - 60, 120, 120);
 
-    // Spinning vinyl record in the sky (subtle)
     ctx.save();
     ctx.translate(W * 0.15, H * 0.25);
     ctx.rotate(time / 2000);
@@ -1723,7 +1777,6 @@ function startVenueScene(venueSize, genre, energy) {
   const container = document.getElementById('action-content');
   if (!container) return;
 
-  // Find or create canvas
   venueCanvasEl = container.querySelector('#venue-canvas');
   if (!venueCanvasEl) return;
 
@@ -1742,7 +1795,6 @@ function startVenueScene(venueSize, genre, energy) {
   };
   const hue = genreHues[genre] || 240;
 
-  // Crowd
   const crowdPeople = [];
   const crowdCount = Math.min(venueSize / 3, 80);
   for (let i = 0; i < crowdCount; i++) {
@@ -1759,22 +1811,18 @@ function startVenueScene(venueSize, genre, energy) {
   function draw(time) {
     ctx.clearRect(0, 0, W, H);
 
-    // Background
     const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
     bgGrad.addColorStop(0, '#0a0a1a');
     bgGrad.addColorStop(1, '#1a1a2e');
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, W, H);
 
-    // Stage
     ctx.fillStyle = '#1a1a28';
     ctx.fillRect(W * 0.05, H * 0.1, W * 0.9, H * 0.5);
 
-    // Stage floor
     ctx.fillStyle = '#252535';
     ctx.fillRect(W * 0.05, H * 0.55, W * 0.9, H * 0.05);
 
-    // Stage lights
     for (let i = 0; i < 5; i++) {
       const lx = W * 0.15 + i * W * 0.175;
       const intensity = 0.2 + Math.sin(time / 500 + i * 1.3) * 0.15;
@@ -1785,7 +1833,6 @@ function startVenueScene(venueSize, genre, energy) {
       ctx.fillStyle = lightGrad;
       ctx.fillRect(lx - 60, 0, 120, H * 0.6);
 
-      // Light beam cone
       ctx.beginPath();
       ctx.moveTo(lx, H * 0.05);
       ctx.lineTo(lx - 30 - energy * 2, H * 0.55);
@@ -1795,7 +1842,6 @@ function startVenueScene(venueSize, genre, energy) {
       ctx.fill();
     }
 
-    // Smoke/haze
     for (let i = 0; i < 8; i++) {
       const sx = W * 0.1 + (Math.sin(time / 3000 + i * 0.8) * 0.5 + 0.5) * W * 0.8;
       const sy = H * 0.2 + Math.sin(time / 2000 + i * 1.2) * H * 0.15;
@@ -1808,7 +1854,6 @@ function startVenueScene(venueSize, genre, energy) {
       ctx.fill();
     }
 
-    // Band members (silhouettes)
     const bandPositions = [
       { x: W * 0.25, instrument: 'guitar' },
       { x: W * 0.45, instrument: 'vocals' },
@@ -1821,22 +1866,14 @@ function startVenueScene(venueSize, genre, energy) {
       const bodyY = H * 0.32 + bobY;
 
       ctx.fillStyle = '#111';
-
-      // Head
       ctx.beginPath();
       ctx.arc(bp.x, bodyY - 15, 7, 0, Math.PI * 2);
       ctx.fill();
-
-      // Body
       ctx.fillRect(bp.x - 4, bodyY - 8, 8, 20);
-
-      // Legs
       ctx.fillRect(bp.x - 4, bodyY + 12, 3, 12);
       ctx.fillRect(bp.x + 1, bodyY + 12, 3, 12);
 
-      // Instrument-specific shapes
       if (bp.instrument === 'guitar' || bp.instrument === 'bass') {
-        // Guitar neck
         ctx.strokeStyle = '#222';
         ctx.lineWidth = 2;
         const armAngle = Math.sin(time / 400 + i) * 0.15;
@@ -1845,7 +1882,6 @@ function startVenueScene(venueSize, genre, energy) {
         ctx.lineTo(bp.x + 15 + Math.sin(time / 200) * 2, bodyY + 10 + armAngle * 10);
         ctx.stroke();
       } else if (bp.instrument === 'vocals') {
-        // Mic
         ctx.strokeStyle = '#333';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
@@ -1857,7 +1893,6 @@ function startVenueScene(venueSize, genre, energy) {
         ctx.arc(bp.x + 12, bodyY - 17, 2.5, 0, Math.PI * 2);
         ctx.fill();
       } else if (bp.instrument === 'drums') {
-        // Drum kit silhouette
         ctx.fillStyle = '#181828';
         ctx.fillRect(bp.x - 15, bodyY + 5, 30, 20);
         ctx.beginPath();
@@ -1866,7 +1901,6 @@ function startVenueScene(venueSize, genre, energy) {
         ctx.beginPath();
         ctx.arc(bp.x + 8, bodyY, 6, 0, Math.PI * 2);
         ctx.fill();
-        // Sticks
         const stickAngle = Math.sin(time / 150) * 0.3;
         ctx.strokeStyle = '#444';
         ctx.lineWidth = 1;
@@ -1877,14 +1911,12 @@ function startVenueScene(venueSize, genre, energy) {
       }
     });
 
-    // Crowd
     crowdPeople.forEach(p => {
       const bob = Math.sin(time / (300 / p.speed) + p.phase) * (2 + energy * 0.3);
       ctx.fillStyle = `hsla(${p.hue}, 25%, 25%, 0.9)`;
       ctx.beginPath();
       ctx.arc(p.x, p.y + bob, p.size, 0, Math.PI * 2);
       ctx.fill();
-      // Hair/head top
       ctx.beginPath();
       ctx.arc(p.x, p.y + bob - p.size * 0.3, p.size * 0.7, Math.PI, 0);
       ctx.fill();
@@ -1930,7 +1962,6 @@ function generateAlbumArtCanvas(genre, albumTitle) {
 
   switch (genre) {
     case 'post-punk': {
-      // Stark black and white geometric
       ctx.fillStyle = '#111';
       ctx.fillRect(0, 0, W, H);
       ctx.strokeStyle = `hsl(${hue1}, 10%, 85%)`;
@@ -1941,14 +1972,12 @@ function generateAlbumArtCanvas(genre, albumTitle) {
         ctx.lineTo(rng() * W, rng() * H);
         ctx.stroke();
       }
-      // Diagonal slash
       ctx.strokeStyle = `hsl(${hue2}, 60%, 45%)`;
       ctx.lineWidth = 4;
       ctx.beginPath();
       ctx.moveTo(W * 0.1, H * 0.9);
       ctx.lineTo(W * 0.9, H * 0.1);
       ctx.stroke();
-      // Circle
       ctx.strokeStyle = 'rgba(255,255,255,0.3)';
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -1957,12 +1986,8 @@ function generateAlbumArtCanvas(genre, albumTitle) {
       break;
     }
     case 'indie-folk': {
-      // Watercolor gradient washes
       for (let i = 0; i < 12; i++) {
-        const grd = ctx.createRadialGradient(
-          rng() * W, rng() * H, 0,
-          rng() * W, rng() * H, 60 + rng() * 100
-        );
+        const grd = ctx.createRadialGradient(rng() * W, rng() * H, 0, rng() * W, rng() * H, 60 + rng() * 100);
         grd.addColorStop(0, `hsla(${30 + rng() * 30}, ${40 + rng() * 30}%, ${65 + rng() * 20}%, 0.4)`);
         grd.addColorStop(1, `hsla(${20 + rng() * 40}, ${30 + rng() * 20}%, ${75 + rng() * 15}%, 0)`);
         ctx.fillStyle = grd;
@@ -1971,7 +1996,6 @@ function generateAlbumArtCanvas(genre, albumTitle) {
       break;
     }
     case 'shoegaze': {
-      // Blurred concentric circles, pastels
       const grd = ctx.createLinearGradient(0, 0, W, H);
       grd.addColorStop(0, `hsl(${hue1}, 40%, 80%)`);
       grd.addColorStop(0.5, `hsl(${hue2}, 50%, 70%)`);
@@ -1987,7 +2011,6 @@ function generateAlbumArtCanvas(genre, albumTitle) {
       break;
     }
     case 'garage': {
-      // Bold primary color blocks, rough edges
       ctx.fillStyle = `hsl(${hue1}, 70%, 50%)`;
       ctx.fillRect(0, 0, W, H);
       ctx.fillStyle = '#111';
@@ -1997,7 +2020,6 @@ function generateAlbumArtCanvas(genre, albumTitle) {
       ctx.rotate(splitAngle * Math.PI / 180);
       ctx.fillRect(-W, 0, W * 2, H);
       ctx.restore();
-      // Rough X
       ctx.strokeStyle = `hsl(${hue2}, 80%, 55%)`;
       ctx.lineWidth = 8;
       ctx.beginPath();
@@ -2007,7 +2029,6 @@ function generateAlbumArtCanvas(genre, albumTitle) {
       break;
     }
     case 'art-rock': {
-      // Complex layered geometric
       ctx.fillStyle = `hsl(${hue1}, 30%, 25%)`;
       ctx.fillRect(0, 0, W, H);
       for (let i = 0; i < 6; i++) {
@@ -2031,15 +2052,12 @@ function generateAlbumArtCanvas(genre, albumTitle) {
       break;
     }
     case 'lo-fi': {
-      // Simple line drawing, polaroid border
       ctx.fillStyle = '#f5f0e0';
       ctx.fillRect(0, 0, W, H);
-      // Polaroid border
       ctx.fillStyle = '#fff';
       ctx.fillRect(15, 15, W - 30, H - 50);
       ctx.fillStyle = '#f0ebe0';
       ctx.fillRect(25, 25, W - 50, H - 70);
-      // Simple line drawing
       ctx.strokeStyle = `hsl(${hue1}, 15%, 40%)`;
       ctx.lineWidth = 1.5;
       ctx.beginPath();
@@ -2051,14 +2069,9 @@ function generateAlbumArtCanvas(genre, albumTitle) {
       break;
     }
     case 'dance-punk': {
-      // Neon colors, angular shapes
       ctx.fillStyle = '#111';
       ctx.fillRect(0, 0, W, H);
-      const neonColors = [
-        `hsl(${hue1}, 80%, 55%)`,
-        `hsl(${hue2}, 90%, 60%)`,
-        '#ff00ff', '#00ffff'
-      ];
+      const neonColors = [`hsl(${hue1}, 80%, 55%)`, `hsl(${hue2}, 90%, 60%)`, '#ff00ff', '#00ffff'];
       for (let i = 0; i < 10; i++) {
         ctx.strokeStyle = neonColors[i % neonColors.length];
         ctx.lineWidth = 2 + rng() * 3;
@@ -2068,7 +2081,6 @@ function generateAlbumArtCanvas(genre, albumTitle) {
         ctx.lineTo(x1 + (rng() - 0.5) * 120, y1 + (rng() - 0.5) * 120);
         ctx.stroke();
       }
-      // Neon glow circle
       ctx.shadowColor = neonColors[0];
       ctx.shadowBlur = 20;
       ctx.strokeStyle = neonColors[0];
@@ -2245,689 +2257,6 @@ function stopLyrics() {
   const el = document.getElementById('np-lyrics');
   if (el) el.innerHTML = '';
 }
-
-// =========================================================================
-// SPEECH SYNTHESIS VOCALS
-// =========================================================================
-function singLyrics(genre, lyrics) {
-  if (!('speechSynthesis' in window)) return;
-  // Cancel any current speech
-  speechSynthesis.cancel();
-
-  const text = lyrics.join('. ');
-  const utterance = new SpeechSynthesisUtterance(text);
-
-  switch (genre) {
-    case 'post-punk':
-      utterance.pitch = 0.6;
-      utterance.rate = 0.6;
-      break;
-    case 'indie-folk':
-      utterance.pitch = 1.2;
-      utterance.rate = 0.5;
-      break;
-    case 'garage':
-      utterance.pitch = 0.8;
-      utterance.rate = 0.9;
-      break;
-    case 'shoegaze':
-      utterance.pitch = 1.0;
-      utterance.rate = 0.3;
-      break;
-    case 'art-rock':
-      utterance.pitch = 0.9;
-      utterance.rate = 0.5;
-      break;
-    case 'lo-fi':
-      utterance.pitch = 1.1;
-      utterance.rate = 0.4;
-      break;
-    case 'dance-punk':
-      utterance.pitch = 0.7;
-      utterance.rate = 0.8;
-      break;
-    default:
-      utterance.pitch = 0.8;
-      utterance.rate = 0.6;
-  }
-
-  utterance.volume = 0.25;
-  speechSynthesis.speak(utterance);
-}
-
-function stopSpeech() {
-  if ('speechSynthesis' in window) speechSynthesis.cancel();
-}
-
-// =========================================================================
-// WEBAUDIOFONT MUSIC ENGINE
-// =========================================================================
-(function() {
-  'use strict';
-
-  const CHORD_SHAPES = {
-    major: [0, 4, 7],
-    minor: [0, 3, 7],
-    power: [0, 7],
-    dom7: [0, 4, 7, 10],
-    min7: [0, 3, 7, 10],
-    sus4: [0, 5, 7],
-    dim: [0, 3, 6],
-  };
-
-  const PROGRESSIONS = {
-    'post-punk': {
-      verse:  [[0,'minor'], [3,'major'], [10,'major'], [8,'major']],
-      chorus: [[0,'minor'], [5,'minor'], [7,'minor'], [0,'minor']],
-    },
-    'indie-folk': {
-      verse:  [[0,'major'], [7,'major'], [9,'minor'], [5,'major']],
-      chorus: [[9,'minor'], [5,'major'], [0,'major'], [7,'major']],
-    },
-    'shoegaze': {
-      verse:  [[0,'major'], [10,'major'], [5,'major'], [0,'major']],
-      chorus: [[0,'major'], [10,'major'], [0,'major'], [10,'major']],
-    },
-    'garage': {
-      verse:  [[0,'power'], [5,'power'], [7,'power'], [5,'power']],
-      chorus: [[0,'power'], [0,'power'], [5,'power'], [7,'power']],
-    },
-    'art-rock': {
-      verse:  [[0,'minor'], [3,'major'], [10,'major'], [5,'minor'], [0,'minor'], [8,'major']],
-      chorus: [[8,'major'], [3,'major'], [5,'major'], [0,'minor'], [7,'major'], [10,'major']],
-    },
-    'lo-fi': {
-      verse:  [[0,'major'], [5,'major'], [9,'minor'], [7,'major']],
-      chorus: [[0,'major'], [4,'minor'], [5,'major'], [7,'major']],
-    },
-    'dance-punk': {
-      verse:  [[0,'minor'], [0,'minor'], [0,'minor'], [10,'major']],
-      chorus: [[0,'minor'], [10,'major'], [0,'minor'], [10,'major']],
-    },
-  };
-
-  const GENRE_KEYS = {
-    'post-punk':   ['Em', 'Am', 'Bm'],
-    'indie-folk':  ['G', 'C', 'D'],
-    'garage':      ['Em', 'Am', 'G'],
-    'shoegaze':    ['Em', 'C', 'Am'],
-    'art-rock':    ['Am', 'Em', 'C'],
-    'lo-fi':       ['C', 'G', 'D'],
-    'dance-punk':  ['Am', 'Em', 'Dm'],
-  };
-
-  const DRUM_PATTERNS = {
-    'post-punk': [
-      { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-      { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1] },
-    ],
-    'indie-folk': [
-      { kick:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], snare:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-    ],
-    'shoegaze': [
-      { kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-    ],
-    'garage': [
-      { kick:[1,0,1,0,1,0,0,0,1,0,1,0,1,0,0,0], snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,1,0], hihat:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-      { kick:[1,0,0,0,1,0,1,0,1,0,0,0,1,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-    ],
-    'art-rock': [
-      { kick:[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0] },
-      { kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0], snare:[0,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
-    ],
-    'lo-fi': [
-      { kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-    ],
-    'dance-punk': [
-      { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-      { kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0], open:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] },
-    ],
-  };
-
-  function parseKey(keyStr) {
-    const isMinor = keyStr.endsWith('m');
-    const rootName = isMinor ? keyStr.slice(0, -1) : keyStr;
-    const semitones = { C:0, D:2, E:4, F:5, G:7, A:9, B:11 };
-    return { rootSemitone: semitones[rootName] || 0, isMinor };
-  }
-
-  function chordToMidi(rootSemitone, offset, quality, octave) {
-    const root = rootSemitone + offset;
-    const shape = CHORD_SHAPES[quality] || CHORD_SHAPES.major;
-    return shape.map(s => (root + s) + octave * 12 + 12);
-  }
-
-  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-
-  function createReverb(ctx, duration, decay) {
-    const length = Math.floor(ctx.sampleRate * duration);
-    const impulse = ctx.createBuffer(2, length, ctx.sampleRate);
-    for (let ch = 0; ch < 2; ch++) {
-      const data = impulse.getChannelData(ch);
-      for (let i = 0; i < length; i++) {
-        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
-      }
-    }
-    const convolver = ctx.createConvolver();
-    convolver.buffer = impulse;
-    return convolver;
-  }
-
-  const MusicEngine = {
-    _playing: false,
-    _stopTimeout: null,
-    _progressInterval: null,
-    _masterGain: null,
-    _scheduledEnvelopes: [],
-
-    isPlaying() { return this._playing; },
-
-    stop() {
-      this._playing = false;
-      if (this._stopTimeout) { clearTimeout(this._stopTimeout); this._stopTimeout = null; }
-      if (this._progressInterval) { clearInterval(this._progressInterval); this._progressInterval = null; }
-
-      // Cancel all active envelopes
-      this._scheduledEnvelopes.forEach(env => {
-        try { if (env.cancel) env.cancel(); } catch(e) {}
-      });
-      this._scheduledEnvelopes = [];
-
-      // Fade out master
-      if (this._masterGain && audioCtx) {
-        try {
-          this._masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-          this._masterGain.gain.setValueAtTime(this._masterGain.gain.value, audioCtx.currentTime);
-          this._masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.05);
-        } catch(e) {}
-      }
-
-      stopSpeech();
-    },
-
-    playBand(bandParams) {
-      if (this._playing) this.stop();
-
-      const ctx = getAudioContext();
-      if (!instrumentsDecoded) initInstruments();
-      this._playing = true;
-      this._scheduledEnvelopes = [];
-
-      const { genre='post-punk', talent=5, key='Em', tempo=130, energy=5, name='Unknown' } = bandParams;
-      const { rootSemitone } = parseKey(key);
-
-      const beatDur = 60 / tempo;
-      const sixteenth = beatDur / 4;
-      const bar = beatDur * 4;
-      const now = ctx.currentTime + 0.2;
-      const totalBars = 20;
-      const songEnd = now + totalBars * bar + 2;
-
-      // Master chain
-      const masterGain = ctx.createGain();
-      this._masterGain = masterGain;
-
-      // Compressor
-      const compressor = ctx.createDynamicsCompressor();
-      compressor.threshold.value = -18;
-      compressor.knee.value = 12;
-      compressor.ratio.value = 4;
-      compressor.attack.value = 0.003;
-      compressor.release.value = 0.15;
-
-      // Reverb
-      let reverbDur, reverbDecay, reverbMix;
-      switch (genre) {
-        case 'post-punk':  reverbDur=2.5; reverbDecay=2.0; reverbMix=0.35; break;
-        case 'indie-folk': reverbDur=0.8; reverbDecay=3.0; reverbMix=0.08; break;
-        case 'shoegaze':   reverbDur=4.5; reverbDecay=1.2; reverbMix=0.7; break;
-        case 'garage':     reverbDur=0.5; reverbDecay=4.0; reverbMix=0.05; break;
-        case 'art-rock':   reverbDur=2.0; reverbDecay=2.0; reverbMix=0.25; break;
-        case 'lo-fi':      reverbDur=1.0; reverbDecay=3.0; reverbMix=0.1; break;
-        case 'dance-punk': reverbDur=0.8; reverbDecay=3.0; reverbMix=0.08; break;
-        default:           reverbDur=1.5; reverbDecay=2.5; reverbMix=0.2;
-      }
-
-      const reverb = createReverb(ctx, reverbDur, reverbDecay);
-      const reverbSend = ctx.createGain();
-      reverbSend.gain.value = reverbMix;
-      reverbSend.connect(reverb);
-      reverb.connect(compressor);
-
-      // Delay
-      const delay = ctx.createDelay(2.0);
-      delay.delayTime.value = genre === 'post-punk' ? beatDur * 0.75 : 0.3;
-      const feedback = ctx.createGain();
-      feedback.gain.value = genre === 'post-punk' ? 0.4 : genre === 'shoegaze' ? 0.5 : 0.2;
-      const delayFilter = ctx.createBiquadFilter();
-      delayFilter.type = 'lowpass';
-      delayFilter.frequency.value = 3000;
-      delay.connect(feedback);
-      feedback.connect(delayFilter);
-      delayFilter.connect(delay);
-      const delaySend = ctx.createGain();
-      delaySend.gain.value = genre === 'post-punk' ? 0.3 : genre === 'shoegaze' ? 0.3 : 0.1;
-      delaySend.connect(delay);
-      delay.connect(compressor);
-
-      // Lo-fi tape filter
-      if (genre === 'lo-fi') {
-        const lpf = ctx.createBiquadFilter();
-        lpf.type = 'lowpass';
-        lpf.frequency.value = 6000;
-        compressor.connect(lpf);
-        lpf.connect(masterGain);
-
-        // Tape hiss
-        const hissBuffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
-        const hissData = hissBuffer.getChannelData(0);
-        for (let i = 0; i < hissData.length; i++) hissData[i] = Math.random() * 2 - 1;
-        const hissSource = ctx.createBufferSource();
-        hissSource.buffer = hissBuffer;
-        hissSource.loop = true;
-        const hissGain = ctx.createGain();
-        hissGain.gain.value = 0.012;
-        const hissFilter = ctx.createBiquadFilter();
-        hissFilter.type = 'lowpass';
-        hissFilter.frequency.value = 4000;
-        hissSource.connect(hissFilter);
-        hissFilter.connect(hissGain);
-        hissGain.connect(masterGain);
-        hissSource.start(now);
-        this._scheduledEnvelopes.push({ cancel: () => { try { hissSource.stop(); } catch(e){} } });
-      } else {
-        compressor.connect(masterGain);
-      }
-
-      // Master gain
-      const gainLevels = {
-        'post-punk': 0.35, 'indie-folk': 0.30, 'shoegaze': 0.28,
-        'garage': 0.38, 'art-rock': 0.33, 'lo-fi': 0.28, 'dance-punk': 0.35
-      };
-      masterGain.gain.value = gainLevels[genre] || 0.33;
-      masterGain.connect(ctx.destination);
-
-      if (analyserNode) {
-        try { masterGain.connect(analyserNode); } catch(e) {}
-      }
-
-      // Destination nodes for instruments
-      const dryDest = compressor;
-      const wetDest = reverbSend;
-      const delayDest = delaySend;
-
-      // Helper: play WAF note into a destination
-      function playNote(preset, when, pitch, duration, volume, dest) {
-        if (!preset || when < ctx.currentTime) return;
-        try {
-          const env = wafPlayer.queueWaveTable(ctx, dest || dryDest, preset, when, pitch, duration, volume);
-          if (env) MusicEngine._scheduledEnvelopes.push(env);
-        } catch(e) {}
-      }
-
-      // Build chords
-      const progs = PROGRESSIONS[genre] || PROGRESSIONS['post-punk'];
-
-      function getChordMidi(section, chordIdx, octave) {
-        const prog = section === 'chorus' ? progs.chorus : progs.verse;
-        const [offset, quality] = prog[chordIdx % prog.length];
-        return chordToMidi(rootSemitone, offset, quality, octave);
-      }
-
-      function getRoot(section, chordIdx, octave) {
-        const prog = section === 'chorus' ? progs.chorus : progs.verse;
-        const [offset] = prog[chordIdx % prog.length];
-        return (rootSemitone + offset) + octave * 12 + 12;
-      }
-
-      // ================================================================
-      // SCHEDULE DRUMS
-      // ================================================================
-      function scheduleDrums(sectionStart, numBars, isChorus) {
-        const patterns = DRUM_PATTERNS[genre] || DRUM_PATTERNS['post-punk'];
-        let kickVol, snareVol, hihatVol;
-        switch (genre) {
-          case 'post-punk':  kickVol=0.7; snareVol=0.6; hihatVol=0.25; break;
-          case 'indie-folk': kickVol=0; snareVol=0; hihatVol=0.1; break;
-          case 'shoegaze':   kickVol=0.15; snareVol=0.12; hihatVol=0; break;
-          case 'garage':     kickVol=0.9; snareVol=0.8; hihatVol=0.1; break;
-          case 'art-rock':   kickVol=0.55; snareVol=0.5; hihatVol=0.22; break;
-          case 'lo-fi':      kickVol=0.3; snareVol=0.25; hihatVol=0.12; break;
-          case 'dance-punk': kickVol=0.85; snareVol=0.65; hihatVol=0.3; break;
-          default:           kickVol=0.6; snareVol=0.5; hihatVol=0.2;
-        }
-        const chorusMult = isChorus ? 1.15 : 1.0;
-
-        for (let barIdx = 0; barIdx < numBars; barIdx++) {
-          const pat = patterns[barIdx % patterns.length];
-          for (let step = 0; step < 16; step++) {
-            const t = sectionStart + barIdx * bar + step * sixteenth;
-            if (t < ctx.currentTime) continue;
-            if (pat.kick[step] && kickVol > 0)
-              playNote(INSTRUMENTS.kick, t, 36, 0.3, kickVol * chorusMult, dryDest);
-            if (pat.snare[step] && snareVol > 0)
-              playNote(INSTRUMENTS.snare, t, 38, 0.2, snareVol * chorusMult, dryDest);
-            if (pat.hihat && pat.hihat[step] && hihatVol > 0)
-              playNote(INSTRUMENTS.hihatClosed, t, 42, 0.1, hihatVol * chorusMult * (0.6 + Math.random() * 0.4), dryDest);
-            if (pat.open && pat.open[step] && hihatVol > 0)
-              playNote(INSTRUMENTS.hihatOpen, t, 46, 0.3, hihatVol * 1.3 * chorusMult, dryDest);
-          }
-        }
-      }
-
-      // ================================================================
-      // SCHEDULE GUITAR
-      // ================================================================
-      function scheduleGuitar(section, sectionStart, numBars, isChorus) {
-        const prog = section === 'chorus' ? progs.chorus : progs.verse;
-        const barsPerChord = genre === 'art-rock' ? 1 : Math.max(1, Math.floor(numBars / prog.length));
-
-        for (let barIdx = 0; barIdx < numBars; barIdx++) {
-          const chordIdx = Math.floor(barIdx / barsPerChord) % prog.length;
-          const chord = getChordMidi(section, chordIdx, 4);
-          const barStart = sectionStart + barIdx * bar;
-          const chorusVol = isChorus ? 1.3 : 1.0;
-
-          switch (genre) {
-            case 'post-punk': {
-              // Clean arpeggiated
-              for (let eighth = 0; eighth < 8; eighth++) {
-                const pitch = chord[eighth % chord.length];
-                const t = barStart + eighth * (beatDur / 2);
-                playNote(INSTRUMENTS.cleanGuitar, t, pitch, beatDur * 0.4, 0.22 * chorusVol, dryDest);
-                playNote(INSTRUMENTS.cleanGuitar, t, pitch, beatDur * 0.4, 0.12 * chorusVol, wetDest);
-                playNote(INSTRUMENTS.cleanGuitar, t, pitch, beatDur * 0.4, 0.10 * chorusVol, delayDest);
-              }
-              // Overdriven chords on 2 and 4
-              for (let beat = 0; beat < 4; beat++) {
-                if (beat === 1 || beat === 3) {
-                  const t = barStart + beat * beatDur;
-                  chord.forEach(pitch => {
-                    playNote(INSTRUMENTS.overdrivenGuitar, t, pitch, beatDur * 0.2, 0.15 * chorusVol, dryDest);
-                  });
-                }
-              }
-              break;
-            }
-            case 'indie-folk': {
-              // Fingerpicked acoustic
-              const pickPattern = [0, 1, 2, 2, 2, 1];
-              for (let s = 0; s < 12; s++) {
-                const noteIdx = pickPattern[s % pickPattern.length] % chord.length;
-                const t = barStart + s * (bar / 12);
-                playNote(INSTRUMENTS.acousticGuitar, t, chord[noteIdx], bar / 8, 0.28 * (0.7 + 0.3 * Math.sin(s * 0.7)), dryDest);
-              }
-              break;
-            }
-            case 'garage': {
-              // Heavy overdriven downstrokes
-              for (let eighth = 0; eighth < 8; eighth++) {
-                const t = barStart + eighth * (beatDur / 2);
-                chord.forEach(pitch => {
-                  playNote(INSTRUMENTS.overdrivenGuitar, t, pitch, beatDur * 0.35, 0.35 * chorusVol, dryDest);
-                });
-              }
-              break;
-            }
-            case 'shoegaze': {
-              // Sustained overdriven chords with reverb
-              chord.forEach(pitch => {
-                playNote(INSTRUMENTS.overdrivenGuitar, barStart, pitch, bar * 0.95, 0.12 * chorusVol, wetDest);
-                playNote(INSTRUMENTS.overdrivenGuitar, barStart, pitch, bar * 0.95, 0.06 * chorusVol, delayDest);
-              });
-              // Synth pad layer
-              chord.forEach(pitch => {
-                playNote(INSTRUMENTS.synthPad, barStart, pitch, bar * 0.95, 0.08 * chorusVol, wetDest);
-              });
-              break;
-            }
-            case 'art-rock': {
-              const dynamicMult = isChorus ? (0.5 + (barIdx / numBars) * 0.5) : 0.5;
-              if (barIdx % 2 === 0) {
-                // Arpeggiated acoustic + electric
-                for (let s = 0; s < 8; s++) {
-                  const pitch = chord[s % chord.length];
-                  const t = barStart + s * (beatDur / 2);
-                  playNote(INSTRUMENTS.acousticGuitar, t, pitch, beatDur * 0.6, 0.18 * dynamicMult * chorusVol, dryDest);
-                  if (dynamicMult > 0.6) {
-                    playNote(INSTRUMENTS.cleanGuitar, t, pitch, beatDur * 0.5, 0.10 * dynamicMult * chorusVol, wetDest);
-                  }
-                }
-              } else {
-                // Strummed chords
-                chord.forEach(pitch => {
-                  playNote(INSTRUMENTS.cleanGuitar, barStart, pitch, beatDur * 0.8, 0.20 * dynamicMult * chorusVol, dryDest);
-                });
-              }
-              // Strings layer
-              if (isChorus || barIdx > numBars * 0.6) {
-                chord.forEach(pitch => {
-                  playNote(INSTRUMENTS.strings, barStart, pitch, bar * 0.9, 0.06 * dynamicMult * chorusVol, wetDest);
-                });
-              }
-              break;
-            }
-            case 'lo-fi': {
-              // Detuned acoustic strums
-              for (let beat = 0; beat < 4; beat++) {
-                const t = barStart + beat * beatDur + (Math.random() - 0.5) * 0.02;
-                chord.forEach((pitch, ni) => {
-                  const strumDelay = ni * 0.015;
-                  playNote(INSTRUMENTS.acousticGuitar, t + strumDelay, pitch, beatDur * 0.85, 0.22, dryDest);
-                });
-              }
-              break;
-            }
-            case 'dance-punk': {
-              // No guitar. Synth pad instead
-              chord.forEach(pitch => {
-                playNote(INSTRUMENTS.synthPad, barStart, pitch + 12, bar * 0.9, 0.12 * chorusVol, dryDest);
-              });
-              break;
-            }
-          }
-        }
-      }
-
-      // ================================================================
-      // SCHEDULE BASS
-      // ================================================================
-      function scheduleBass(section, sectionStart, numBars, isChorus) {
-        const prog = section === 'chorus' ? progs.chorus : progs.verse;
-        const barsPerChord = genre === 'art-rock' ? 1 : Math.max(1, Math.floor(numBars / prog.length));
-        const chorusVol = isChorus ? 1.2 : 1.0;
-
-        for (let barIdx = 0; barIdx < numBars; barIdx++) {
-          const chordIdx = Math.floor(barIdx / barsPerChord) % prog.length;
-          const root = getRoot(section, chordIdx, 2);
-          const barStart = sectionStart + barIdx * bar;
-
-          switch (genre) {
-            case 'post-punk': {
-              // Melodic 8th note bass lines (Peter Hook style)
-              const offsets = [[0,2,4,7,4,2,0,-2],[0,0,3,5,7,5,3,0],[0,4,3,2,0,-1,0,4],[0,7,5,4,3,2,0,7]];
-              const pat = offsets[barIdx % offsets.length];
-              for (let eighth = 0; eighth < 8; eighth++) {
-                const pitch = root + pat[eighth];
-                const t = barStart + eighth * (beatDur / 2);
-                playNote(INSTRUMENTS.electricBass, t, pitch, beatDur * 0.45, 0.45 * chorusVol, dryDest);
-              }
-              break;
-            }
-            case 'indie-folk': {
-              // Very sparse
-              if (Math.random() > 0.6) {
-                playNote(INSTRUMENTS.electricBass, barStart, root, bar * 0.9, 0.12, dryDest);
-              }
-              break;
-            }
-            case 'garage': {
-              // No bass
-              break;
-            }
-            case 'shoegaze': {
-              // Drone bass
-              playNote(INSTRUMENTS.electricBass, barStart, root, bar * 0.95, 0.15, dryDest);
-              break;
-            }
-            case 'art-rock': {
-              // Walking bass
-              const walkOffsets = [0, 2, 4, 5];
-              for (let beat = 0; beat < 4; beat++) {
-                const t = barStart + beat * beatDur;
-                playNote(INSTRUMENTS.electricBass, t, root + walkOffsets[beat], beatDur * 0.85, 0.30 * chorusVol, dryDest);
-              }
-              break;
-            }
-            case 'lo-fi': {
-              // Sparse half notes
-              playNote(INSTRUMENTS.electricBass, barStart, root, beatDur * 1.8, 0.20, dryDest);
-              playNote(INSTRUMENTS.electricBass, barStart + beatDur * 2, root, beatDur * 1.8, 0.18, dryDest);
-              break;
-            }
-            case 'dance-punk': {
-              // Synth bass funky pattern
-              const jumpPattern = [1,0,0,1,0,0,1,0,1,0,0,1,0,1,0,0];
-              const highPattern = [0,0,0,1,0,0,0,0,0,0,0,1,0,1,0,0];
-              for (let s = 0; s < 16; s++) {
-                if (!jumpPattern[s]) continue;
-                const pitch = highPattern[s] ? root + 12 : root;
-                const t = barStart + s * sixteenth;
-                playNote(INSTRUMENTS.synthBass, t, pitch, sixteenth * 1.5, 0.40 * chorusVol, dryDest);
-              }
-              break;
-            }
-          }
-        }
-      }
-
-      // ================================================================
-      // SCHEDULE SYNTH/PAD LAYERS
-      // ================================================================
-      function scheduleSynth(section, sectionStart, numBars, isChorus) {
-        if (genre !== 'art-rock' && genre !== 'dance-punk' && genre !== 'shoegaze') return;
-
-        const prog = section === 'chorus' ? progs.chorus : progs.verse;
-        const barsPerChord = genre === 'art-rock' ? 1 : Math.max(1, Math.floor(numBars / prog.length));
-
-        for (let barIdx = 0; barIdx < numBars; barIdx++) {
-          const chordIdx = Math.floor(barIdx / barsPerChord) % prog.length;
-          const chord = getChordMidi(section, chordIdx, 5);
-          const barStart = sectionStart + barIdx * bar;
-
-          if (genre === 'art-rock') {
-            const vol = 0.06 * (isChorus ? (0.5 + barIdx / numBars * 0.5) : 0.3);
-            chord.forEach(pitch => {
-              playNote(INSTRUMENTS.synthPad, barStart, pitch, bar * 0.9, vol, wetDest);
-            });
-          } else if (genre === 'shoegaze') {
-            chord.forEach(pitch => {
-              playNote(INSTRUMENTS.strings, barStart, pitch, bar * 0.9, 0.04, wetDest);
-            });
-          }
-        }
-      }
-
-      // ================================================================
-      // SCHEDULE SONG STRUCTURE
-      // ================================================================
-      const introStart = now;
-      const verseStart = now + 4 * bar;
-      const chorusStart = now + 12 * bar;
-
-      // INTRO (4 bars)
-      switch (genre) {
-        case 'post-punk':
-          scheduleDrums(introStart, 4, false);
-          scheduleBass('verse', introStart, 4, false);
-          break;
-        case 'indie-folk':
-          scheduleGuitar('verse', introStart, 4, false);
-          break;
-        case 'shoegaze':
-          scheduleGuitar('verse', introStart, 4, false);
-          scheduleSynth('verse', introStart, 4, false);
-          break;
-        case 'garage':
-          // Count-in: 4 snare hits then crash
-          for (let beat = 0; beat < 4; beat++) {
-            playNote(INSTRUMENTS.snare, introStart + beat * beatDur, 38, 0.15, 0.6, dryDest);
-          }
-          playNote(INSTRUMENTS.crash, introStart + 4 * beatDur, 49, 1.0, 0.7, dryDest);
-          scheduleDrums(introStart + bar, 3, false);
-          scheduleGuitar('verse', introStart + bar, 3, false);
-          break;
-        case 'art-rock':
-          scheduleGuitar('verse', introStart, 4, false);
-          break;
-        case 'lo-fi':
-          scheduleGuitar('verse', introStart, 4, false);
-          break;
-        case 'dance-punk':
-          scheduleDrums(introStart, 4, false);
-          scheduleBass('verse', introStart, 4, false);
-          break;
-      }
-
-      // VERSE (8 bars)
-      scheduleGuitar('verse', verseStart, 8, false);
-      scheduleBass('verse', verseStart, 8, false);
-      scheduleDrums(verseStart, 8, false);
-      scheduleSynth('verse', verseStart, 8, false);
-
-      // CHORUS (8 bars)
-      scheduleGuitar('chorus', chorusStart, 8, true);
-      scheduleBass('chorus', chorusStart, 8, true);
-      scheduleDrums(chorusStart, 8, true);
-      scheduleSynth('chorus', chorusStart, 8, true);
-      // Crash on chorus entry
-      playNote(INSTRUMENTS.crash, chorusStart, 49, 1.5, 0.5, dryDest);
-
-      // Fade out
-      const fadeStart = chorusStart + 6 * bar;
-      masterGain.gain.setValueAtTime(masterGain.gain.value, fadeStart);
-      masterGain.gain.linearRampToValueAtTime(0, songEnd);
-
-      // Trigger speech synthesis vocals at verse start
-      const lyricsPool = LYRICS_DB[genre] || LYRICS_DB['post-punk'];
-      const selectedLyrics = [];
-      for (let i = 0; i < 3; i++) {
-        const pair = lyricsPool[Math.floor(Math.random() * lyricsPool.length)];
-        selectedLyrics.push(pair[0], pair[1]);
-      }
-      const verseDelay = (verseStart - ctx.currentTime) * 1000;
-      if (verseDelay > 0) {
-        setTimeout(() => {
-          if (this._playing) singLyrics(genre, selectedLyrics);
-        }, verseDelay);
-      }
-
-      // Progress tracking
-      const totalDuration = songEnd - now;
-      const startTime = ctx.currentTime;
-      this._progressInterval = setInterval(() => {
-        const elapsed = ctx.currentTime - startTime;
-        const pct = Math.min(100, (elapsed / totalDuration) * 100);
-        const fill = document.getElementById('np-progress-fill');
-        if (fill) fill.style.width = pct + '%';
-      }, 200);
-
-      // Auto-stop
-      this._stopTimeout = setTimeout(() => {
-        this._playing = false;
-        if (this._progressInterval) { clearInterval(this._progressInterval); this._progressInterval = null; }
-        this._scheduledEnvelopes = [];
-        this._masterGain = null;
-        if (window._onSongEnd) window._onSongEnd();
-      }, totalDuration * 1000 + 500);
-
-      return totalDuration;
-    },
-  };
-
-  window.MusicEngine = MusicEngine;
-})();
-
 
 // =========================================================================
 // GAME CODE
@@ -3157,373 +2486,13 @@ const INDUSTRY_OFFERS = [
 
 // ---- Game State ----
 let state = {};
-let vizAnimFrame = null;
 let selectedBandIndex = -1;
 let currentAction = null;
-let songStartTime = 0;
-let songDuration = 0;
 
 function getYear() { return 2001 + Math.floor(state.month / 12); }
 function getMonthName() { return MONTHS[state.month % 12]; }
 function getDateStr() { return getMonthName() + ' ' + getYear(); }
 function getCurrentMonthIndex() { return (state.month % 12) + 1; }
-
-function initAudio() {
-  const ctx = getAudioContext();
-  if (!analyserNode) {
-    analyserNode = ctx.createAnalyser();
-    analyserNode.fftSize = 64;
-    analyserNode.connect(ctx.destination);
-  }
-  if (!instrumentsDecoded) initInstruments();
-}
-
-// ---- Sound Effects ----
-function playSFX(type) {
-  if (!instrumentsDecoded || !audioCtx) return;
-  const ctx = audioCtx;
-  const now = ctx.currentTime;
-  try {
-    switch (type) {
-      case 'click':
-        if (INSTRUMENTS.hihatClosed) wafPlayer.queueWaveTable(ctx, ctx.destination, INSTRUMENTS.hihatClosed, now, 42, 0.05, 0.08);
-        break;
-      case 'sign':
-        if (INSTRUMENTS.crash) wafPlayer.queueWaveTable(ctx, ctx.destination, INSTRUMENTS.crash, now, 49, 1.0, 0.3);
-        break;
-      case 'album':
-        if (INSTRUMENTS.snare) {
-          wafPlayer.queueWaveTable(ctx, ctx.destination, INSTRUMENTS.snare, now, 38, 0.1, 0.3);
-          wafPlayer.queueWaveTable(ctx, ctx.destination, INSTRUMENTS.snare, now + 0.1, 38, 0.1, 0.3);
-          wafPlayer.queueWaveTable(ctx, ctx.destination, INSTRUMENTS.crash, now + 0.2, 49, 0.8, 0.25);
-        }
-        break;
-      case 'good-score':
-        if (INSTRUMENTS.cleanGuitar) {
-          [60, 64, 67, 72].forEach((note, i) => {
-            wafPlayer.queueWaveTable(ctx, ctx.destination, INSTRUMENTS.cleanGuitar, now + i * 0.12, note, 0.3, 0.15);
-          });
-        }
-        break;
-      case 'bad-score':
-        if (INSTRUMENTS.electricBass) {
-          wafPlayer.queueWaveTable(ctx, ctx.destination, INSTRUMENTS.electricBass, now, 40, 0.8, 0.2);
-        }
-        break;
-      case 'month':
-        if (INSTRUMENTS.hihatClosed) wafPlayer.queueWaveTable(ctx, ctx.destination, INSTRUMENTS.hihatClosed, now, 42, 0.05, 0.04);
-        break;
-    }
-  } catch(e) {}
-}
-
-// ---- Visualizer ----
-function initVisualizer() {
-  const vizEl = document.getElementById('visualizer');
-  vizEl.innerHTML = '';
-  for (let i = 0; i < 16; i++) {
-    const bar = document.createElement('div');
-    bar.className = 'viz-bar';
-    bar.style.height = '2px';
-    vizEl.appendChild(bar);
-  }
-}
-
-function updateVisualizer() {
-  if (!analyserNode || !MusicEngine.isPlaying()) {
-    if (vizAnimFrame) cancelAnimationFrame(vizAnimFrame);
-    vizAnimFrame = null;
-    document.querySelectorAll('.viz-bar').forEach(b => b.style.height = '2px');
-    return;
-  }
-  const data = new Uint8Array(analyserNode.frequencyBinCount);
-  analyserNode.getByteFrequencyData(data);
-  const bars = document.querySelectorAll('.viz-bar');
-  const step = Math.floor(data.length / bars.length);
-  bars.forEach((bar, i) => {
-    const val = data[i * step] || 0;
-    bar.style.height = Math.max(2, val / 255 * 24) + 'px';
-  });
-  vizAnimFrame = requestAnimationFrame(updateVisualizer);
-}
-
-function playBandMusic(band) {
-  initAudio();
-  const tempoRange = GENRE_TEMPOS[band.genre] || [120, 140];
-  const tempo = tempoRange[0] + Math.floor(Math.random() * (tempoRange[1] - tempoRange[0]));
-  const genreKeys = GENRE_KEYS_MAP[band.genre] || KEYS;
-  const params = {
-    genre: band.genre, talent: band.talent,
-    key: band.musicParams ? band.musicParams.key : pick(genreKeys),
-    tempo: tempo, energy: band.energy, name: band.name,
-  };
-
-  const duration = MusicEngine.playBand(params);
-  songStartTime = Date.now();
-  songDuration = duration * 1000;
-
-  const np = document.getElementById('now-playing');
-  np.style.display = 'flex';
-  document.getElementById('np-track-name').textContent = band.name;
-  document.getElementById('np-genre').textContent = band.genre;
-
-  const color = GENRE_COLORS[band.genre] || '#7A8B6F';
-  document.querySelectorAll('.viz-bar').forEach(b => b.style.background = color);
-
-  const eqIcon = document.getElementById('eq-icon');
-  eqIcon.classList.add('playing');
-  eqIcon.querySelectorAll('.eq-bar').forEach(b => b.style.background = color);
-
-  if (vizAnimFrame) cancelAnimationFrame(vizAnimFrame);
-  vizAnimFrame = requestAnimationFrame(updateVisualizer);
-
-  startLyrics(band.genre, tempo);
-  document.getElementById('np-progress-fill').style.width = '0%';
-
-  window._onSongEnd = () => {
-    document.getElementById('now-playing').style.display = 'none';
-    document.getElementById('eq-icon').classList.remove('playing');
-    if (vizAnimFrame) cancelAnimationFrame(vizAnimFrame);
-    stopLyrics();
-    stopVenueScene();
-  };
-}
-
-function stopMusic() {
-  MusicEngine.stop();
-  document.getElementById('now-playing').style.display = 'none';
-  document.getElementById('eq-icon').classList.remove('playing');
-  if (vizAnimFrame) cancelAnimationFrame(vizAnimFrame);
-  stopLyrics();
-  stopVenueScene();
-}
-
-// =========================================================================
-// ANIMATIONS & INTERSTITIALS
-// =========================================================================
-
-function showTitleAnimation() {
-  const titleEl = document.getElementById('title-text');
-  const text = 'MATADOR DREAMS';
-  titleEl.innerHTML = '';
-  text.split('').forEach((letter, i) => {
-    const span = document.createElement('span');
-    span.className = 'title-letter';
-    span.textContent = letter === ' ' ? '\u00A0' : letter;
-    span.style.animationDelay = (i * 0.08) + 's';
-    titleEl.appendChild(span);
-  });
-}
-
-function showMonthInterstitial(monthName, year, isNewYear) {
-  return new Promise(resolve => {
-    const overlay = document.createElement('div');
-    overlay.className = 'interstitial-overlay month-interstitial';
-    overlay.style.pointerEvents = 'auto';
-
-    if (isNewYear) {
-      overlay.innerHTML = `
-        <div style="text-align:center;">
-          <div class="year-num" style="animation: fadeInDown 0.4s ease forwards;">${year}</div>
-          <h2 style="animation: fadeInUp 0.4s ease 0.2s forwards; opacity:0;">${monthName}</h2>
-        </div>`;
-    } else {
-      overlay.innerHTML = `<h2 style="animation: fadeInUp 0.3s ease forwards;">${monthName} ${year}</h2>`;
-    }
-
-    document.body.appendChild(overlay);
-    playSFX('month');
-    const duration = isNewYear ? 1500 : 700;
-    setTimeout(() => {
-      overlay.style.animation = 'fadeOut 0.3s ease forwards';
-      setTimeout(() => { overlay.remove(); resolve(); }, 300);
-    }, duration);
-  });
-}
-
-function showYearEndSummary(year) {
-  return new Promise(resolve => {
-    const yearAlbums = state.albums.filter(a => {
-      const albumYear = 2001 + Math.floor(a.month / 12);
-      return albumYear === year;
-    });
-    const bestScore = yearAlbums.length > 0 ? Math.max(...yearAlbums.map(a => a.score)) : 0;
-    const bnmCount = yearAlbums.filter(a => a.isBNM).length;
-    const yearHistory = state.history.filter(h => h.date && h.date.includes(year.toString()));
-    const highlight = yearHistory.length > 0 ? pick(yearHistory).text : 'Survived another year in Brooklyn.';
-    const nextYear = year + 1;
-    const nextTrends = trends[nextYear];
-
-    const overlay = document.createElement('div');
-    overlay.className = 'year-end-overlay';
-    overlay.style.cursor = 'pointer';
-
-    let trendsHtml = '';
-    if (nextTrends) {
-      trendsHtml = '<div style="margin-top:1rem;"><div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.15em; margin-bottom:0.3rem; color:#888;">Genre Outlook for ' + nextYear + '</div>';
-      trendsHtml += Object.entries(nextTrends).map(([g, v]) => {
-        const label = v >= 0.8 ? 'HOT' : v >= 0.5 ? 'warm' : v >= 0.3 ? 'cool' : 'cold';
-        const color = v >= 0.8 ? 'var(--faded-red)' : v >= 0.5 ? 'var(--mustard)' : '#888';
-        return `<span style="color:${color}; font-weight:${v >= 0.7 ? '700' : '400'}; font-family:var(--font-mono); font-size:0.75rem;">${g}: ${label}</span>`;
-      }).join(' &bull; ');
-      trendsHtml += '</div>';
-    }
-
-    overlay.innerHTML = `
-      <div class="year-end-card">
-        <h2>${year} IN REVIEW</h2>
-        <div class="year-end-stat"><span>Albums Released</span><span class="ye-val">${yearAlbums.length}</span></div>
-        <div class="year-end-stat"><span>Best Pitchfork Score</span><span class="ye-val">${bestScore.toFixed(1)}</span></div>
-        <div class="year-end-stat"><span>Best New Music Awards</span><span class="ye-val">${bnmCount}</span></div>
-        <div class="year-end-stat"><span>Budget</span><span class="ye-val">$${state.budget.toLocaleString()}</span></div>
-        <div class="year-end-stat"><span>Credibility</span><span class="ye-val">${state.credibility}/100</span></div>
-        <div class="year-end-stat"><span>Roster Size</span><span class="ye-val">${state.roster.length} bands</span></div>
-        <div class="year-end-highlight"><b>Notable moment:</b> ${highlight}</div>
-        ${trendsHtml}
-        <div style="margin-top:1.2rem; font-size:0.7rem; color:#999; text-transform:uppercase; letter-spacing:0.15em;">Click to continue</div>
-      </div>`;
-
-    document.body.appendChild(overlay);
-    overlay.addEventListener('click', () => {
-      overlay.style.animation = 'fadeOut 0.3s ease forwards';
-      setTimeout(() => { overlay.remove(); resolve(); }, 300);
-    });
-  });
-}
-
-function spawnConfetti() {
-  const container = document.createElement('div');
-  container.className = 'confetti-container';
-  document.body.appendChild(container);
-  const colors = ['#B85450', '#C49B3F', '#7A8B6F', '#4A6B8A', '#C4858C', '#b8a9c9', '#ff6b9d'];
-  for (let i = 0; i < 50; i++) {
-    const piece = document.createElement('div');
-    piece.className = 'confetti-piece';
-    piece.style.left = Math.random() * 100 + '%';
-    piece.style.background = pick(colors);
-    piece.style.animationDelay = Math.random() * 1.5 + 's';
-    piece.style.animationDuration = (2 + Math.random() * 2) + 's';
-    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-    piece.style.width = (6 + Math.random() * 6) + 'px';
-    piece.style.height = (6 + Math.random() * 6) + 'px';
-    container.appendChild(piece);
-  }
-  setTimeout(() => container.remove(), 4000);
-}
-
-function createCrowdAnimation(success) {
-  let html = '<div class="crowd-container">';
-  const count = success > 0.75 ? 20 : success > 0.45 ? 12 : 5;
-  for (let i = 0; i < count; i++) {
-    const bobClass = success > 0.45 ? pick(['bobbing', 'bobbing2', 'bobbing3']) : '';
-    const delay = Math.random() * 0.5;
-    html += `<div class="crowd-person ${bobClass}" style="animation-delay:${delay}s; height:${14 + Math.random() * 10}px;"></div>`;
-  }
-  html += '</div>';
-  return html;
-}
-
-// ---- UI Rendering ----
-function renderAll() {
-  renderHeader();
-  renderResources();
-  renderRoster();
-  renderActionButtons();
-}
-
-function renderHeader() {
-  document.getElementById('header-label-name').textContent = state.labelName;
-  document.getElementById('header-date').textContent = getDateStr();
-  const actionsEl = document.getElementById('actions-display');
-  let html = '<span>Actions:</span>';
-  for (let i = 0; i < 3; i++) {
-    html += `<div class="action-dot ${i < state.actionsLeft ? '' : 'spent'}"></div>`;
-  }
-  actionsEl.innerHTML = html;
-}
-
-function renderResources() {
-  document.getElementById('budget-val').textContent = '$' + state.budget.toLocaleString();
-  document.getElementById('cred-val').textContent = state.credibility;
-  document.getElementById('hype-val').textContent = state.hype;
-  const maxBudget = 50000;
-  document.getElementById('budget-bar').style.width = clamp(state.budget / maxBudget * 100, 0, 100) + '%';
-  document.getElementById('cred-bar').style.width = clamp(state.credibility, 0, 100) + '%';
-  document.getElementById('hype-bar').style.width = clamp(state.hype, 0, 100) + '%';
-}
-
-function renderRoster() {
-  const el = document.getElementById('roster-list');
-  let html = '';
-  for (let i = 0; i < 5; i++) {
-    if (i < state.roster.length) {
-      const band = state.roster[i];
-      const trendVal = getTrendValue(band.genre);
-      const trendClass = trendVal >= 0.8 ? 'trend-hot' : trendVal >= 0.5 ? 'trend-warm' : trendVal >= 0.3 ? 'trend-cool' : 'trend-cold';
-      html += `<div class="band-card ${i === selectedBandIndex ? 'selected' : ''}" onclick="selectBand(${i})">
-        <div class="band-name">${band.name}</div>
-        <div class="band-genre">${band.genre} <span class="trend-indicator ${trendClass}" title="Trend: ${Math.round(trendVal*100)}%"></span></div>
-        <div class="band-stars">${renderStars(band.talent)}</div>
-        <div class="band-morale">Morale</div>
-        <div class="morale-bar"><div class="morale-fill" style="width:${band.morale}%; background:${band.morale > 50 ? 'var(--sage)' : band.morale > 25 ? 'var(--mustard)' : 'var(--faded-red)'}"></div></div>
-        <div style="font-size:0.65rem; color:#888; margin-top:2px;">Fans: ${band.fanBase} | Albums: ${band.albums.length}</div>
-      </div>`;
-    } else {
-      html += `<div class="empty-slot">--- empty slot ---</div>`;
-    }
-  }
-  el.innerHTML = html;
-}
-
-function renderStars(talent) {
-  const full = Math.round(talent / 2);
-  let s = '';
-  for (let i = 0; i < 5; i++) s += i < full ? '\u2605' : '\u2606';
-  return s;
-}
-
-function getTrendValue(genre) {
-  const year = getYear();
-  return (trends[year] && trends[year][genre]) || 0.3;
-}
-
-function renderActionButtons() {
-  const hasBands = state.roster.length > 0;
-  document.getElementById('btn-record').disabled = !hasBands;
-  document.getElementById('btn-book').disabled = !hasBands;
-  document.getElementById('btn-promote').disabled = !hasBands;
-}
-
-function selectBand(index) {
-  selectedBandIndex = index;
-  renderRoster();
-  if (currentAction === 'record-select' || currentAction === 'book-select' || currentAction === 'promote-select') {
-    if (currentAction === 'record-select') showRecordOptions();
-    else if (currentAction === 'book-select') showBookOptions();
-    else if (currentAction === 'promote-select') showPromoteOptions();
-  }
-}
-
-function setActionPanel(title, html) {
-  document.getElementById('action-panel-title').textContent = title;
-  document.getElementById('action-content').innerHTML = html;
-}
-
-function addHistory(text) {
-  state.history.push({ date: getDateStr(), text });
-  const el = document.getElementById('history-log');
-  const entry = document.createElement('div');
-  entry.className = 'history-entry';
-  entry.innerHTML = `<span class="h-date">${getDateStr()}</span> ${text}`;
-  el.insertBefore(entry, el.firstChild);
-}
-
-function useAction() {
-  if (state.actionsLeft <= 0) return false;
-  state.actionsLeft--;
-  renderHeader();
-  return true;
-}
 
 // ---- Modal ----
 function showModal(title, body, buttons) {
@@ -3706,7 +2675,9 @@ function recordAlbum(style, cost, prodBonus) {
   const albumName = generateAlbumName();
   const artCanvas = generateAlbumArtCanvas(band.genre, albumName);
 
-  // Calculate Pitchfork score
+  // Play band music briefly during recording
+  playBandMusic(band);
+
   const trendVal = getTrendValue(band.genre);
   const baseScore = band.talent * 0.6 + prodBonus * 0.2 * 10 + trendVal * 10 * 0.2;
   const variance = (Math.random() - 0.5) * 3;
@@ -3753,7 +2724,6 @@ function recordAlbum(style, cost, prodBonus) {
   const reviewText = generateReview(band, album, finalScore);
   const scoreColor = finalScore >= 8.5 ? 'var(--sage)' : finalScore >= 7.0 ? 'var(--denim)' : finalScore >= 5.0 ? 'var(--mustard)' : 'var(--faded-red)';
 
-  // Build HTML with canvas placeholder
   let html = `<div class="flex-row" style="gap:1rem; align-items:flex-start;">
     <div id="album-art-container"></div>
     <div>
@@ -3777,7 +2747,6 @@ function recordAlbum(style, cost, prodBonus) {
   }
 
   setActionPanel('Album Released!', html);
-  // Insert canvas art
   const artContainer = document.getElementById('album-art-container');
   if (artContainer) {
     artCanvas.style.width = '120px';
@@ -3906,7 +2875,6 @@ function bookVenue(venueIdx) {
   renderAll();
   playBandMusic(band);
 
-  // Start venue scene animation after DOM update
   setTimeout(() => {
     startVenueScene(venue.capacity, band.genre, band.energy);
   }, 50);
@@ -4188,9 +3156,235 @@ function saveHighScore(rank, score) {
   } catch (e) {}
 }
 
+// ---- UI Rendering ----
+function renderAll() {
+  renderHeader();
+  renderResources();
+  renderRoster();
+  renderActionButtons();
+}
+
+function renderHeader() {
+  document.getElementById('header-label-name').textContent = state.labelName;
+  document.getElementById('header-date').textContent = getDateStr();
+  const actionsEl = document.getElementById('actions-display');
+  let html = '<span>Actions:</span>';
+  for (let i = 0; i < 3; i++) {
+    html += `<div class="action-dot ${i < state.actionsLeft ? '' : 'spent'}"></div>`;
+  }
+  actionsEl.innerHTML = html;
+}
+
+function renderResources() {
+  document.getElementById('budget-val').textContent = '$' + state.budget.toLocaleString();
+  document.getElementById('cred-val').textContent = state.credibility;
+  document.getElementById('hype-val').textContent = state.hype;
+  const maxBudget = 50000;
+  document.getElementById('budget-bar').style.width = clamp(state.budget / maxBudget * 100, 0, 100) + '%';
+  document.getElementById('cred-bar').style.width = clamp(state.credibility, 0, 100) + '%';
+  document.getElementById('hype-bar').style.width = clamp(state.hype, 0, 100) + '%';
+}
+
+function renderRoster() {
+  const el = document.getElementById('roster-list');
+  let html = '';
+  for (let i = 0; i < 5; i++) {
+    if (i < state.roster.length) {
+      const band = state.roster[i];
+      const trendVal = getTrendValue(band.genre);
+      const trendClass = trendVal >= 0.8 ? 'trend-hot' : trendVal >= 0.5 ? 'trend-warm' : trendVal >= 0.3 ? 'trend-cool' : 'trend-cold';
+      html += `<div class="band-card ${i === selectedBandIndex ? 'selected' : ''}" onclick="selectBand(${i})">
+        <div class="band-name">${band.name}</div>
+        <div class="band-genre">${band.genre} <span class="trend-indicator ${trendClass}" title="Trend: ${Math.round(trendVal*100)}%"></span></div>
+        <div class="band-stars">${renderStars(band.talent)}</div>
+        <div class="band-morale">Morale</div>
+        <div class="morale-bar"><div class="morale-fill" style="width:${band.morale}%; background:${band.morale > 50 ? 'var(--sage)' : band.morale > 25 ? 'var(--mustard)' : 'var(--faded-red)'}"></div></div>
+        <div style="font-size:0.65rem; color:#888; margin-top:2px;">Fans: ${band.fanBase} | Albums: ${band.albums.length}</div>
+      </div>`;
+    } else {
+      html += `<div class="empty-slot">--- empty slot ---</div>`;
+    }
+  }
+  el.innerHTML = html;
+}
+
+function renderStars(talent) {
+  const full = Math.round(talent / 2);
+  let s = '';
+  for (let i = 0; i < 5; i++) s += i < full ? '\u2605' : '\u2606';
+  return s;
+}
+
+function getTrendValue(genre) {
+  const year = getYear();
+  return (trends[year] && trends[year][genre]) || 0.3;
+}
+
+function renderActionButtons() {
+  const hasBands = state.roster.length > 0;
+  document.getElementById('btn-record').disabled = !hasBands;
+  document.getElementById('btn-book').disabled = !hasBands;
+  document.getElementById('btn-promote').disabled = !hasBands;
+}
+
+function selectBand(index) {
+  selectedBandIndex = index;
+  renderRoster();
+  if (currentAction === 'record-select' || currentAction === 'book-select' || currentAction === 'promote-select') {
+    if (currentAction === 'record-select') showRecordOptions();
+    else if (currentAction === 'book-select') showBookOptions();
+    else if (currentAction === 'promote-select') showPromoteOptions();
+  }
+}
+
+function setActionPanel(title, html) {
+  document.getElementById('action-panel-title').textContent = title;
+  document.getElementById('action-content').innerHTML = html;
+}
+
+function addHistory(text) {
+  state.history.push({ date: getDateStr(), text });
+  const el = document.getElementById('history-log');
+  const entry = document.createElement('div');
+  entry.className = 'history-entry';
+  entry.innerHTML = `<span class="h-date">${getDateStr()}</span> ${text}`;
+  el.insertBefore(entry, el.firstChild);
+}
+
+function useAction() {
+  if (state.actionsLeft <= 0) return false;
+  state.actionsLeft--;
+  renderHeader();
+  return true;
+}
+
+// =========================================================================
+// ANIMATIONS & INTERSTITIALS
+// =========================================================================
+
+function showTitleAnimation() {
+  const titleEl = document.getElementById('title-text');
+  const text = 'MATADOR DREAMS';
+  titleEl.innerHTML = '';
+  text.split('').forEach((letter, i) => {
+    const span = document.createElement('span');
+    span.className = 'title-letter';
+    span.textContent = letter === ' ' ? '\u00A0' : letter;
+    span.style.animationDelay = (i * 0.08) + 's';
+    titleEl.appendChild(span);
+  });
+}
+
+function showMonthInterstitial(monthName, year, isNewYear) {
+  return new Promise(resolve => {
+    const overlay = document.createElement('div');
+    overlay.className = 'interstitial-overlay month-interstitial';
+    overlay.style.pointerEvents = 'auto';
+
+    if (isNewYear) {
+      overlay.innerHTML = `
+        <div style="text-align:center;">
+          <div class="year-num" style="animation: fadeInDown 0.4s ease forwards;">${year}</div>
+          <h2 style="animation: fadeInUp 0.4s ease 0.2s forwards; opacity:0;">${monthName}</h2>
+        </div>`;
+    } else {
+      overlay.innerHTML = `<h2 style="animation: fadeInUp 0.3s ease forwards;">${monthName} ${year}</h2>`;
+    }
+
+    document.body.appendChild(overlay);
+    playSFX('month');
+    const duration = isNewYear ? 1500 : 700;
+    setTimeout(() => {
+      overlay.style.animation = 'fadeOut 0.3s ease forwards';
+      setTimeout(() => { overlay.remove(); resolve(); }, 300);
+    }, duration);
+  });
+}
+
+function showYearEndSummary(year) {
+  return new Promise(resolve => {
+    const yearAlbums = state.albums.filter(a => {
+      const albumYear = 2001 + Math.floor(a.month / 12);
+      return albumYear === year;
+    });
+    const bestScore = yearAlbums.length > 0 ? Math.max(...yearAlbums.map(a => a.score)) : 0;
+    const bnmCount = yearAlbums.filter(a => a.isBNM).length;
+    const yearHistory = state.history.filter(h => h.date && h.date.includes(year.toString()));
+    const highlight = yearHistory.length > 0 ? pick(yearHistory).text : 'Survived another year in Brooklyn.';
+    const nextYear = year + 1;
+    const nextTrends = trends[nextYear];
+
+    const overlay = document.createElement('div');
+    overlay.className = 'year-end-overlay';
+    overlay.style.cursor = 'pointer';
+
+    let trendsHtml = '';
+    if (nextTrends) {
+      trendsHtml = '<div style="margin-top:1rem;"><div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.15em; margin-bottom:0.3rem; color:#888;">Genre Outlook for ' + nextYear + '</div>';
+      trendsHtml += Object.entries(nextTrends).map(([g, v]) => {
+        const label = v >= 0.8 ? 'HOT' : v >= 0.5 ? 'warm' : v >= 0.3 ? 'cool' : 'cold';
+        const color = v >= 0.8 ? 'var(--faded-red)' : v >= 0.5 ? 'var(--mustard)' : '#888';
+        return `<span style="color:${color}; font-weight:${v >= 0.7 ? '700' : '400'}; font-family:var(--font-mono); font-size:0.75rem;">${g}: ${label}</span>`;
+      }).join(' &bull; ');
+      trendsHtml += '</div>';
+    }
+
+    overlay.innerHTML = `
+      <div class="year-end-card">
+        <h2>${year} IN REVIEW</h2>
+        <div class="year-end-stat"><span>Albums Released</span><span class="ye-val">${yearAlbums.length}</span></div>
+        <div class="year-end-stat"><span>Best Pitchfork Score</span><span class="ye-val">${bestScore.toFixed(1)}</span></div>
+        <div class="year-end-stat"><span>Best New Music Awards</span><span class="ye-val">${bnmCount}</span></div>
+        <div class="year-end-stat"><span>Budget</span><span class="ye-val">$${state.budget.toLocaleString()}</span></div>
+        <div class="year-end-stat"><span>Credibility</span><span class="ye-val">${state.credibility}/100</span></div>
+        <div class="year-end-stat"><span>Roster Size</span><span class="ye-val">${state.roster.length} bands</span></div>
+        <div class="year-end-highlight"><b>Notable moment:</b> ${highlight}</div>
+        ${trendsHtml}
+        <div style="margin-top:1.2rem; font-size:0.7rem; color:#999; text-transform:uppercase; letter-spacing:0.15em;">Click to continue</div>
+      </div>`;
+
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', () => {
+      overlay.style.animation = 'fadeOut 0.3s ease forwards';
+      setTimeout(() => { overlay.remove(); resolve(); }, 300);
+    });
+  });
+}
+
+function spawnConfetti() {
+  const container = document.createElement('div');
+  container.className = 'confetti-container';
+  document.body.appendChild(container);
+  const colors = ['#B85450', '#C49B3F', '#7A8B6F', '#4A6B8A', '#C4858C', '#b8a9c9', '#ff6b9d'];
+  for (let i = 0; i < 50; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.background = pick(colors);
+    piece.style.animationDelay = Math.random() * 1.5 + 's';
+    piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+    piece.style.width = (6 + Math.random() * 6) + 'px';
+    piece.style.height = (6 + Math.random() * 6) + 'px';
+    container.appendChild(piece);
+  }
+  setTimeout(() => container.remove(), 4000);
+}
+
+function createCrowdAnimation(success) {
+  let html = '<div class="crowd-container">';
+  const count = success > 0.75 ? 20 : success > 0.45 ? 12 : 5;
+  for (let i = 0; i < count; i++) {
+    const bobClass = success > 0.45 ? pick(['bobbing', 'bobbing2', 'bobbing3']) : '';
+    const delay = Math.random() * 0.5;
+    html += `<div class="crowd-person ${bobClass}" style="animation-delay:${delay}s; height:${14 + Math.random() * 10}px;"></div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
 // ---- Start Game ----
 function startGame() {
-  initAudio();
   initVisualizer();
   stopTitleCanvas();
 
@@ -4220,49 +3414,44 @@ function startGame() {
   </div>`);
 }
 
-// ---- Init: Check for saved game after instruments load ----
-function checkSavedGame() {
-  const saved = loadGame();
-  if (saved && saved.month > 0 && saved.month < 72) {
-    showModal('Continue?', `Found a saved game: <b>${saved.labelName}</b>, ${MONTHS[saved.month % 12]} ${2001 + Math.floor(saved.month / 12)}.`, [
-      { label: 'Continue', class: 'btn-play', action: () => {
-        initAudio();
-        initVisualizer();
-        stopTitleCanvas();
-        state = saved;
-        document.getElementById('title-screen').style.display = 'none';
-        document.getElementById('game-screen').style.display = 'block';
-        document.getElementById('history-log').innerHTML = '';
-        state.history.forEach(h => {
-          const entry = document.createElement('div');
-          entry.className = 'history-entry';
-          entry.innerHTML = `<span class="h-date">${h.date}</span> ${h.text}`;
-          document.getElementById('history-log').appendChild(entry);
-        });
-        renderAll();
-        setActionPanel("What's the Move?", '<div class="select-band-prompt">Welcome back. Choose an action below.</div>');
-      }},
-      { label: 'New Game', action: () => {
-        localStorage.removeItem('matador-dreams-save');
-      }},
-    ]);
-  }
-}
+// ---- Init: Show title screen immediately, check for saved game ----
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('title-screen').style.display = 'flex';
+  showTitleAnimation();
+  startTitleCanvas();
 
-// Called after loading screen finishes
-const origCheckLoading = checkLoading;
-// We'll check for saved game after the title screen appears, via a timeout
-setTimeout(() => {
-  if (instrumentsLoaded) checkSavedGame();
-  else {
-    const waitForLoad = setInterval(() => {
-      if (instrumentsLoaded) {
-        clearInterval(waitForLoad);
-        checkSavedGame();
-      }
-    }, 500);
-  }
-}, 4000);
+  document.getElementById('label-name-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') startGame();
+  });
+
+  // Check for saved game
+  setTimeout(() => {
+    const saved = loadGame();
+    if (saved && saved.month > 0 && saved.month < 72) {
+      showModal('Continue?', `Found a saved game: <b>${saved.labelName}</b>, ${MONTHS[saved.month % 12]} ${2001 + Math.floor(saved.month / 12)}.`, [
+        { label: 'Continue', class: 'btn-play', action: () => {
+          initVisualizer();
+          stopTitleCanvas();
+          state = saved;
+          document.getElementById('title-screen').style.display = 'none';
+          document.getElementById('game-screen').style.display = 'block';
+          document.getElementById('history-log').innerHTML = '';
+          state.history.forEach(h => {
+            const entry = document.createElement('div');
+            entry.className = 'history-entry';
+            entry.innerHTML = `<span class="h-date">${h.date}</span> ${h.text}`;
+            document.getElementById('history-log').appendChild(entry);
+          });
+          renderAll();
+          setActionPanel("What's the Move?", '<div class="select-band-prompt">Welcome back. Choose an action below.</div>');
+        }},
+        { label: 'New Game', action: () => {
+          localStorage.removeItem('matador-dreams-save');
+        }},
+      ]);
+    }
+  }, 500);
+});
 </script>
 </body>
 </html>
