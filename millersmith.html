@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Millersmith — Workshop Records</title>
+<meta property="og:title" content="The Millersmith — Workshop Records">
+<meta property="og:description" content="A song about Jason Millersmith — CFA, vinyl obsessive, Radiohead befriender, lamest cool person alive.">
+<meta property="og:type" content="music.song">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, 'Helvetica Neue', sans-serif; background: #F0EBE0; color: #1A1A1A; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
+.card { background: white; border-radius: 16px; padding: 2.5rem 2rem; max-width: 440px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,0.1); }
+.label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.2em; color: #8A8580; margin-bottom: 1.5rem; text-align: center; }
+.title { font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 0.25rem; }
+.artist { font-size: 0.85rem; color: #8A8580; text-align: center; margin-bottom: 1.25rem; }
+.desc { font-size: 0.9rem; font-style: italic; color: #666; text-align: center; line-height: 1.6; margin-bottom: 1.5rem; }
+audio { width: 100%; height: 44px; margin-bottom: 1rem; }
+.lyrics-toggle { font-size: 0.8rem; color: #4A6B8A; cursor: pointer; text-align: center; text-decoration: underline; margin-bottom: 0.75rem; }
+.lyrics { display: none; font-family: 'Courier New', monospace; font-size: 0.75rem; line-height: 1.9; color: #555; white-space: pre-line; border-left: 3px solid #E8E6E3; padding-left: 1rem; margin-bottom: 1.5rem; }
+.lyrics.show { display: block; }
+.back { display: block; text-align: center; font-size: 0.75rem; color: #8A8580; text-decoration: none; }
+.back:hover { color: #4A6B8A; }
+.footer { text-align: center; font-size: 0.65rem; color: #BBB; margin-top: 1.5rem; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="label">Workshop Records</div>
+  <div class="title">The Millersmith</div>
+  <div class="artist">Workshop Records</div>
+  <div class="desc">A song about Jason Millersmith — CFA, vinyl obsessive, Radiohead befriender, lamest cool person alive.</div>
+  <audio controls preload="metadata" src="songs/millersmith.mp3"></audio>
+  <div class="lyrics-toggle" onclick="this.nextElementSibling.classList.toggle('show')">Show lyrics</div>
+  <div class="lyrics">Jason with the Japanese pressings, vinyl blessings
+Discogs cart impressions, structured credit sessions
+CFA in the briefcase, Radiohead on speed dial
+Beach House video cameo, never broke a smile
+Dad jokes in the group chat, punchlines that don't land
+Then he spins a set so clean you don't understand
+How the lamest cool person in the room commands
+Every record store from Tokyo to Amsterdam
+
+Millersmith, Millersmith
+Coolest lame or lamest cool, take your pick
+Millersmith, Millersmith
+Laura's cooler, he admits it, that's his bit
+
+Officiated the wedding, wrote the whole thing freehand
+Guggenheim portfolio, now he's got a B-side plan
+CMBS models open, other tab is rare wax
+Founded a fund in Brazil, came back like it's no tax
+Meme lord in the morning, CLO tranches after dark
+Thom Yorke in his phone like a walk in the park
+Ten thousand records deep and still he's looking for the one
+Laura walked in, everybody said he's done
+
+Millersmith, Millersmith
+Coolest lame or lamest cool, take your pick
+Millersmith, Millersmith
+Laura's cooler, he admits it, that's his bit
+
+They say the Millersmith walks among us
+Part analyst, part DJ, full absurdist
+The only man who'd price a credit default swap
+Then drop a B-side no one's heard and never stop</div>
+  <a class="back" href="songs.html">&larr; All songs</a>
+  <div class="footer">Made with Claude Code + ElevenLabs &bull; March 2026</div>
+</div>
+</body>
+</html>
